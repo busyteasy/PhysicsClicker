@@ -20,4 +20,5 @@ export const CATEGORIES = {
   teilchen: 'Teilchen',
   person: 'Person',
   einheit: 'Einheit',
+  experiment: 'Experiment',
 };

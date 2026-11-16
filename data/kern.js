@@ -1,4 +1,4 @@
-import { F, K, P, T, U, W, inArea } from './helpers.js';
+import { E, F, K, P, T, U, W, inArea } from './helpers.js';
 
 export default inArea('kern', [
   T('elektron', 1, 'Elektron', ['Elektronen'], '1897 von J. J. Thomson entdeckt – das erste bekannte Elementarteilchen.'),
@@ -59,4 +59,10 @@ export default inArea('kern', [
 
   K('protonenmasse', 3, 'Protonenmasse', ['Ruhemasse des Protons', 'Masse des Protons'], ['mp', 'm_p'], [[1.67262192e-27, ['kg']], [938.272, ['MeV/c^2'], 0.002]], 'Rund 938 MeV/c².'),
   K('atomare_masseneinheit', 3, 'Atomare Masseneinheit', [], ['u'], [[1.66053907e-27, ['kg']]], 'Ein Zwölftel der Masse eines Kohlenstoff-12-Atoms.'),
+
+  E('rutherford_streu', 2, 'Rutherfordscher Streuversuch', ['Rutherford-Experiment', 'Rutherford-Streuversuch', 'Goldfolienexperiment', 'Goldfolienversuch', 'Geiger-Marsden-Experiment'], 'Die meisten Alphateilchen flogen durch die Goldfolie, einige prallten zurück – der Atomkern war entdeckt.'),
+  E('chicago_pile', 3, 'Chicago Pile-1', ['Chicago Pile', 'CP-1'], 'Unter einer Tribüne in Chicago lief 1942 die erste kontrollierte Kettenreaktion.'),
+  E('cowan_reines', 4, 'Cowan-Reines-Neutrinoexperiment', ['Cowan-Reines-Experiment', 'Neutrinonachweis'], 'Clyde Cowan und Frederick Reines wiesen 1956 an einem Kernreaktor erstmals Neutrinos nach.'),
+  E('lhc', 3, 'Large Hadron Collider', ['LHC'], 'Im 27 Kilometer langen Ring bei Genf wurde 2012 das Higgs-Boson nachgewiesen.'),
+  E('nebelkammer', 2, 'Nebelkammer', ['wilsonsche Nebelkammer', 'Wilson-Kammer'], 'Charles Wilson machte ab 1911 die Spuren geladener Teilchen als Nebelstreifen sichtbar.'),
 ]);

@@ -1,4 +1,4 @@
-import { F, G, K, P, U, W, inArea } from './helpers.js';
+import { E, F, G, K, P, U, W, inArea } from './helpers.js';
 
 export default inArea('waerme', [
   F('gasgleichung', 2, 'p·V = n·R·T', ['pV=NkT', 'pV=NkBT'], 'Die ideale Gasgleichung verbindet Druck, Volumen und Temperatur.'),
@@ -46,4 +46,8 @@ export default inArea('waerme', [
   K('gaskonstante', 2, 'Universelle Gaskonstante', ['Gaskonstante', 'allgemeine Gaskonstante', 'molare Gaskonstante'], ['R'], [[8.314, ['J/(molK)', 'J/molK', 'J/(Kmol)', 'Jmol^-1K^-1', 'J/mol/K']]], 'Boltzmann-Konstante mal Avogadro-Konstante.'),
   K('avogadro', 2, 'Avogadro-Konstante', ['Avogadrokonstante', 'Avogadro-Zahl', 'Avogadrozahl'], ['NA', 'N_A'], [[6.02214076e23, ['1/mol', 'mol^-1']]], 'So viele Teilchen stecken in einem Mol.'),
   K('stefan_k', 4, 'Stefan-Boltzmann-Konstante', [], ['σ', 'sigma'], [[5.670374e-8, ['W/(m^2K^4)', 'Wm^-2K^-4', 'W/m^2K^4']]], 'Rund 5,67·10⁻⁸ W/(m²·K⁴).'),
+
+  E('schaufelrad', 2, 'Joules Schaufelradversuch', ['Schaufelradversuch', 'Joule-Experiment', 'joulescher Versuch'], 'Ein fallendes Gewicht rührt Wasser und erwärmt es – so bestimmte Joule das mechanische Wärmeäquivalent.'),
+  E('rumford', 3, 'Rumfords Kanonenbohrversuch', ['Kanonenbohrversuch'], 'Graf Rumford bemerkte 1798, dass beim Aufbohren von Kanonenrohren scheinbar unbegrenzt Wärme entsteht – ein Schlag gegen die Theorie vom Wärmestoff.'),
+  E('maxwell_daemon', 3, 'Maxwellscher Dämon', ['Maxwells Dämon', 'Maxwell-Dämon'], 'Ein Gedankenexperiment von 1867, das den zweiten Hauptsatz scheinbar austrickst.'),
 ]);

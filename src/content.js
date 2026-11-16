@@ -30,13 +30,15 @@ export const BEREICHE = [
     desc: 'Gleichungen mit „=“. Leerzeichen, Malpunkte und Reihenfolge sind egal.' },
   { id: 'konstante', name: 'Konstanten', beispiel: 'Lichtgeschwindigkeit, h = 6,626·10⁻³⁴ Js',
     desc: 'Naturkonstanten – mit korrektem Wert gibt es doppelt.' },
+  { id: 'experiment', name: 'Experimente', beispiel: 'Foucaultsches Pendel, Millikan-Versuch, Schrödingers Katze',
+    desc: 'Berühmte Versuche und Gedankenexperimente.' },
 ];
 
 export const BEREICH_NAMES = Object.fromEntries(BEREICHE.map((b) => [b.id, b.name]));
 export const START_BEREICHE = ['person'];
 
 // Preis des n-ten freigekauften Bereichs (unabhängig davon, welcher es ist)
-export const UNLOCK_PRICES = [100, 500, 1_200, 2_500, 4_500, 7_000];
+export const UNLOCK_PRICES = [100, 500, 1_200, 2_500, 4_500, 7_000, 10_000];
 
 // Grundwert einer Erstentdeckung je Stufe (Index = Stufe)
 export const TIER_POINTS = [0, 10, 30, 80, 200, 500];

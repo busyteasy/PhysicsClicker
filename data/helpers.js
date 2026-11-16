@@ -1,6 +1,6 @@
 // Kurzschreibweisen für die Datendateien. Jeder Eintrag:
 //   id      eindeutig, nur a-z, 0-9 und _
-//   cat     formel | konstante | gesetz | phaenomen | teilchen | person | einheit
+//   cat     formel | konstante | gesetz | phaenomen | teilchen | person | einheit | experiment
 //   tier    1 (Schulwissen) bis 5 (Spezialwissen)
 //   name    Anzeigename; wird automatisch auch als Eingabe akzeptiert
 //   aliases weitere akzeptierte Schreibweisen
@@ -17,6 +17,7 @@ export const P = make('phaenomen');
 export const T = make('teilchen');
 export const W = make('person');
 export const U = make('einheit');
+export const E = make('experiment');
 
 export const K = (id, tier, name, aliases, symbols, values, fact) => ({
   id, cat: 'konstante', tier, name, aliases, symbols,

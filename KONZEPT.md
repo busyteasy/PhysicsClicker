@@ -27,6 +27,7 @@ Kein Server, keine KI – das Spiel läuft komplett im Browser.
 | Teilchen   | `Myon`, `Higgs-Boson`                       |
 | Person     | `Emmy Noether`, `Marie Curie`               |
 | Einheit    | `Tesla`, `1 N = 1 kg·m/s²`                  |
+| Experiment | `Foucaultsches Pendel`, `Millikan-Versuch`  |
 
 Jeder Eintrag gehört zu einem von acht **Gebieten** (Mechanik, Optik,
 Wärmelehre, Elektrizität & Magnetismus, Astrophysik, Quantenphysik,
@@ -59,13 +60,13 @@ bis 5 (Spezialwissen).
 ## Bereiche freischalten
 
 Die Bereiche sind die Kategorien der Wissensdatenbank. Offen ist am Anfang nur
-**Personen**. Die übrigen sechs kauft man mit Erkenntnis frei – in beliebiger
+**Personen**. Die übrigen sieben kauft man mit Erkenntnis frei – in beliebiger
 Reihenfolge, so dass jede und jeder mit dem eigenen Lieblingsthema weitermachen
 kann. Der Preis hängt nur davon ab, der wievielte Bereich es ist:
 
-| Freischaltung | 1.  | 2.  | 3.    | 4.    | 5.    | 6.    |
-|---------------|-----|-----|-------|-------|-------|-------|
-| Preis         | 100 | 500 | 1.200 | 2.500 | 4.500 | 7.000 |
+| Freischaltung | 1.  | 2.  | 3.    | 4.    | 5.    | 6.    | 7.     |
+|---------------|-----|-----|-------|-------|-------|-------|--------|
+| Preis         | 100 | 500 | 1.200 | 2.500 | 4.500 | 7.000 | 10.000 |
 
 Eingaben aus einem gesperrten Bereich werden erkannt, aber nicht gewertet und
 nicht gemerkt; das Spiel sagt, welcher Bereich dafür nötig ist. Mehrdeutige
