@@ -25,14 +25,11 @@
       <form class="eingabe" id="eingabe-form" autocomplete="off">
         <label for="eingabe" class="nur-vorleser">Physikwissen eingeben</label>
         <input id="eingabe" type="text" spellcheck="false" autocomplete="off" autocapitalize="off"
-               placeholder="z. B. F = m·a, Myon, Ohmsches Gesetz …" maxlength="120" autofocus>
+               placeholder="z. B. Marie Curie …" maxlength="120" autofocus>
         <button type="submit">Eintragen</button>
         <div class="plus-ebene" id="plus-ebene" aria-hidden="true"></div>
       </form>
-      <p class="hilfe">
-        Formeln mit <code>=</code> · Konstanten gern mit Wert, z. B. <code>c = 3·10^8 m/s</code> ·
-        Begriffe, Gesetze, Teilchen, Personen und Einheiten einfach als Wort
-      </p>
+      <p class="hilfe" id="hilfe">Offen: Personen.</p>
 
       <div class="combo" id="combo" hidden>
         <span class="combo-text" id="combo-text"></span>
@@ -47,19 +44,17 @@
       <ol class="verlauf" id="verlauf"></ol>
     </section>
 
-    <section class="spalte seiten-spalte" aria-label="Labor und Codex">
+    <section class="spalte seiten-spalte" aria-label="Bereiche und Codex">
       <nav class="reiter" role="tablist">
-        <button role="tab" data-tab="labor" aria-selected="true">Labor</button>
+        <button role="tab" data-tab="bereiche" aria-selected="true">Bereiche</button>
         <button role="tab" data-tab="codex" aria-selected="false">Codex <span id="codex-zahl"></span></button>
         <button role="tab" data-tab="optionen" aria-selected="false">Optionen</button>
       </nav>
 
-      <div class="tab" id="tab-labor" role="tabpanel">
-        <h2>Einrichtungen</h2>
-        <ul class="einrichtungen" id="einrichtungen"></ul>
-        <h2>Upgrades</h2>
-        <ul class="upgrades" id="upgrades"></ul>
-        <p class="gekauft" id="gekauft"></p>
+      <div class="tab" id="tab-bereiche" role="tabpanel">
+        <h2>Bereiche</h2>
+        <p class="erklaerung" id="naechster-preis"></p>
+        <ul class="bereiche" id="bereiche"></ul>
       </div>
 
       <div class="tab" id="tab-codex" role="tabpanel" hidden>

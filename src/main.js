@@ -1,11 +1,11 @@
 // Oberfläche: verbindet Spiellogik und DOM.
 
-import { CATEGORIES, ENTRIES } from '../data/index.js';
-import { AREAS, AREA_NAMES, BUILDINGS, HOME_AREA_FACTOR, UPGRADES } from './content.js';
+import { ENTRIES } from '../data/index.js';
+import { AREA_NAMES, BEREICHE, BEREICH_NAMES } from './content.js';
 import { formatNumber as fmt } from './format.js';
 import {
-  areaCount, buildingBonus, buildingCost, buyBuilding, buyUpgrade, comboMultiplier,
-  comboWindow, discoveryCount, facilityBonus, isUnlocked, newState, submit,
+  bereichCount, buyBereich, comboMultiplier, comboWindow, discoveryCount,
+  isOpen, newState, submit, unlockPrice,
 } from './game.js';
 import { clearLocal, exportState, importState, loadLocal, saveLocal } from './save.js';
 import { isRelation } from './normalize.js';
@@ -28,7 +28,8 @@ function h(tag, props = {}, ...children) {
   return el;
 }
 
-const ENTRIES_BY_AREA = Object.fromEntries(AREAS.map((a) => [a.id, ENTRIES.filter((e) => e.area === a.id)]));
+const ENTRIES_BY_BEREICH = Object.fromEntries(BEREICHE.map((b) => [b.id, ENTRIES.filter((e) => e.cat === b.id)]));
+const openBereiche = () => BEREICHE.filter((b) => isOpen(state, b.id));
 
 // ---------- Eingabe ----------
 
@@ -50,7 +51,7 @@ form.addEventListener('submit', (event) => {
 
   if (result.items.some((i) => i.art === 'neu' || i.art === 'wert')) {
     renderCodex();
-    renderUpgrades(true);
+    renderBereiche(true);
     saveLocal(state);
   }
 });
@@ -76,16 +77,29 @@ const ART_TEXT = {
   wertWiederholung: 'Wert schon bekannt – kleines Trinkgeld',
 };
 
+function lockedHint(locked) {
+  const names = [...new Set(locked.map((e) => BEREICH_NAMES[e.cat]))];
+  return `Gehört zum Bereich ${names.join(' bzw. ')} – den kannst du im Reiter „Bereiche“ freischalten.`;
+}
+
 function showFeedback(result, text) {
   const box = $('rueckmeldung');
   box.replaceChildren();
 
+  if (result.status === 'gesperrt') {
+    box.append(
+      h('p', { class: 'titel warn' }, 'Richtig – aber dieser Bereich ist noch gesperrt.'),
+      h('p', { class: 'hinweis' }, lockedHint(result.locked)),
+    );
+    return;
+  }
   if (result.status === 'unbekannt') {
+    const open = openBereiche().map((b) => b.name).join(', ');
     box.append(
       h('p', { class: 'titel schlecht' }, 'Das kenne ich (noch) nicht.'),
       h('p', { class: 'hinweis' }, isRelation(text)
         ? 'Formeln vergleiche ich ohne Leerzeichen und Malpunkte, Seiten und Faktoren dürfen vertauscht sein. Vielleicht fehlt diese Form noch in der Datenbank.'
-        : 'Vielleicht ein Tippfehler – oder der Begriff fehlt noch in der Datenbank.'),
+        : `Vielleicht ein Tippfehler – oder der Begriff fehlt noch in der Datenbank. Offen sind gerade: ${open}.`),
     );
     return;
   }
@@ -121,7 +135,7 @@ function showFeedback(result, text) {
     box.append(h('div', { class: 'fund' },
       h('div', { class: 'fund-kopf' },
         h('span', { class: `fund-name ${entry.cat}` }, entry.name),
-        h('span', { class: `marke${isNew ? ' neu' : ''}` }, CATEGORIES[entry.cat]),
+        h('span', { class: `marke${isNew ? ' neu' : ''}` }, BEREICH_NAMES[entry.cat]),
         h('span', { class: 'marke' }, AREA_NAMES[entry.area]),
         h('span', { class: `fund-punkte${item.points ? '' : ' null'}` }, item.points ? `+${fmt(item.points)}` : '±0'),
       ),
@@ -129,6 +143,7 @@ function showFeedback(result, text) {
       showFact ? h('p', { class: 'fund-fakt' }, entry.fact) : null,
     ));
   }
+  if (result.locked.length) box.append(h('p', { class: 'hinweis' }, `Außerdem: ${lockedHint(result.locked)}`));
   if (result.combo > 1) {
     box.append(h('p', { class: 'hinweis' }, `Combo ${result.combo} – alles ×${fmt(result.multiplier)}`));
   }
@@ -145,6 +160,15 @@ function addHistory(result, text) {
   )));
 }
 
+/** Platzhalter und Hilfetext zeigen nur, was gerade eingegeben werden kann. */
+function renderInputHints() {
+  const open = openBereiche();
+  const examples = open.map((b) => b.beispiel.split(', ')[0]);
+  input.placeholder = `z. B. ${examples.slice(0, 3).join(', ')} …`;
+  $('hilfe').textContent = `Offen: ${open.map((b) => b.name).join(', ')}.`
+    + (open.length < BEREICHE.length ? ' Weitere Bereiche schaltest du im Reiter „Bereiche“ frei.' : '');
+}
+
 // ---------- Reiter ----------
 
 for (const tab of document.querySelectorAll('[role="tab"]')) {
@@ -158,138 +182,84 @@ for (const tab of document.querySelectorAll('[role="tab"]')) {
   });
 }
 
-// ---------- Einrichtungen ----------
+// ---------- Bereiche ----------
 
-const buildingRows = new Map();
+let bereicheSignature = '';
 
-function createBuildings() {
-  const list = $('einrichtungen');
-  for (const b of BUILDINGS) {
-    const button = h('button', { type: 'button', class: 'einrichtung', onclick: () => {
-      if (buyBuilding(state, b.id)) update();
-    } });
-    const li = h('li', {}, button);
-    list.append(li);
-    buildingRows.set(b.id, { li, button, shown: null });
-  }
-}
+function renderBereiche(force = false) {
+  const price = unlockPrice(state);
+  const signature = state.unlocked.join(',') + '|' + discoveryCount(state);
+  const list = $('bereiche');
 
-function renderBuildings() {
-  let teaserShown = false;
-  BUILDINGS.forEach((b, i) => {
-    const row = buildingRows.get(b.id);
-    const count = state.buildings[b.id];
-    const cost = buildingCost(state, b.id);
-    const visible = i === 0 || count > 0 || state.buildings[BUILDINGS[i - 1].id] > 0 || state.totalInsight >= b.cost;
-    const mode = visible ? 'offen' : !teaserShown ? 'teaser' : 'aus';
-    if (mode === 'teaser') teaserShown = true;
+  if (force || signature !== bereicheSignature) {
+    bereicheSignature = signature;
+    $('naechster-preis').textContent = price == null
+      ? 'Alle Bereiche sind offen.'
+      : `Der nächste Bereich kostet ${fmt(price)} Erkenntnis – welcher, entscheidest du.`;
 
-    row.li.hidden = mode === 'aus';
-    const key = `${mode}|${count}|${cost}|${buildingBonus(state, b.id)}`;
-    if (row.shown !== key) {
-      row.shown = key;
-      row.button.classList.toggle('teaser', mode === 'teaser');
-      if (mode === 'teaser') {
-        row.button.replaceChildren(
-          h('span', { class: 'name' }, '???'),
-          h('span', { class: 'anzahl' }, ''),
-          h('span', { class: 'beschr' }, `Noch unbekannte Einrichtung (${AREA_NAMES[b.area]})`),
-          h('span', { class: 'zahlen' }, h('span', { class: 'preis' }, fmt(cost)), ' Erkenntnis'),
-        );
-      } else {
-        const each = buildingBonus(state, b.id);
-        row.button.replaceChildren(
-          h('span', { class: 'name' }, b.name),
-          h('span', { class: 'anzahl' }, count),
-          h('span', { class: 'beschr' }, b.desc),
-          h('span', { class: 'zahlen' },
-            h('span', { class: 'preis' }, fmt(cost)), ' · ',
-            `+${fmt(each)} je Treffer (×${HOME_AREA_FACTOR} in ${AREA_NAMES[b.area]})`,
-            count ? ` · zusammen +${fmt(each * count)}` : ''),
-        );
+    list.replaceChildren(...BEREICHE.map((b) => {
+      const total = ENTRIES_BY_BEREICH[b.id].length;
+      if (isOpen(state, b.id)) {
+        const found = bereichCount(state, b.id);
+        return h('li', { class: 'bereich offen' },
+          h('div', { class: 'kopf' },
+            h('span', { class: 'name' }, b.name),
+            h('span', { class: 'status' }, `${found}/${total}`)),
+          h('div', { class: 'beschr' }, b.desc),
+          h('div', { class: 'beispiel' }, `z. B. ${b.beispiel}`),
+          h('div', { class: 'fortschritt' }, bar(found / total)));
       }
-    }
-    row.button.disabled = mode !== 'offen' || state.insight < cost;
-  });
-}
-
-// ---------- Upgrades ----------
-
-let upgradeSignature = '';
-
-function requirementText(u) {
-  if (u.req.area) {
-    const missing = u.req.n - areaCount(state, u.req.area);
-    return `Noch ${missing} ${missing === 1 ? 'Entdeckung' : 'Entdeckungen'} in ${AREA_NAMES[u.req.area]}`;
+      return h('li', { class: 'bereich gesperrt' },
+        h('div', { class: 'kopf' },
+          h('span', { class: 'name' }, b.name),
+          h('span', { class: 'status' }, `${total} Einträge`)),
+        h('div', { class: 'beschr' }, b.desc),
+        h('div', { class: 'beispiel' }, `z. B. ${b.beispiel}`),
+        h('button', {
+          type: 'button', class: 'freischalten', 'data-preis': price,
+          onclick: () => {
+            if (!buyBereich(state, b.id)) return;
+            saveLocal(state);
+            renderBereiche(true);
+            renderCodex();
+            renderInputHints();
+            update();
+            input.focus();
+          },
+        }, `Freischalten · ${fmt(price)} Erkenntnis`));
+    }));
   }
-  const missing = u.req.total - discoveryCount(state);
-  return `Noch ${missing} ${missing === 1 ? 'Entdeckung' : 'Entdeckungen'} insgesamt`;
-}
 
-function lockedProgress(u) {
-  return u.req.area ? areaCount(state, u.req.area) / u.req.n : discoveryCount(state) / u.req.total;
-}
-
-function renderUpgrades(force = false) {
-  const open = UPGRADES.filter((u) => !state.upgrades.includes(u.id));
-  const available = open.filter((u) => isUnlocked(state, u)).sort((a, b) => a.cost - b.cost);
-  const locked = open.filter((u) => !isUnlocked(state, u))
-    .sort((a, b) => lockedProgress(b) - lockedProgress(a) || a.cost - b.cost)
-    .slice(0, 3);
-
-  const signature = [...available, ...locked].map((u) => u.id + requirementText(u)).join(',') + state.upgrades.join(',');
-  const list = $('upgrades');
-  if (force || signature !== upgradeSignature) {
-    upgradeSignature = signature;
-    const cards = available.map((u) => h('li', {}, h('button', {
-      type: 'button', class: 'upgrade', 'data-id': u.id, 'data-cost': u.cost,
-      onclick: () => { if (buyUpgrade(state, u.id)) { renderUpgrades(true); update(); saveLocal(state); } },
-    },
-    h('span', { class: 'name' }, u.name),
-    h('span', { class: 'beschr' }, u.desc),
-    h('span', { class: 'preis' }, `${fmt(u.cost)} Erkenntnis`))));
-    const teasers = locked.map((u) => h('li', {}, h('button', { type: 'button', class: 'upgrade gesperrt', disabled: true },
-      h('span', { class: 'name' }, u.name),
-      h('span', { class: 'beschr' }, u.desc),
-      h('span', { class: 'preis' }, requirementText(u)))));
-    list.replaceChildren(...cards, ...teasers);
-    if (!cards.length && !teasers.length) list.append(h('li', { class: 'leer-hinweis' }, 'Alle Upgrades gekauft.'));
-
-    const bought = state.upgrades.map((id) => UPGRADES.find((u) => u.id === id)?.name).filter(Boolean);
-    $('gekauft').textContent = bought.length ? `Gekauft: ${bought.join(', ')}` : '';
-  }
-  for (const button of list.querySelectorAll('.upgrade[data-id]')) {
-    const tooExpensive = state.insight < Number(button.dataset.cost);
-    button.disabled = tooExpensive;
-    button.classList.toggle('zu-teuer', tooExpensive);
+  for (const button of list.querySelectorAll('.freischalten')) {
+    button.disabled = state.insight < Number(button.dataset.preis);
   }
 }
 
 // ---------- Codex ----------
 
-const openAreas = new Set();
+const openSections = new Set();
 
 function renderCodex() {
   const total = ENTRIES.length;
   const found = discoveryCount(state);
   $('codex-zahl').textContent = `${found}/${total}`;
 
-  const container = $('codex');
-  container.replaceChildren(
+  $('codex').replaceChildren(
     h('div', { class: 'codex-gesamt' },
       h('strong', {}, `${found} von ${total} Einträgen entdeckt`),
       h('div', { class: 'fortschritt' }, bar(found / total))),
-    ...AREAS.map((area) => {
-      const entries = ENTRIES_BY_AREA[area.id];
-      const known = entries.filter((e) => state.discovered[e.id])
-        .sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name, 'de'));
+    ...BEREICHE.map((b) => {
+      const entries = ENTRIES_BY_BEREICH[b.id];
+      const known = entries.filter((e) => state.discovered[e.id] != null)
+        .sort((x, y) => x.tier - y.tier || x.name.localeCompare(y.name, 'de'));
+      const open = isOpen(state, b.id);
       const missingByTier = [1, 2, 3, 4, 5]
-        .map((t) => [t, entries.filter((e) => e.tier === t && !state.discovered[e.id]).length])
+        .map((t) => [t, entries.filter((e) => e.tier === t && state.discovered[e.id] == null).length])
         .filter(([, n]) => n > 0);
 
-      const details = h('details', { class: 'gebiet', open: openAreas.has(area.id) },
+      const details = h('details', { class: `gebiet${open ? '' : ' zu'}`, open: openSections.has(b.id) },
         h('summary', {},
-          h('span', { class: 'name' }, area.name),
+          h('span', { class: 'name' }, b.name + (open ? '' : ' (gesperrt)')),
           h('span', { class: 'zahl' }, `${known.length}/${entries.length}`),
           h('div', { class: 'fortschritt' }, bar(known.length / entries.length))),
         h('div', { class: 'gebiet-inhalt' },
@@ -297,16 +267,16 @@ function renderCodex() {
             ? h('ul', { class: 'codex-liste' }, known.map((e) => h('li', {},
               h('div', { class: 'kopfzeile' },
                 h('span', { class: `name ${e.cat}` }, e.name),
-                h('span', { class: 'marke' }, CATEGORIES[e.cat]),
+                h('span', { class: 'marke' }, AREA_NAMES[e.area]),
                 h('span', { class: 'marke' }, `Stufe ${e.tier}`),
-                e.values ? h('span', { class: 'marke' }, state.values[e.id] ? '✓ Wert' : 'Wert fehlt') : null),
+                e.values ? h('span', { class: 'marke' }, state.values[e.id] != null ? '✓ Wert' : 'Wert fehlt') : null),
               h('p', { class: 'fakt' }, e.fact))))
-            : h('p', { class: 'offen' }, 'Noch nichts entdeckt.'),
+            : h('p', { class: 'offen' }, open ? 'Noch nichts entdeckt.' : 'Schalte den Bereich frei, um hier Einträge zu sammeln.'),
           missingByTier.length
             ? h('p', { class: 'offen' }, 'Noch offen: ' + missingByTier.map(([t, n]) => `Stufe ${t}: ${n}`).join(' · '))
-            : h('p', { class: 'offen' }, 'Gebiet vollständig!')));
+            : h('p', { class: 'offen' }, 'Bereich vollständig!')));
       details.addEventListener('toggle', () => {
-        if (details.open) openAreas.add(area.id); else openAreas.delete(area.id);
+        if (details.open) openSections.add(b.id); else openSections.delete(b.id);
       });
       return details;
     }),
@@ -324,11 +294,11 @@ function bar(share) {
 function renderStats() {
   const rows = [
     ['Entdeckungen', `${discoveryCount(state)} von ${ENTRIES.length}`],
+    ['Offene Bereiche', `${state.unlocked.length} von ${BEREICHE.length}`],
     ['Konstanten mit Wert', Object.keys(state.values).length],
     ['Eingaben', fmt(state.stats.inputs)],
     ['Davon gewertet', fmt(state.stats.hits)],
     ['Erkenntnis insgesamt', fmt(state.totalInsight)],
-    ['Einrichtungen', BUILDINGS.reduce((s, b) => s + state.buildings[b.id], 0)],
   ];
   $('statistik').replaceChildren(...rows.flatMap(([k, v]) => [h('dt', {}, k), h('dd', {}, v)]));
 }
@@ -366,7 +336,7 @@ $('import-knopf').addEventListener('click', () => {
 });
 
 $('reset-knopf').addEventListener('click', () => {
-  if (!confirm('Wirklich alles löschen? Erkenntnis, Einrichtungen, Upgrades und Codex gehen verloren.')) return;
+  if (!confirm('Wirklich alles löschen? Erkenntnis, freigeschaltete Bereiche und Codex gehen verloren.')) return;
   clearLocal();
   state = newState();
   history.length = 0;
@@ -374,7 +344,7 @@ $('reset-knopf').addEventListener('click', () => {
   rerenderAll();
 });
 
-// ---------- Hauptschleife ----------
+// ---------- Anzeige ----------
 
 function updateCombo(now) {
   const combo = $('combo');
@@ -382,25 +352,24 @@ function updateCombo(now) {
   combo.hidden = !active;
   if (!active) return;
   $('combo-text').textContent = `Combo ${state.combo.count} · ×${fmt(comboMultiplier(state.combo.count))}`;
-  const share = (state.combo.until - now) / comboWindow(state);
+  const share = (state.combo.until - now) / comboWindow();
   $('combo-fuellung').style.width = `${Math.max(0, share * 100)}%`;
 }
 
 function update() {
   $('betrag').textContent = fmt(state.insight);
-  const bonus = facilityBonus(state, null);
-  $('rate').textContent = bonus ? `+${fmt(bonus)} Bonus je Treffer durch Einrichtungen` : 'Erkenntnis gibt es nur für Eingaben';
+  const price = unlockPrice(state);
+  $('rate').textContent = price == null ? 'Alle Bereiche offen' : `Nächster Bereich: ${fmt(price)} Erkenntnis`;
   document.title = `${fmt(state.insight)} Erkenntnis – PhysicsClicker`;
-  renderBuildings();
-  renderUpgrades();
+  renderBereiche();
   updateCombo(Date.now());
 }
 
 function rerenderAll() {
-  upgradeSignature = '';
-  for (const row of buildingRows.values()) row.shown = null;
+  renderBereiche(true);
   renderCodex();
   renderStats();
+  renderInputHints();
   update();
 }
 
@@ -411,6 +380,5 @@ setInterval(() => saveLocal(state), 10_000);
 document.addEventListener('visibilitychange', () => { if (document.hidden) saveLocal(state); });
 window.addEventListener('pagehide', () => saveLocal(state));
 
-createBuildings();
 rerenderAll();
 input.focus();

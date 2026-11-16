@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { CATEGORIES, ENTRIES } from '../data/index.js';
-import { AREAS, UPGRADES } from '../src/content.js';
+import { AREAS, BEREICHE, START_BEREICHE, UNLOCK_PRICES } from '../src/content.js';
 import { buildIndex, match } from '../src/matcher.js';
 import { isRelation, keyOf, normWord } from '../src/normalize.js';
 
@@ -58,10 +58,8 @@ test('Jeder Eintrag ist über seinen eigenen Namen erreichbar', () => {
   }
 });
 
-test('Jedes Gebiet hat genug Einträge für beide Gebiets-Upgrades', () => {
-  for (const area of AREAS) {
-    const n = ENTRIES.filter((e) => e.area === area.id).length;
-    const needed = Math.max(...UPGRADES.filter((u) => u.req.area === area.id).map((u) => u.req.n));
-    assert.ok(n >= needed + 5, `${area.name}: nur ${n} Einträge`);
-  }
+test('Jede Kategorie ist ein Bereich, und es gibt genug Preise', () => {
+  assert.deepEqual(BEREICHE.map((b) => b.id).sort(), Object.keys(CATEGORIES).sort());
+  assert.equal(UNLOCK_PRICES.length, BEREICHE.length - START_BEREICHE.length);
+  for (let i = 1; i < UNLOCK_PRICES.length; i++) assert.ok(UNLOCK_PRICES[i] > UNLOCK_PRICES[i - 1]);
 });

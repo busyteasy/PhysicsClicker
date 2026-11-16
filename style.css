@@ -204,47 +204,29 @@ h2.klein {
 .reiter button[aria-selected="true"] { color: var(--akzent); border-bottom-color: var(--akzent); }
 #codex-zahl { font-weight: 400; font-size: 0.85em; }
 
-/* ---------- Einrichtungen ---------- */
+/* ---------- Bereiche ---------- */
 
-.einrichtungen, .upgrades { list-style: none; margin: 0; padding: 0; }
-.einrichtungen li + li { margin-top: 8px; }
-
-.einrichtung {
-  width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 2px 12px;
-  text-align: left; padding: 10px 14px; border-radius: var(--radius); cursor: pointer;
-  background: var(--flaeche); border: 1px solid var(--linie); transition: border-color 0.15s, transform 0.05s;
+.bereiche { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.bereich {
+  padding: 12px 14px; border-radius: var(--radius); border: 1px solid var(--linie);
+  background: var(--flaeche); display: grid; gap: 4px;
 }
-.einrichtung:not(:disabled):hover { border-color: var(--akzent); }
-.einrichtung:not(:disabled):active { transform: scale(0.99); }
-.einrichtung:disabled { cursor: default; opacity: 0.55; }
-.einrichtung .name { font-weight: 700; }
-.einrichtung .anzahl {
-  grid-row: span 3; align-self: center; font-size: 1.8rem; font-weight: 700;
-  color: var(--tinte-leise); font-variant-numeric: tabular-nums;
+.bereich .kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.bereich .name { font-weight: 700; }
+.bereich .status { font-size: 0.85rem; color: var(--tinte-leise); font-variant-numeric: tabular-nums; }
+.bereich.offen .name::before { content: "✓ "; color: var(--gut); }
+.bereich.gesperrt { border-style: dashed; }
+.bereich.gesperrt .name::before { content: "🔒 "; }
+.bereich .beschr { font-size: 0.88rem; }
+.bereich .beispiel { font-size: 0.82rem; color: var(--tinte-leise); }
+.bereich .fortschritt { margin-top: 4px; height: 5px; }
+.freischalten {
+  justify-self: start; margin-top: 6px; border: 0; border-radius: var(--radius);
+  padding: 0 16px; min-height: 40px; background: var(--akzent); color: var(--akzent-text);
+  font-weight: 600; cursor: pointer;
 }
-.einrichtung .beschr { font-size: 0.85rem; color: var(--tinte-leise); }
-.einrichtung .zahlen { font-size: 0.85rem; font-variant-numeric: tabular-nums; }
-.einrichtung .preis { font-weight: 700; color: var(--akzent); }
-.einrichtung.teaser { cursor: default; border-style: dashed; opacity: 0.6; }
-
-/* ---------- Upgrades ---------- */
-
-.upgrades { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
-.upgrade {
-  width: 100%; height: 100%; text-align: left; padding: 10px 12px; border-radius: var(--radius);
-  background: var(--flaeche); border: 1px solid var(--linie); cursor: pointer;
-  display: flex; flex-direction: column; gap: 2px;
-}
-.upgrade:not(:disabled):hover { border-color: var(--akzent); }
-.upgrade:disabled { cursor: default; }
-.upgrade.zu-teuer { opacity: 0.6; }
-.upgrade.gesperrt { opacity: 0.5; border-style: dashed; }
-.upgrade .name { font-weight: 700; }
-.upgrade .beschr { font-size: 0.82rem; color: var(--tinte-leise); }
-.upgrade .preis { margin-top: auto; padding-top: 4px; font-weight: 700; color: var(--akzent); font-size: 0.9rem; }
-.upgrade.gesperrt .preis { color: var(--tinte-leise); font-weight: 600; }
-.leer-hinweis { color: var(--tinte-leise); font-size: 0.9rem; grid-column: 1 / -1; margin: 0; }
-.gekauft { font-size: 0.85rem; color: var(--tinte-leise); }
+.freischalten:hover:not(:disabled) { filter: brightness(1.08); }
+.freischalten:disabled { opacity: 0.45; cursor: default; }
 
 /* ---------- Codex ---------- */
 
@@ -254,6 +236,7 @@ h2.klein {
 }
 .fortschritt span { display: block; height: 100%; background: var(--akzent); }
 
+.gebiet.zu { opacity: 0.6; }
 .gebiet { border: 1px solid var(--linie); border-radius: var(--radius); margin-bottom: 8px; background: var(--flaeche); }
 .gebiet summary {
   cursor: pointer; padding: 10px 14px; display: grid;

@@ -2,8 +2,8 @@
 
 Ein Browserspiel im Stil der Idle-Spiele: Statt zu klicken, tippst du
 **Physikwissen** ein – Formeln, Konstanten (gern mit Wert), Gesetze, Phänomene,
-Teilchen, Personen und Einheiten. Jede erkannte Eingabe bringt Erkenntnis, mit
-der du Forschungseinrichtungen und Upgrades kaufst.
+Teilchen, Personen und Einheiten. Jede erkannte Eingabe bringt Erkenntnis. Am
+Anfang sind nur Personen offen; mit Erkenntnis schaltest du weitere Bereiche frei.
 
 Das Konzept steht in [KONZEPT.md](KONZEPT.md).
 
@@ -32,8 +32,8 @@ Läuft mit dem eingebauten Test-Runner von Node (ab Version 18), ohne Abhängigk
 |---------------------|--------------------------------------------------------|
 | `index.html`, `style.css` | Seite und Gestaltung                             |
 | `src/main.js`       | Oberfläche, Hauptschleife                              |
-| `src/game.js`       | Spiellogik ohne DOM (Punkte, Käufe, Speichern-Format)  |
-| `src/content.js`    | Balance: Gebiete, Einrichtungen, Upgrades, Punktwerte  |
+| `src/game.js`       | Spiellogik ohne DOM (Punkte, Bereiche, Speichern)      |
+| `src/content.js`    | Balance: Bereiche, Preise, Punktwerte                  |
 | `src/matcher.js`    | Ordnet Eingaben den Datenbank-Einträgen zu             |
 | `src/normalize.js`  | Vereinheitlicht Schreibweisen von Wörtern und Formeln  |
 | `data/*.js`         | Wissensdatenbank, eine Datei pro Gebiet                |

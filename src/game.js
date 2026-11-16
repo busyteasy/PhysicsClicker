@@ -3,22 +3,19 @@
 import { ENTRIES } from '../data/index.js';
 import { buildIndex, match } from './matcher.js';
 import {
-  BUILDINGS, COMBO_MAX, COMBO_STEP, COMBO_WINDOW_MS, COST_GROWTH,
-  HOME_AREA_FACTOR, REPEAT_COOLDOWN_MS, REPEAT_SHARE,
-  TIER_POINTS, UPGRADES, VALUE_FACTOR,
+  BEREICHE, COMBO_MAX, COMBO_STEP, COMBO_WINDOW_MS, REPEAT_COOLDOWN_MS,
+  REPEAT_SHARE, START_BEREICHE, TIER_POINTS, UNLOCK_PRICES, VALUE_FACTOR,
 } from './content.js';
 
 export const INDEX = buildIndex(ENTRIES);
-const BUILDING_BY_ID = new Map(BUILDINGS.map((b) => [b.id, b]));
-const UPGRADE_BY_ID = new Map(UPGRADES.map((u) => [u.id, u]));
+const BEREICH_IDS = new Set(BEREICHE.map((b) => b.id));
 
 export function newState() {
   return {
-    version: 1,
+    version: 2,
     insight: 0,          // aktuelles Guthaben an Erkenntnis
     totalInsight: 0,     // insgesamt verdient
-    buildings: Object.fromEntries(BUILDINGS.map((b) => [b.id, 0])),
-    upgrades: [],
+    unlocked: [...START_BEREICHE], // freigeschaltete Bereiche (Kategorien)
     discovered: {},      // Eintrag-ID -> Zeitpunkt
     values: {},          // Konstanten-ID -> Zeitpunkt (Wert gewusst)
     lastSeen: {},        // Schlüssel -> Zeitpunkt der letzten Wertung
@@ -27,59 +24,40 @@ export function newState() {
   };
 }
 
-// ---------- Multiplikatoren ----------
+// ---------- Bereiche ----------
 
-const hasUpgrade = (state, id) => state.upgrades.includes(id);
-const boughtEffects = (state) => state.upgrades.map((id) => UPGRADE_BY_ID.get(id)?.effect).filter(Boolean);
+export const isOpen = (state, bereich) => state.unlocked.includes(bereich);
 
-export function areaMultiplier(state, area) {
-  return boughtEffects(state).reduce((m, e) => (e.area === area ? m * e.factor : m), 1);
+/** Preis für den nächsten Bereich, `null` wenn alle offen sind. */
+export function unlockPrice(state) {
+  const bought = state.unlocked.filter((b) => !START_BEREICHE.includes(b)).length;
+  return UNLOCK_PRICES[bought] ?? null;
 }
 
-export function typingMultiplier(state) {
-  let m = 1;
-  for (const e of boughtEffects(state)) {
-    if (e.typing) m *= e.typing;
-    if (e.network) m *= 1 + e.network * discoveryCount(state);
-  }
-  return m;
+export function buyBereich(state, bereich) {
+  const price = unlockPrice(state);
+  if (!BEREICH_IDS.has(bereich) || isOpen(state, bereich) || price == null || state.insight < price) return false;
+  state.insight -= price;
+  state.unlocked.push(bereich);
+  return true;
 }
 
-export function comboWindow(state) {
-  return boughtEffects(state).reduce((ms, e) => ms + (e.comboMs || 0), COMBO_WINDOW_MS);
-}
+// ---------- Zähler ----------
 
 export function discoveryCount(state) {
   return Object.keys(state.discovered).length;
 }
 
-export function areaCount(state, area) {
+export function bereichCount(state, bereich) {
   let n = 0;
   for (const id of Object.keys(state.discovered)) {
-    if (INDEX.byId.get(id)?.area === area) n++;
+    if (INDEX.byId.get(id)?.cat === bereich) n++;
   }
   return n;
 }
 
-function facilityMultiplier(state) {
-  return boughtEffects(state).reduce((m, e) => (e.facilities ? m * e.facilities : m), 1);
-}
-
-/** Bonus, den ein einzelnes Exemplar der Einrichtung auf Treffer außerhalb ihres Gebiets gibt. */
-export function buildingBonus(state, id) {
-  const b = BUILDING_BY_ID.get(id);
-  return b.bonus * areaMultiplier(state, b.area) * facilityMultiplier(state);
-}
-
-/**
- * Fester Bonus aller Einrichtungen auf einen Treffer im Gebiet `area`.
- * Einrichtungen erzeugen nie selbst Erkenntnis – sie wirken nur auf Eingaben.
- */
-export function facilityBonus(state, area) {
-  return BUILDINGS.reduce((sum, b) => {
-    const home = b.area === area ? HOME_AREA_FACTOR : 1;
-    return sum + state.buildings[b.id] * buildingBonus(state, b.id) * home;
-  }, 0);
+export function comboWindow() {
+  return COMBO_WINDOW_MS;
 }
 
 export function comboMultiplier(count) {
@@ -88,44 +66,52 @@ export function comboMultiplier(count) {
 
 // ---------- Eingaben ----------
 
-function entryValue(state, entry, isValue) {
-  const factor = isValue ? VALUE_FACTOR : 1;
-  const base = TIER_POINTS[entry.tier] * areaMultiplier(state, entry.area);
-  return (base + facilityBonus(state, entry.area)) * typingMultiplier(state) * factor;
+function entryValue(entry, isValue) {
+  return TIER_POINTS[entry.tier] * (isValue ? VALUE_FACTOR : 1);
 }
 
 function repeatItem(state, entry, key, isValue, now) {
   const last = state.lastSeen[key] || 0;
   const wait = REPEAT_COOLDOWN_MS - (now - last);
   if (wait > 0) return { entry, art: 'abklingend', points: 0, waitSeconds: Math.ceil(wait / 1000) };
-  return { entry, art: isValue ? 'wertWiederholung' : 'wiederholung', points: Math.max(1, entryValue(state, entry, isValue) * REPEAT_SHARE) };
+  return { entry, art: isValue ? 'wertWiederholung' : 'wiederholung', points: Math.max(1, entryValue(entry, isValue) * REPEAT_SHARE) };
 }
 
 /**
  * Wertet eine Eingabe aus und verändert den Zustand.
- * Rückgabe: { status, items, gained, combo, fuzzy, entry }
- *   status: 'treffer' | 'unbekannt' | 'wertFalsch' | 'einheitFalsch' | 'leer'
+ * Rückgabe: { status, items, gained, combo, fuzzy, entry, locked }
+ *   status: 'treffer' | 'gesperrt' | 'unbekannt' | 'wertFalsch' | 'einheitFalsch' | 'leer'
  *   items:  [{ entry, art, points, waitSeconds? }]
  *     art: 'neu' | 'wert' | 'wiederholung' | 'wertWiederholung' | 'abklingend'
+ *   locked: Einträge, die passen, aber in einem noch gesperrten Bereich liegen
  */
 export function submit(state, raw, now = Date.now()) {
   const result = match(INDEX, raw);
-  if (result.kind === 'leer') return { status: 'leer', items: [], gained: 0 };
+  if (result.kind === 'leer') return { status: 'leer', items: [], gained: 0, locked: [] };
   state.stats.inputs++;
+
   if (result.kind !== 'treffer') {
-    return { status: result.kind, items: [], gained: 0, entry: result.id ? INDEX.byId.get(result.id) : null };
+    const entry = result.id ? INDEX.byId.get(result.id) : null;
+    // Bei gesperrten Konstanten nichts über den Wert verraten
+    if (entry && !isOpen(state, entry.cat)) return { status: 'gesperrt', items: [], gained: 0, locked: [entry] };
+    return { status: result.kind, items: [], gained: 0, entry, locked: [] };
   }
 
+  const matched = result.ids.map((id) => INDEX.byId.get(id));
+  const open = matched.filter((e) => isOpen(state, e.cat));
+  const locked = matched.filter((e) => !isOpen(state, e.cat));
+  if (open.length === 0) return { status: 'gesperrt', items: [], gained: 0, locked };
+
   const items = [];
-  for (const id of result.ids) {
-    const entry = INDEX.byId.get(id);
+  for (const entry of open) {
+    const { id } = entry;
     if (!Object.hasOwn(state.discovered, id)) {
-      items.push({ entry, art: 'neu', points: entryValue(state, entry, false) });
+      items.push({ entry, art: 'neu', points: entryValue(entry, false) });
     } else if (result.wert !== id) {
       items.push(repeatItem(state, entry, id, false, now));
     }
     if (result.wert === id) {
-      if (!Object.hasOwn(state.values, id)) items.push({ entry, art: 'wert', points: entryValue(state, entry, true) });
+      if (!Object.hasOwn(state.values, id)) items.push({ entry, art: 'wert', points: entryValue(entry, true) });
       else items.push(repeatItem(state, entry, id + '#wert', true, now));
     }
   }
@@ -134,7 +120,7 @@ export function submit(state, raw, now = Date.now()) {
   let combo = state.combo.count;
   if (rawTotal > 0) {
     combo = now < state.combo.until ? state.combo.count + 1 : 1;
-    state.combo = { count: combo, until: now + comboWindow(state) };
+    state.combo = { count: combo, until: now + comboWindow() };
   }
   const multiplier = comboMultiplier(combo);
 
@@ -153,37 +139,10 @@ export function submit(state, raw, now = Date.now()) {
   state.insight += gained;
   state.totalInsight += gained;
   if (gained > 0) state.stats.hits++;
-  return { status: 'treffer', items, gained, combo: rawTotal > 0 ? combo : 0, multiplier, fuzzy: !!result.fuzzy };
-}
-
-// ---------- Einrichtungen & Upgrades ----------
-
-export function buildingCost(state, id) {
-  const b = BUILDING_BY_ID.get(id);
-  return Math.ceil(b.cost * COST_GROWTH ** state.buildings[id]);
-}
-
-export function buyBuilding(state, id) {
-  const cost = buildingCost(state, id);
-  if (state.insight < cost) return false;
-  state.insight -= cost;
-  state.buildings[id]++;
-  return true;
-}
-
-export function isUnlocked(state, upgrade) {
-  const { req } = upgrade;
-  if (req.area) return areaCount(state, req.area) >= req.n;
-  if (req.total) return discoveryCount(state) >= req.total;
-  return true;
-}
-
-export function buyUpgrade(state, id) {
-  const u = UPGRADE_BY_ID.get(id);
-  if (!u || hasUpgrade(state, id) || !isUnlocked(state, u) || state.insight < u.cost) return false;
-  state.insight -= u.cost;
-  state.upgrades.push(id);
-  return true;
+  return {
+    status: 'treffer', items, gained, locked,
+    combo: rawTotal > 0 ? combo : 0, multiplier, fuzzy: !!result.fuzzy,
+  };
 }
 
 // ---------- Speichern ----------
@@ -195,8 +154,9 @@ export function restore(saved) {
   const num = (x) => (Number.isFinite(x) && x >= 0 ? x : 0);
   state.insight = num(saved.insight);
   state.totalInsight = Math.max(num(saved.totalInsight), state.insight);
-  for (const b of BUILDINGS) state.buildings[b.id] = Math.floor(num(saved.buildings?.[b.id]));
-  state.upgrades = (saved.upgrades || []).filter((id) => UPGRADE_BY_ID.has(id));
+  for (const b of saved.unlocked || []) {
+    if (BEREICH_IDS.has(b) && !state.unlocked.includes(b)) state.unlocked.push(b);
+  }
   for (const [id, t] of Object.entries(saved.discovered || {})) if (INDEX.byId.has(id)) state.discovered[id] = num(t);
   for (const [id, t] of Object.entries(saved.values || {})) if (INDEX.byId.get(id)?.values) state.values[id] = num(t);
   for (const [k, t] of Object.entries(saved.lastSeen || {})) state.lastSeen[k] = num(t);
