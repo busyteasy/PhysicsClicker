@@ -1,4 +1,4 @@
-import { E, F, K, P, T, U, W, inArea } from './helpers.js';
+import { E, F, G, K, P, T, U, W, inArea } from './helpers.js';
 
 export default inArea('kern', [
   T('elektron', 1, 'Elektron', ['Elektronen'], '1897 von J. J. Thomson entdeckt – das erste bekannte Elementarteilchen.'),
@@ -65,4 +65,35 @@ export default inArea('kern', [
   E('cowan_reines', 4, 'Cowan-Reines-Neutrinoexperiment', ['Cowan-Reines-Experiment', 'Neutrinonachweis'], 'Clyde Cowan und Frederick Reines wiesen 1956 an einem Kernreaktor erstmals Neutrinos nach.'),
   E('lhc', 3, 'Large Hadron Collider', ['LHC'], 'Im 27 Kilometer langen Ring bei Genf wurde 2012 das Higgs-Boson nachgewiesen.'),
   E('nebelkammer', 2, 'Nebelkammer', ['wilsonsche Nebelkammer', 'Wilson-Kammer'], 'Charles Wilson machte ab 1911 die Spuren geladener Teilchen als Nebelstreifen sichtbar.'),
+
+  // Erweiterung (Issue #8)
+  T('antiproton', 3, 'Antiproton', ['Antiprotonen'], '1955 in Berkeley erstmals nachgewiesen.'),
+  T('antineutrino', 3, 'Antineutrino', ['Antineutrinos'], 'Entsteht beim Betazerfall zusammen mit einem Elektron.'),
+  T('kaon', 4, 'Kaon', ['K-Meson', 'Kaonen'], 'Enthält ein Strange-Quark – eines der ersten „seltsamen“ Teilchen.'),
+  T('meson', 3, 'Meson', ['Mesonen'], 'Ein Teilchen aus einem Quark und einem Antiquark.'),
+  T('baryon', 3, 'Baryon', ['Baryonen'], 'Ein Teilchen aus drei Quarks – wie Proton und Neutron.'),
+  T('hadron', 3, 'Hadron', ['Hadronen'], 'Sammelbegriff für alle Teilchen, die aus Quarks bestehen.'),
+  T('lepton', 3, 'Lepton', ['Leptonen'], 'Elektron, Myon, Tauon und ihre Neutrinos – Teilchen ohne starke Wechselwirkung.'),
+  T('fermion', 3, 'Fermion', ['Fermionen'], 'Teilchen mit halbzahligem Spin – für sie gilt das Pauli-Prinzip.'),
+  T('boson', 3, 'Boson', ['Bosonen'], 'Teilchen mit ganzzahligem Spin, benannt nach Satyendra Nath Bose.'),
+  T('nukleon', 2, 'Nukleon', ['Nukleonen', 'Kernteilchen'], 'Oberbegriff für Proton und Neutron.'),
+  T('ion', 1, 'Ion', ['Ionen'], 'Ein Atom oder Molekül mit zu vielen oder zu wenigen Elektronen.'),
+  T('atom', 1, 'Atom', ['Atome'], 'Griechisch für „das Unteilbare“ – was sich als Irrtum herausstellte.'),
+  T('atomkern', 1, 'Atomkern', [], 'Enthält fast die gesamte Masse des Atoms, ist aber rund 100 000-mal kleiner.'),
+  T('deuteron', 4, 'Deuteron', ['Deuteriumkern'], 'Der Kern des schweren Wasserstoffs: ein Proton und ein Neutron.'),
+  U('u_barn', 5, 'Barn', [], 'Ein Witz als Einheit: Für Kernphysiker war ein Urankern „so groß wie ein Scheunentor“ (englisch barn).'),
+  U('u_curie', 3, 'Curie (Einheit)', ['Curie'], 'Alte Einheit der Aktivität: 3,7·10¹⁰ Zerfälle pro Sekunde.'),
+  K('neutronenmasse', 3, 'Neutronenmasse', ['Masse des Neutrons', 'Ruhemasse des Neutrons'], ['mn', 'm_n'], [[1.67492750e-27, ['kg']], [939.565, ['MeV/c^2'], 0.002]], 'Etwas schwerer als das Proton – darum zerfallen freie Neutronen.'),
+  W('thomson', 2, 'Joseph John Thomson', ['J. J. Thomson'], 'Entdeckte 1897 das Elektron.'),
+  W('oppenheimer', 2, 'J. Robert Oppenheimer', ['Oppenheimer', 'Robert Oppenheimer'], 'Leitete im Zweiten Weltkrieg das Labor in Los Alamos.'),
+  W('wu', 4, 'Chien-Shiung Wu', [], 'Zeigte 1956, dass die schwache Wechselwirkung links und rechts unterscheidet.'),
+  W('noddack', 5, 'Ida Noddack', ['Noddack'], 'Vermutete schon 1934 die Kernspaltung – niemand nahm sie ernst.'),
+  W('roentgen', 1, 'Wilhelm Conrad Röntgen', ['Röntgen'], 'Erhielt 1901 den allerersten Nobelpreis für Physik.'),
+  F('aktivitaet_f', 3, 'A = λ·N', ['A=-dN/dt'], 'Die Aktivität ist proportional zur Zahl der noch nicht zerfallenen Kerne.'),
+  G('soddy_fajans', 5, 'Verschiebungssätze von Soddy und Fajans', ['radioaktive Verschiebungssätze'], 'Sagen voraus, welches Element nach einem Alpha- oder Betazerfall entsteht.'),
+  G('baryonenzahl', 5, 'Erhaltung der Baryonenzahl', ['Baryonenzahlerhaltung'], 'Deshalb ist das Proton nach heutigem Wissen stabil.'),
+  G('cpt', 5, 'CPT-Theorem', ['CPT-Symmetrie'], 'Spiegelt man Ladung, Raum und Zeit zugleich, bleiben die Naturgesetze gleich.'),
+  P('roentgenstrahlung', 1, 'Röntgenstrahlung', ['Röntgenstrahlen', 'X-Strahlen'], 'Durchdringt weiches Gewebe, aber kaum Knochen – darum sieht man im Röntgenbild das Skelett.'),
+  P('cherenkov', 4, 'Tscherenkow-Strahlung', ['Tscherenkow-Effekt', 'Cherenkov-Strahlung'], 'Das blaue Leuchten im Wasser von Kernreaktoren: Teilchen sind dort schneller als das Licht im Wasser.'),
+  E('wu_experiment', 4, 'Wu-Experiment', [], 'Kobalt-60-Kerne sandten 1956 ihre Elektronen bevorzugt in eine Richtung aus – die Natur unterscheidet links und rechts.'),
 ]);

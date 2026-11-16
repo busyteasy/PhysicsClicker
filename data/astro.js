@@ -1,4 +1,4 @@
-import { E, F, G, K, P, U, W, inArea } from './helpers.js';
+import { E, F, G, K, P, T, U, W, inArea } from './helpers.js';
 
 export default inArea('astro', [
   G('kepler1', 2, 'Erstes Keplersches Gesetz', ['1. keplersches Gesetz', 'erstes Kepler-Gesetz', 'Ellipsensatz'], 'Planeten laufen auf Ellipsen, in deren einem Brennpunkt die Sonne steht.'),
@@ -48,4 +48,22 @@ export default inArea('astro', [
 
   E('jupitermonde', 1, 'Galileis Jupitermonde', ['Entdeckung der Jupitermonde', 'galileische Monde'], 'Galilei entdeckte 1610 vier Monde um Jupiter – nicht alles kreist um die Erde.'),
   E('penzias_wilson', 3, 'Entdeckung der Hintergrundstrahlung', ['Penzias und Wilson', 'Penzias-Wilson-Experiment'], 'Arno Penzias und Robert Wilson hielten 1964 das Rauschen ihrer Antenne zuerst für Taubendreck.'),
+
+  // Erweiterung (Issue #8)
+  T('wimp', 5, 'WIMP', ['WIMPs'], 'Hypothetischer Kandidat für Dunkle Materie: ein schwach wechselwirkendes, massereiches Teilchen.'),
+  T('axion', 5, 'Axion', ['Axionen'], 'Hypothetisches Teilchen und Kandidat für Dunkle Materie – Frank Wilczek benannte es nach einem Waschmittel.'),
+  K('solarkonstante', 3, 'Solarkonstante', [], ['S0', 'S_0'], [[1361, ['W/m^2'], 0.02]], 'So viel Sonnenleistung trifft oberhalb der Atmosphäre auf jeden Quadratmeter.'),
+  K('erdradius', 2, 'Erdradius', [], ['RE', 'R_E'], [[6371, ['km'], 0.01], [6.371e6, ['m'], 0.01]], 'Im Mittel rund 6371 Kilometer.'),
+  K('erdmasse', 3, 'Erdmasse', [], ['ME', 'M_E'], [[5.972e24, ['kg']]], 'Rund 6·10²⁴ Kilogramm.'),
+  K('sonnenmasse', 3, 'Sonnenmasse', [], ['M☉', 'Msun', 'M_sun'], [[1.989e30, ['kg']]], 'Rund 2·10³⁰ Kilogramm – die Maßeinheit für Sterne und Schwarze Löcher.'),
+  W('sagan', 2, 'Carl Sagan', ['Sagan'], 'Brachte Millionen Menschen mit der Fernsehserie „Unser Kosmos“ die Astronomie nahe.'),
+  W('leavitt', 4, 'Henrietta Leavitt', ['Leavitt'], 'Entdeckte, wie man mit pulsierenden Sternen Entfernungen im All misst.'),
+  W('zwicky', 4, 'Fritz Zwicky', ['Zwicky'], 'Vermutete schon 1933 die Dunkle Materie.'),
+  W('bell_burnell', 4, 'Jocelyn Bell Burnell', ['Bell Burnell', 'Jocelyn Bell'], 'Entdeckte 1967 als Doktorandin den ersten Pulsar.'),
+  W('eddington_p', 3, 'Arthur Eddington', ['Eddington'], 'Leitete 1919 die Expedition, die Einsteins Lichtablenkung bestätigte.'),
+  W('ptolemaeus', 2, 'Claudius Ptolemäus', ['Ptolemäus'], 'Sein Weltbild mit der Erde im Zentrum hielt sich rund 1400 Jahre.'),
+  G('kosmologisches_prinzip', 3, 'Kosmologisches Prinzip', [], 'Im Großen sieht das Universum überall und in jeder Richtung gleich aus.'),
+  P('olbers', 3, 'Olberssches Paradoxon', ['Olbers-Paradoxon'], 'Warum ist der Nachthimmel dunkel, wenn es unzählige Sterne gibt?'),
+  P('polarlicht', 1, 'Polarlicht', ['Nordlicht', 'Aurora'], 'Teilchen des Sonnenwinds bringen die Luft in großer Höhe zum Leuchten.'),
+  E('eratosthenes', 3, 'Eratosthenes’ Erdmessung', ['Eratosthenes', 'Erdumfang des Eratosthenes'], 'Mit Schattenwinkeln in zwei Städten bestimmte Eratosthenes um 240 v. Chr. den Erdumfang.'),
 ]);

@@ -1,4 +1,4 @@
-import { E, F, G, K, P, U, W, inArea } from './helpers.js';
+import { E, F, G, K, P, T, U, W, inArea } from './helpers.js';
 
 export default inArea('waerme', [
   F('gasgleichung', 2, 'p·V = n·R·T', ['pV=NkT', 'pV=NkBT'], 'Die ideale Gasgleichung verbindet Druck, Volumen und Temperatur.'),
@@ -50,4 +50,18 @@ export default inArea('waerme', [
   E('schaufelrad', 2, 'Joules Schaufelradversuch', ['Schaufelradversuch', 'Joule-Experiment', 'joulescher Versuch'], 'Ein fallendes Gewicht rührt Wasser und erwärmt es – so bestimmte Joule das mechanische Wärmeäquivalent.'),
   E('rumford', 3, 'Rumfords Kanonenbohrversuch', ['Kanonenbohrversuch'], 'Graf Rumford bemerkte 1798, dass beim Aufbohren von Kanonenrohren scheinbar unbegrenzt Wärme entsteht – ein Schlag gegen die Theorie vom Wärmestoff.'),
   E('maxwell_daemon', 3, 'Maxwellscher Dämon', ['Maxwells Dämon', 'Maxwell-Dämon'], 'Ein Gedankenexperiment von 1867, das den zweiten Hauptsatz scheinbar austrickst.'),
+
+  // Erweiterung (Issue #8)
+  T('phonon', 4, 'Phonon', ['Phononen'], 'Ein Quasiteilchen: das Quant einer Gitterschwingung im Festkörper.'),
+  U('u_grad_celsius', 1, 'Grad Celsius', ['Celsius-Grad'], '0 °C sind 273,15 Kelvin.'),
+  K('wien_k', 4, 'Wiensche Verschiebungskonstante', ['Wien-Konstante'], ['b'], [[2.8978e-3, ['mK', 'm*K']]], 'Teilt man sie durch die Temperatur, erhält man die Wellenlänge des Strahlungsmaximums.'),
+  W('fahrenheit', 2, 'Daniel Gabriel Fahrenheit', ['Fahrenheit'], 'Erfand das Quecksilberthermometer und eine Temperaturskala, die in den USA bis heute gilt.'),
+  W('gibbs', 4, 'Josiah Willard Gibbs', ['Gibbs'], 'Begründete die chemische Thermodynamik.'),
+  W('nernst', 3, 'Walther Nernst', ['Nernst'], 'Formulierte den dritten Hauptsatz der Thermodynamik.'),
+  F('waermeausdehnung', 3, 'ΔL = α·L₀·ΔT', ['dL=αL0dT'], 'Darum haben Brücken Dehnungsfugen.'),
+  F('kelvin_celsius', 1, 'T = ϑ + 273,15 K', ['T=ϑ+273.15'], 'So rechnet man Grad Celsius in Kelvin um.'),
+  F('mittlere_energie', 4, 'E = 3/2·k·T', ['E=3/2kBT', 'Ekin=3/2kT'], 'Die mittlere Bewegungsenergie eines Gasteilchens hängt nur von der Temperatur ab.'),
+  G('avogadro_gesetz', 3, 'Gesetz von Avogadro', ['avogadrosches Gesetz'], 'Gleiche Volumina idealer Gase enthalten bei gleichem Druck und gleicher Temperatur gleich viele Teilchen.'),
+  G('dalton', 3, 'Gesetz von Dalton', ['daltonsches Gesetz', 'Partialdruckgesetz'], 'Der Gesamtdruck eines Gasgemischs ist die Summe der Partialdrücke.'),
+  P('leidenfrost', 3, 'Leidenfrost-Effekt', [], 'Wassertropfen tanzen auf einer heißen Herdplatte auf einem Polster aus Dampf.'),
 ]);

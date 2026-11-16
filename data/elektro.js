@@ -1,4 +1,4 @@
-import { E, F, G, K, P, U, W, inArea } from './helpers.js';
+import { E, F, G, K, P, T, U, W, inArea } from './helpers.js';
 
 export default inArea('elektro', [
   F('ohm_f', 1, 'U = R·I', ['R=U/I', 'I=U/R'], 'Spannung gleich Widerstand mal Stromstärke.'),
@@ -64,4 +64,24 @@ export default inArea('elektro', [
   E('millikan', 2, 'Millikan-Versuch', ['Millikan-Experiment', 'Öltröpfchenversuch', 'Öltröpfchenexperiment'], 'Schwebende Öltröpfchen zeigten 1909, dass Ladung nur in Vielfachen der Elementarladung vorkommt.'),
   E('hertz_versuch', 3, 'Hertzscher Versuch', ['Hertz-Experiment'], 'Heinrich Hertz erzeugte und empfing 1886 bis 1888 als Erster elektromagnetische Wellen.'),
   E('galvani', 2, 'Galvanis Froschschenkelversuch', ['Froschschenkelversuch', 'Froschschenkel-Experiment'], 'Zuckende Froschschenkel brachten Luigi Galvani um 1780 auf die Spur der „tierischen Elektrizität“.'),
+
+  // Erweiterung (Issue #8)
+  T('cooper_paar', 5, 'Cooper-Paar', ['Cooper-Paare'], 'Zwei aneinander gebundene Elektronen – sie machen Supraleitung möglich.'),
+  U('u_kilowattstunde', 1, 'Kilowattstunde', ['kWh'], 'Damit rechnet der Stromversorger ab: 3,6 Millionen Joule.'),
+  U('u_gauss', 3, 'Gauß (Einheit)', ['Gauß', 'Gauss'], 'Alte Einheit der magnetischen Flussdichte: 10⁻⁴ Tesla.'),
+  K('faraday_k', 4, 'Faraday-Konstante', [], ['F'], [[96485.33, ['C/mol', 'As/mol']]], 'Die Ladung eines Mols Elektronen.'),
+  W('henry_p', 3, 'Joseph Henry', ['Henry'], 'Entdeckte die Selbstinduktion – fast gleichzeitig mit Faraday.'),
+  W('weber_p', 3, 'Wilhelm Weber', ['Weber'], 'Baute 1833 mit Gauß in Göttingen einen der ersten elektromagnetischen Telegrafen.'),
+  W('siemens_p', 2, 'Werner von Siemens', ['Siemens'], 'Entdeckte das dynamoelektrische Prinzip und gründete einen Weltkonzern.'),
+  W('galvani_p', 2, 'Luigi Galvani', ['Galvani'], 'Seine zuckenden Froschschenkel gaben dem Galvanisieren den Namen.'),
+  W('millikan_p', 3, 'Robert Millikan', ['Millikan'], 'Bestimmte die Elementarladung mit schwebenden Öltröpfchen.'),
+  F('magnetfeld_spule', 3, 'B = μ₀·N·I/l', ['B=μ0μrNI/l'], 'Das Magnetfeld im Inneren einer langen Spule.'),
+  F('reihenschaltung', 2, 'R = R₁ + R₂', ['Rges=R1+R2'], 'In einer Reihenschaltung addieren sich die Widerstände.'),
+  F('parallelschaltung', 2, '1/R = 1/R₁ + 1/R₂', ['1/Rges=1/R1+1/R2'], 'Parallel geschaltet ist der Gesamtwiderstand kleiner als jeder einzelne.'),
+  F('kraft_feld', 2, 'F = q·E', ['E=F/q'], 'Die elektrische Feldstärke ist Kraft pro Ladung.'),
+  F('transformator', 3, 'U₁/U₂ = N₁/N₂', ['U2/U1=N2/N1'], 'Das Verhältnis der Windungszahlen bestimmt die Spannung am Transformator.'),
+  F('thomson_schwingung', 4, 'T = 2π·√(L·C)', ['T=2πsqrt(LC)', 'f=1/(2π√(LC))'], 'Die thomsonsche Schwingungsgleichung für einen elektrischen Schwingkreis.'),
+  G('ampere_gesetz', 3, 'Ampèresches Gesetz', ['Durchflutungsgesetz', 'Ampère-Gesetz'], 'Jeder elektrische Strom ist von einem Magnetfeld umgeben.'),
+  G('gauss_gesetz', 4, 'Gaußsches Gesetz', ['Gauß-Gesetz'], 'Der elektrische Fluss durch eine geschlossene Fläche hängt nur von der eingeschlossenen Ladung ab.'),
+  G('biot_savart', 4, 'Biot-Savart-Gesetz', ['Gesetz von Biot-Savart'], 'Damit berechnet man das Magnetfeld eines stromdurchflossenen Leiters.'),
 ]);
