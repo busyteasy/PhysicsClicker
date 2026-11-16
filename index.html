@@ -31,6 +31,9 @@
       </form>
       <p class="hilfe" id="hilfe">Offen: Personen.</p>
 
+      <ul class="aktiv" id="aktiv" aria-live="polite"></ul>
+      <div class="spickzettel" id="spickzettel" hidden></div>
+
       <div class="combo" id="combo" hidden>
         <span class="combo-text" id="combo-text"></span>
         <span class="combo-balken"><span id="combo-fuellung"></span></span>
@@ -48,6 +51,7 @@
       <nav class="reiter" role="tablist">
         <button role="tab" data-tab="bereiche" aria-selected="true">Bereiche</button>
         <button role="tab" data-tab="fragen" aria-selected="false">Fragen <span id="fragen-zahl"></span></button>
+        <button role="tab" data-tab="upgrades" aria-selected="false">Upgrades</button>
         <button role="tab" data-tab="codex" aria-selected="false">Codex <span id="codex-zahl"></span></button>
         <button role="tab" data-tab="optionen" aria-selected="false">Optionen</button>
       </nav>
@@ -63,6 +67,14 @@
         <p class="erklaerung">Klick auf eine Frage, um sie zu beantworten. Jede Frage zählt einmal;
           nach drei Fehlversuchen kannst du sie auflösen – dann ohne Punkte.</p>
         <div id="fragen"></div>
+      </div>
+
+      <div class="tab" id="tab-upgrades" role="tabpanel" hidden>
+        <h2>Upgrades</h2>
+        <p class="erklaerung">Einmalige Effekte für den richtigen Moment – etwa einen Multiplikator
+          kaufen und dann dein schwierigstes Wissen eingeben. Es wirkt immer nur ein
+          Multiplikator gleichzeitig, und jedes Upgrade wird mit jedem Kauf etwas teurer.</p>
+        <ul class="upgrades" id="upgrades"></ul>
       </div>
 
       <div class="tab" id="tab-codex" role="tabpanel" hidden>

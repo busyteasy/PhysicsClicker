@@ -72,7 +72,26 @@ Eingaben aus einem gesperrten Bereich werden erkannt, aber nicht gewertet und
 nicht gemerkt; das Spiel sagt, welcher Bereich dafür nötig ist. Mehrdeutige
 Eingaben wie `Newton` zählen nur für die offenen Bereiche.
 
-Einrichtungen und Upgrades sind vorerst gestrichen.
+Einrichtungen sind vorerst gestrichen.
+
+## Upgrades (Einmal-Effekte)
+
+Upgrades werden mit Erkenntnis gekauft, wirken kurz und sind dann verbraucht.
+Das macht das Spiel taktischer: erst einen Multiplikator kaufen, dann das
+schwierigste Wissen eingeben.
+
+| Upgrade       | Preis | Wirkung                                             |
+|---------------|-------|-----------------------------------------------------|
+| Geistesblitz  | 40    | nächste gewertete Eingabe oder Antwort ×2           |
+| Heureka!      | 150   | nächste gewertete Eingabe oder Antwort ×3           |
+| Konzentration | 120   | nächste 5 gewertete Eingaben oder Antworten ×1,5    |
+| Kaffeepause   | 80    | 60 Sekunden lang doppeltes Combo-Fenster            |
+| Eselsbrücke   | 100   | 2 Minuten lang keine Abklingzeit bei Wiederholungen |
+| Spickzettel   | 60    | Hinweis auf einen unentdeckten Eintrag (offener Bereich, leichteste Stufe; Gebiet, Anfangsbuchstabe, Fun Fact ohne Namen) |
+
+Balance: Es wirkt immer nur **ein** Multiplikator gleichzeitig, ungewertete
+Eingaben verbrauchen ihn nicht, und jedes Upgrade wird mit jedem Kauf um 15 %
+teurer.
 
 ## Fragekatalog
 

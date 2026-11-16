@@ -1,12 +1,12 @@
 // Oberfläche: verbindet Spiellogik und DOM.
 
-import { ENTRIES } from '../data/index.js';
-import { AREA_NAMES, BEREICHE, BEREICH_NAMES } from './content.js';
+import { CATEGORIES, ENTRIES } from '../data/index.js';
+import { AREA_NAMES, BEREICHE, BEREICH_NAMES, BOOSTS } from './content.js';
 import { formatNumber as fmt } from './format.js';
 import {
-  QUESTIONS, answerQuestion, bereichCount, buyBereich, canReveal, comboMultiplier,
-  comboWindow, discoveryCount, isOpen, newState, questionPoints, questionStatus,
-  revealQuestion, submit, unlockPrice,
+  INDEX, QUESTIONS, answerQuestion, bereichCount, boostBlocked, boostPrice, buyBereich,
+  buyBoost, canReveal, comboMultiplier, comboWindow, discoveryCount, isOpen, newState,
+  questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
 } from './game.js';
 import { clearLocal, exportState, importState, loadLocal, saveLocal } from './save.js';
 import { isRelation } from './normalize.js';
@@ -53,6 +53,7 @@ form.addEventListener('submit', (event) => {
   if (result.items.some((i) => i.art === 'neu' || i.art === 'wert')) {
     renderCodex();
     renderBereiche(true);
+    renderHint();
     saveLocal(state);
   }
 });
@@ -145,6 +146,9 @@ function showFeedback(result, text) {
     ));
   }
   if (result.locked.length) box.append(h('p', { class: 'hinweis' }, `Außerdem: ${lockedHint(result.locked)}`));
+  if (result.boost) {
+    box.append(h('p', { class: 'hinweis' }, `${result.boost.name}: ×${fmt(result.boost.factor)}`));
+  }
   if (result.combo > 1) {
     box.append(h('p', { class: 'hinweis' }, `Combo ${result.combo} – alles ×${fmt(result.multiplier)}`));
   }
@@ -309,6 +313,7 @@ function renderQuestion(q) {
         openQuestion = null;
         floatPoints(result.points);
         showQuestionResult(q, result);
+        renderHint();
         saveLocal(state);
       } else if (result.status === 'falsch') {
         questionFeedback = { id: q.id, cls: 'schlecht', text: result.canReveal
@@ -338,7 +343,7 @@ function renderQuestion(q) {
 /** Zeigt eine richtige Antwort auch in der großen Rückmeldung links. */
 function showQuestionResult(q, result) {
   const box = $('rueckmeldung');
-  box.replaceChildren(
+  box.replaceChildren(...[
     h('p', { class: 'titel gut' }, `+${fmt(result.points)} Erkenntnis – Frage richtig beantwortet`),
     h('div', { class: 'fund' },
       h('div', { class: 'fund-kopf' },
@@ -347,8 +352,79 @@ function showQuestionResult(q, result) {
         h('span', { class: 'fund-punkte' }, `+${fmt(result.points)}`)),
       h('div', { class: 'fund-art' }, q.frage),
       h('p', { class: 'fund-fakt' }, result.entry.fact)),
-  );
+    result.boost ? h('p', { class: 'hinweis' }, `${result.boost.name}: ×${fmt(result.boost.factor)}`) : null,
+  ].filter(Boolean));
   pushHistory(result.points, `Frage: ${result.entry.name}`);
+}
+
+// ---------- Upgrades ----------
+
+let boostSignature = '';
+
+function renderBoosts(force = false) {
+  const now = Date.now();
+  const signature = BOOSTS.map((b) => `${boostPrice(state, b.id)}|${boostBlocked(state, b.id, now)}`).join(',');
+  const list = $('upgrades');
+  if (force || signature !== boostSignature) {
+    boostSignature = signature;
+    list.replaceChildren(...BOOSTS.map((b) => {
+      const blocked = boostBlocked(state, b.id, now);
+      const price = boostPrice(state, b.id);
+      return h('li', {}, h('button', {
+        type: 'button', class: 'upgrade', 'data-preis': price, 'data-blockiert': blocked ? '1' : '',
+        onclick: () => {
+          if (!buyBoost(state, b.id)) return;
+          saveLocal(state);
+          renderBoosts(true);
+          renderHint();
+          update();
+          input.focus();
+        },
+      },
+      h('span', { class: 'name' }, b.name),
+      h('span', { class: 'beschr' }, b.desc),
+      h('span', { class: 'preis' }, blocked ?? `${fmt(price)} Erkenntnis`)));
+    }));
+  }
+  for (const button of list.querySelectorAll('.upgrade')) {
+    button.disabled = Boolean(button.dataset.blockiert) || state.insight < Number(button.dataset.preis);
+  }
+}
+
+/** Kleine Plaketten unter dem Eingabefeld für alles, was gerade wirkt. */
+function renderActive(now) {
+  const b = state.boosts;
+  const chips = [];
+  if (b.mult) {
+    const name = BOOSTS.find((x) => x.id === b.mult.id).name;
+    chips.push(`${name} ×${fmt(b.mult.factor)}` + (b.mult.uses > 1 ? ` (noch ${b.mult.uses})` : ''));
+  }
+  if (now < b.comboUntil) chips.push(`Kaffeepause ${Math.ceil((b.comboUntil - now) / 1000)} s`);
+  if (now < b.noCooldownUntil) chips.push(`Eselsbrücke ${Math.ceil((b.noCooldownUntil - now) / 1000)} s`);
+  const text = chips.join('|');
+  const list = $('aktiv');
+  if (list.dataset.text !== text) {
+    list.dataset.text = text;
+    list.replaceChildren(...chips.map((c) => h('li', {}, c)));
+  }
+}
+
+/** Der Spickzettel verrät Bereich, Gebiet, Anfangsbuchstaben und den Fun Fact – ohne den Namen. */
+function renderHint() {
+  const card = $('spickzettel');
+  const entry = state.boosts.hint ? INDEX.byId.get(state.boosts.hint) : null;
+  card.hidden = !entry;
+  if (!entry) return;
+  const words = [entry.name, ...entry.aliases]
+    .flatMap((n) => n.split(/[^\p{L}]+/u))
+    .filter((w) => w.length >= 4);
+  let fact = entry.fact;
+  for (const w of words) fact = fact.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), '…');
+  card.replaceChildren(
+    h('p', { class: 'titel' }, '📝 Spickzettel'),
+    h('p', {}, `Gesucht: ${CATEGORIES[entry.cat]} aus ${AREA_NAMES[entry.area]}, Stufe ${entry.tier}, beginnt mit „${entry.name[0]}“.`),
+    h('p', { class: 'hinweis' }, fact),
+  );
 }
 
 // ---------- Codex ----------
@@ -469,7 +545,7 @@ function updateCombo(now) {
   combo.hidden = !active;
   if (!active) return;
   $('combo-text').textContent = `Combo ${state.combo.count} · ×${fmt(comboMultiplier(state.combo.count))}`;
-  const share = (state.combo.until - now) / comboWindow();
+  const share = (state.combo.until - now) / comboWindow(state, now);
   $('combo-fuellung').style.width = `${Math.max(0, share * 100)}%`;
 }
 
@@ -478,14 +554,19 @@ function update() {
   const price = unlockPrice(state);
   $('rate').textContent = price == null ? 'Alle Bereiche offen' : `Nächster Bereich: ${fmt(price)} Erkenntnis`;
   document.title = `${fmt(state.insight)} Erkenntnis – PhysicsClicker`;
+  const now = Date.now();
   renderBereiche();
-  updateCombo(Date.now());
+  renderBoosts();
+  renderActive(now);
+  updateCombo(now);
 }
 
 function rerenderAll() {
   renderBereiche(true);
   renderCodex();
   renderQuestions();
+  renderBoosts(true);
+  renderHint();
   renderStats();
   renderInputHints();
   update();
