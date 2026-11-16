@@ -74,4 +74,70 @@ export default [
   Q('f_katze', 2, 'Mit welchem Gedankenexperiment spitzte Schrödinger 1935 die Quantenmechanik zu?', 'katze'),
   Q('f_aether', 3, 'Welches Experiment suchte 1887 vergeblich nach dem Äther?', 'michelson_morley'),
   Q('f_silberatome', 3, 'Welcher Versuch spaltete 1922 einen Strahl aus Silberatomen im Magnetfeld auf?', 'stern_gerlach'),
+  // ---------- Erweiterung (Issue #7) ----------
+
+  // Personen
+  Q('f_bewegungsgesetze', 1, 'Wer formulierte die Bewegungsgesetze und das Gravitationsgesetz?', 'newton'),
+  Q('f_blitzableiter', 1, 'Wer erfand den Blitzableiter?', 'franklin'),
+  Q('f_xstrahlen', 1, 'Wer entdeckte 1895 die nach ihm benannten X-Strahlen?', 'roentgen'),
+  Q('f_unschaerfe', 2, 'Wer formulierte die Unschärferelation?', 'heisenberg'),
+  Q('f_fahrenheit', 2, 'Nach wem ist die Temperaturskala benannt, die in den USA gilt?', 'fahrenheit'),
+  Q('f_los_alamos', 2, 'Wer leitete im Zweiten Weltkrieg das Labor in Los Alamos?', 'oppenheimer'),
+  Q('f_pulsar', 4, 'Welche Doktorandin entdeckte 1967 den ersten Pulsar?', 'bell_burnell'),
+  Q('f_dunkle_materie', 4, 'Wer vermutete schon 1933 die Dunkle Materie?', 'zwicky'),
+
+  // Einheiten
+  Q('f_energie_einheit', 1, 'In welcher Einheit misst man Energie?', 'u_joule'),
+  Q('f_leistung_einheit', 1, 'In welcher Einheit misst man Leistung?', 'u_watt'),
+  Q('f_widerstand_einheit', 1, 'In welcher Einheit misst man den elektrischen Widerstand?', 'u_ohm'),
+  Q('f_temperatur_einheit', 1, 'Wie heißt die SI-Einheit der Temperatur?', 'u_kelvin'),
+  Q('f_stromrechnung', 1, 'In welcher Einheit rechnet der Stromversorger ab?', 'u_kilowattstunde'),
+  Q('f_ladung_einheit', 2, 'Welche Einheit hat die elektrische Ladung?', 'u_coulomb'),
+
+  // Teilchen
+  Q('f_nukleon', 2, 'Wie lautet der Oberbegriff für Proton und Neutron?', 'nukleon'),
+  Q('f_drei_quarks', 3, 'Wie heißen Teilchen aus drei Quarks, zu denen Proton und Neutron gehören?', 'baryon'),
+  Q('f_quark_antiquark', 3, 'Wie heißt ein Teilchen aus einem Quark und einem Antiquark?', 'meson'),
+  Q('f_betazerfall_teilchen', 3, 'Welches neutrale Teilchen entsteht beim Betazerfall zusammen mit dem Elektron?', 'antineutrino'),
+  Q('f_waschmittel', 5, 'Welcher Kandidat für Dunkle Materie ist nach einem Waschmittel benannt?', 'axion'),
+
+  // Phänomene
+  Q('f_polarlicht', 1, 'Wie heißt das farbige Leuchten am Himmel in der Nähe der Pole?', 'polarlicht'),
+  Q('f_roentgenstrahlung', 1, 'Welche Strahlung macht im Krankenhaus das Skelett sichtbar?', 'roentgenstrahlung'),
+  Q('f_tiefdruck', 3, 'Welche Scheinkraft lässt Tiefdruckgebiete auf der Nordhalbkugel gegen den Uhrzeigersinn drehen?', 'coriolis'),
+  Q('f_angeschnitten', 3, 'Welcher Effekt lässt einen angeschnittenen Ball eine Kurve fliegen?', 'magnus'),
+  Q('f_herdplatte', 3, 'Welcher Effekt lässt Wassertropfen auf einer heißen Herdplatte tanzen?', 'leidenfrost'),
+  Q('f_blaues_leuchten', 4, 'Was erzeugt das blaue Leuchten im Wasser von Kernreaktoren?', 'cherenkov'),
+
+  // Gesetze
+  Q('f_energie_weg', 1, 'Welcher Satz besagt, dass Energie weder entsteht noch verloren geht?', 'energieerhaltung'),
+  Q('f_ellipsen', 2, 'Welches Gesetz besagt, dass Planeten auf Ellipsen um die Sonne laufen?', 'kepler1'),
+  Q('f_hydraulik', 2, 'Welches Prinzip nutzt jede hydraulische Presse?', 'pascal_prinzip'),
+  Q('f_druck_volumen', 2, 'Welches Gesetz verknüpft Druck und Volumen eines Gases bei konstanter Temperatur?', 'boyle_mariotte'),
+  Q('f_nullpunkt', 3, 'Welcher Hauptsatz macht den absoluten Nullpunkt unerreichbar?', 'hs3'),
+  Q('f_schwarzer_koerper', 3, 'Welches Gesetz beschreibt das Spektrum eines Schwarzen Körpers?', 'planck_gesetz'),
+
+  // Formeln
+  Q('f_ohm_formel', 1, 'Wie lautet das ohmsche Gesetz als Formel?', 'ohm_f'),
+  Q('f_druck_formel', 1, 'Wie berechnet man den Druck aus Kraft und Fläche?', 'druck'),
+  Q('f_lageenergie', 1, 'Wie berechnet man die Lageenergie?', 'epot'),
+  Q('f_periodendauer', 1, 'Wie hängen Frequenz und Periodendauer zusammen?', 'frequenz_f'),
+  Q('f_el_leistung', 1, 'Wie berechnet man die elektrische Leistung aus Spannung und Strom?', 'el_leistung'),
+  Q('f_reihe', 2, 'Wie berechnet man den Gesamtwiderstand einer Reihenschaltung aus zwei Widerständen?', 'reihenschaltung'),
+  Q('f_pendel', 3, 'Wie berechnet man die Schwingungsdauer eines Fadenpendels?', 'pendel_f'),
+
+  // Konstanten (mit Wert)
+  Q('f_schall', 1, 'Wie schnell ist Schall in Luft? (Zahl mit Einheit)', 'schallgeschwindigkeit', true),
+  Q('f_erdradius', 2, 'Wie groß ist der Erdradius? (Zahl mit Einheit)', 'erdradius', true),
+  Q('f_boltzmann', 4, 'Welchen Wert hat die Boltzmann-Konstante?', 'boltzmannkonstante', true),
+  Q('f_gravitation', 4, 'Welchen Wert hat die Gravitationskonstante?', 'gravitationskonstante', true),
+  Q('f_feinstruktur', 5, 'Welchen Wert hat die Feinstrukturkonstante? (Bruch oder Dezimalzahl)', 'feinstruktur', true),
+
+  // Experimente
+  Q('f_prisma', 1, 'Mit welchem Versuch zeigte Newton, dass weißes Licht aus vielen Farben besteht?', 'prisma'),
+  Q('f_halbkugeln', 2, 'Welche luftleer gepumpten Kugeln konnten nicht einmal Pferdegespanne trennen?', 'magdeburg'),
+  Q('f_gravitationswellen', 3, 'Welches Experiment maß 2015 erstmals Gravitationswellen?', 'ligo'),
+  Q('f_higgs_maschine', 3, 'In welchem Beschleuniger wurde 2012 das Higgs-Boson nachgewiesen?', 'lhc'),
+  Q('f_daemon', 3, 'Wie heißt das Gedankenexperiment mit einem Wesen, das schnelle und langsame Moleküle sortiert?', 'maxwell_daemon'),
+  Q('f_erdumfang', 3, 'Wie heißt der antike Versuch, mit Schattenwinkeln den Erdumfang zu bestimmen?', 'eratosthenes'),
 ];

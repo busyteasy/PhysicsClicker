@@ -1,6 +1,7 @@
 // Oberfläche: verbindet Spiellogik und DOM.
 
 import { CATEGORIES, ENTRIES } from '../data/index.js';
+import * as C from './content.js';
 import { AREA_NAMES, BEREICHE, BEREICH_NAMES, BOOSTS } from './content.js';
 import { formatNumber as fmt } from './format.js';
 import {
@@ -29,6 +30,11 @@ function h(tag, props = {}, ...children) {
   return el;
 }
 
+/** Ersetzt den Inhalt eines Elements; leere Teile (null, false) werden übersprungen. */
+function fill(el, ...children) {
+  el.replaceChildren(...children.flat().filter((c) => c != null && c !== false));
+}
+
 const ENTRIES_BY_BEREICH = Object.fromEntries(BEREICHE.map((b) => [b.id, ENTRIES.filter((e) => e.cat === b.id)]));
 const openBereiche = () => BEREICHE.filter((b) => isOpen(state, b.id));
 
@@ -36,7 +42,7 @@ const openBereiche = () => BEREICHE.filter((b) => isOpen(state, b.id));
 
 const form = $('eingabe-form');
 const input = $('eingabe');
-const history = [];
+const recent = []; // Liste „Zuletzt eingetragen“
 
 form.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -160,9 +166,9 @@ function addHistory(result, text) {
 }
 
 function pushHistory(points, label) {
-  history.unshift({ points, label });
-  history.length = Math.min(history.length, 8);
-  $('verlauf').replaceChildren(...history.map((e) => h('li', {},
+  recent.unshift({ points, label });
+  recent.length = Math.min(recent.length, 8);
+  $('verlauf').replaceChildren(...recent.map((e) => h('li', {},
     h('span', { class: `p${e.points ? '' : ' null'}` }, e.points ? `+${fmt(e.points)}` : '–'),
     h('span', { class: 't', title: e.label }, e.label),
   )));
@@ -245,10 +251,115 @@ function renderBereiche(force = false) {
   }
 }
 
+// ---------- Overlays (große Fragenansicht, Hilfe) ----------
+
+// Jedes Overlay legt einen Eintrag in den Browserverlauf. So schließt die
+// Zurück-Taste von Browser oder Handy das Overlay statt die Seite zu verlassen.
+const overlays = { frage: $('frage-overlay'), hilfe: $('hilfe-overlay') };
+let activeOverlay = null;
+let overlayReturnFocus = null;
+
+function openOverlay(name) {
+  if (activeOverlay === name) return;
+  if (activeOverlay) hideOverlay();
+  else window.history.pushState({ overlay: name }, '');
+  overlayReturnFocus = document.activeElement;
+  overlays[name].hidden = false;
+  activeOverlay = name;
+  document.body.classList.add('overlay-offen');
+}
+
+/** Schließt über den Verlauf – dadurch bleibt die Zurück-Taste konsistent. */
+function closeOverlay() {
+  if (!activeOverlay) return;
+  if (window.history.state?.overlay) window.history.back();
+  else hideOverlay();
+}
+
+function hideOverlay() {
+  if (!activeOverlay) return;
+  overlays[activeOverlay].hidden = true;
+  activeOverlay = null;
+  document.body.classList.remove('overlay-offen');
+  overlayReturnFocus?.focus?.();
+}
+
+window.addEventListener('popstate', hideOverlay);
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && activeOverlay) {
+    event.preventDefault();
+    closeOverlay();
+  }
+});
+for (const overlay of Object.values(overlays)) {
+  overlay.addEventListener('click', (event) => { if (event.target === overlay) closeOverlay(); });
+}
+
+// ---------- Hilfe (Fragezeichen) ----------
+
+const pct = (x) => `${fmt(x * 100)} %`;
+const secs = (ms) => `${fmt(ms / 1000)} Sekunden`;
+
+/** Baut die Anleitung aus den echten Spielwerten – sie bleibt so immer aktuell. */
+function renderHelp() {
+  const table = (head, rows) => h('table', { class: 'hilfe-tabelle' },
+    h('thead', {}, h('tr', {}, head.map((x) => h('th', {}, x)))),
+    h('tbody', {}, rows.map((r) => h('tr', {}, r.map((x) => h('td', {}, x))))));
+
+  $('hilfe-inhalt').replaceChildren(
+    h('div', { class: 'overlay-leiste' },
+      h('button', { type: 'button', class: 'zurueck', onclick: closeOverlay }, '← Zurück'),
+      h('span', { class: 'overlay-info' }, 'Anleitung')),
+    h('h2', { id: 'hilfe-titel' }, 'So funktioniert PhysicsClicker'),
+    h('p', {}, 'Tippe Physikwissen in das Eingabefeld – Namen, Begriffe, Formeln oder Konstanten. '
+      + 'Jede richtige Eingabe bringt Erkenntnis, die Spielwährung. Erkenntnis gibt es ausschließlich '
+      + 'für deine Eingaben und Antworten: Nichts läuft von selbst.'),
+    h('p', {}, 'Zu Beginn kannst du nur Physikerinnen und Physiker eingeben. Mit Erkenntnis schaltest du '
+      + 'im Reiter „Bereiche“ weitere Bereiche frei – in der Reihenfolge, die du willst. Alles, was du '
+      + 'entdeckst, sammelt sich mit einem Fun Fact im Codex.'),
+
+    h('h3', {}, 'Punkte für Eingaben'),
+    table(['Stufe', 'Erstentdeckung'], [1, 2, 3, 4, 5].map((t) => [`Stufe ${t}`, `${fmt(C.TIER_POINTS[t])} Erkenntnis`])),
+    h('ul', {},
+      h('li', {}, `Stufe 1 ist Schulwissen, Stufe 5 Spezialwissen. Jeder Eintrag zählt beim ersten Mal voll.`),
+      h('li', {}, `Konstante mit richtigem Wert (z. B. c = 3·10^8 m/s): zusätzlich das ${fmt(C.VALUE_FACTOR)}-Fache.`),
+      h('li', {}, `Wiederholung: ${pct(C.REPEAT_SHARE)} des Werts als Trinkgeld – höchstens alle ${secs(C.REPEAT_COOLDOWN_MS)} pro Eintrag.`),
+      h('li', {}, `Combo: Jeder Treffer innerhalb von ${secs(C.COMBO_WINDOW_MS)} nach dem letzten erhöht den Wert um ${pct(C.COMBO_STEP)}, bis höchstens ×${fmt(C.COMBO_MAX)}.`),
+      h('li', {}, 'Einträge aus gesperrten Bereichen werden erkannt, bringen aber noch nichts.')),
+
+    h('h3', {}, 'Fragen'),
+    h('p', {}, `Jede Frage im Fragekatalog bringt einmalig das ${fmt(C.QUESTION_FACTOR)}-Fache ihrer Stufe, `
+      + `also zwischen ${fmt(C.TIER_POINTS[1] * C.QUESTION_FACTOR)} und ${fmt(C.TIER_POINTS[5] * C.QUESTION_FACTOR)} Erkenntnis. `
+      + `Nach ${C.QUESTION_TRIES} Fehlversuchen kannst du eine Frage auflösen – dann ohne Punkte.`),
+
+    h('h3', {}, 'Bereiche freischalten'),
+    table(['Freischaltung', 'Preis'], C.UNLOCK_PRICES.map((p, i) => [`${i + 1}. Bereich`, `${fmt(p)} Erkenntnis`])),
+
+    h('h3', {}, 'Upgrades'),
+    h('p', {}, `Einmalige Effekte für den richtigen Moment. Es wirkt immer nur ein Multiplikator gleichzeitig, `
+      + `und jedes Upgrade wird mit jedem Kauf um ${pct(C.BOOST_PRICE_GROWTH - 1)} teurer.`),
+    table(['Upgrade', 'Startpreis', 'Wirkung'], BOOSTS.map((b) => [b.name, fmt(b.price), b.desc])),
+
+    h('h3', {}, 'Tipps zur Eingabe'),
+    h('ul', {},
+      h('li', {}, 'Groß- und Kleinschreibung, Leerzeichen und Bindestriche sind egal; „oe“ geht statt „ö“.'),
+      h('li', {}, 'Formeln mit „=“: Malpunkte und Reihenfolge sind egal, F = m·a ist dasselbe wie ma = F. Hochzahlen als ² oder ^2.'),
+      h('li', {}, 'Konstanten mit Wert: h = 6,626·10^-34 Js oder h = 6.626e-34. Die Einheit ist freiwillig.'),
+      h('li', {}, 'Kleine Tippfehler in langen Begriffen werden verziehen.')),
+  );
+}
+
+$('hilfe-knopf').addEventListener('click', () => {
+  renderHelp();
+  openOverlay('hilfe');
+  $('hilfe-inhalt').querySelector('.zurueck').focus();
+});
+
 // ---------- Fragen ----------
 
-let openQuestion = null;     // ID der aufgeklappten Frage
-let questionFeedback = null; // { id, text, cls }
+let currentQuestion = null;   // ID der groß angezeigten Frage
+let questionFeedback = null;  // { text, cls }
+let questionSolved = null;    // Ergebnis einer gerade richtig beantworteten Frage
 
 function renderQuestions() {
   const solved = QUESTIONS.filter((q) => questionStatus(state, q) === 'richtig').length;
@@ -265,85 +376,128 @@ function renderQuestions() {
     const done = questions.filter((q) => questionStatus(state, q) === 'richtig').length;
     return h('section', { class: 'fragen-gruppe' },
       h('h3', {}, b.name, h('span', { class: 'zahl' }, `${done}/${questions.length}`)),
-      h('ul', { class: 'fragen-liste' }, questions.map(renderQuestion)));
+      h('ul', { class: 'fragen-liste' }, questions.map(renderQuestionRow)));
   }));
-
-  const field = document.querySelector('.antwort input');
-  if (field) field.focus();
 }
 
-function renderQuestion(q) {
+function renderQuestionRow(q) {
   const status = questionStatus(state, q);
-  const expanded = openQuestion === q.id && status === 'offen';
-  const badge = {
-    offen: `+${fmt(questionPoints(q))}`,
-    richtig: '✓',
-    aufgeloest: 'aufgelöst',
-  }[status];
-
+  const badge = { offen: `+${fmt(questionPoints(q))}`, richtig: '✓', aufgeloest: 'aufgelöst' }[status];
   const li = h('li', { class: `frage ${status}` },
     h('button', {
-      type: 'button', class: 'frage-kopf', 'aria-expanded': String(expanded), disabled: status !== 'offen',
+      type: 'button', class: 'frage-kopf', disabled: status !== 'offen', 'data-frage': q.id,
+      onclick: () => showQuestion(q.id),
+    }, h('span', { class: 'frage-text' }, q.frage), h('span', { class: 'frage-punkte' }, badge)));
+  if (status !== 'offen') {
+    li.append(h('div', { class: 'frage-loesung' }, `Antwort: ${INDEX.byId.get(q.antwort).name}`));
+  }
+  return li;
+}
+
+/** Öffnet eine Frage groß im Overlay. */
+function showQuestion(id) {
+  currentQuestion = id;
+  questionFeedback = null;
+  questionSolved = null;
+  openOverlay('frage');
+  renderQuestionView();
+}
+
+/** Nächste offene Frage: erst im selben Bereich, dann irgendwo. */
+function nextQuestion(after) {
+  const open = QUESTIONS.filter((q) => q.id !== after.id && questionStatus(state, q) === 'offen');
+  return open.find((q) => q.bereich === after.bereich) ?? open[0] ?? null;
+}
+
+function renderQuestionView() {
+  const q = QUESTIONS.find((x) => x.id === currentQuestion);
+  const card = $('frage-gross');
+  if (!q) return;
+
+  const top = h('div', { class: 'overlay-leiste' },
+    h('button', { type: 'button', class: 'zurueck', onclick: closeOverlay }, '← Zurück'),
+    h('span', { class: 'overlay-info' }, `${BEREICH_NAMES[q.bereich]} · Stufe ${q.tier}`));
+
+  if (questionSolved) {
+    const { entry, points, boost } = questionSolved;
+    const next = nextQuestion(q);
+    fill(card, top,
+      h('p', { class: 'frage-gross-text' }, q.frage),
+      h('div', { class: 'frage-erfolg' },
+        h('p', { class: 'titel gut' }, `Richtig! +${fmt(points)} Erkenntnis`),
+        h('p', { class: 'loesung' }, entry.name),
+        h('p', { class: 'hinweis' }, entry.fact),
+        boost ? h('p', { class: 'hinweis' }, `${boost.name}: ×${fmt(boost.factor)}`) : null),
+      h('div', { class: 'knopfreihe' },
+        next ? h('button', { type: 'button', class: 'primaer', onclick: () => showQuestionInPlace(next.id) }, 'Nächste Frage →') : null,
+        h('button', { type: 'button', class: 'zweitrangig', onclick: closeOverlay }, 'Zurück zur Liste')));
+    card.querySelector('.primaer, .zweitrangig').focus();
+    return;
+  }
+
+  const field = h('input', {
+    type: 'text', id: 'frage-antwort', spellcheck: 'false', autocomplete: 'off', autocapitalize: 'off',
+    placeholder: q.wert ? 'Zahl mit Einheit, z. B. 3·10^8 m/s' : 'Deine Antwort …',
+  });
+  fill(card, top,
+    h('label', { class: 'frage-gross-text', for: 'frage-antwort', id: 'frage-titel' }, q.frage),
+    h('p', { class: 'frage-wert' }, `+${fmt(questionPoints(q))} Erkenntnis`),
+    h('form', {
+      class: 'antwort-gross',
+      onsubmit: (event) => {
+        event.preventDefault();
+        const result = answerQuestion(state, q.id, field.value);
+        if (result.status === 'leer') return;
+        if (result.status === 'richtig') {
+          questionSolved = result;
+          floatPoints(result.points);
+          showQuestionResult(q, result);
+          renderHint();
+          saveLocal(state);
+        } else if (result.status === 'falsch') {
+          questionFeedback = { cls: 'schlecht', text: result.canReveal
+            ? `Leider nicht richtig (${result.attempts}. Versuch). Du kannst die Frage jetzt auflösen.`
+            : `Leider nicht richtig (${result.attempts}. Versuch).` };
+        }
+        renderQuestionView();
+        renderQuestions();
+        update();
+      },
+    }, field, h('button', { type: 'submit' }, 'Antworten')),
+    questionFeedback ? h('p', { class: `frage-meldung ${questionFeedback.cls}` }, questionFeedback.text) : null,
+    canReveal(state, q) ? h('button', {
+      type: 'button', class: 'aufloesen',
       onclick: () => {
-        openQuestion = expanded ? null : q.id;
+        const entry = revealQuestion(state, q.id);
+        if (!entry) return;
+        saveLocal(state);
         questionFeedback = null;
         renderQuestions();
+        fill(card, top,
+          h('p', { class: 'frage-gross-text' }, q.frage),
+          h('div', { class: 'frage-erfolg' },
+            h('p', { class: 'titel' }, 'Aufgelöst – diesmal ohne Punkte.'),
+            h('p', { class: 'loesung' }, entry.name),
+            h('p', { class: 'hinweis' }, entry.fact)),
+          h('div', { class: 'knopfreihe' },
+            h('button', { type: 'button', class: 'zweitrangig', onclick: closeOverlay }, 'Zurück zur Liste')));
       },
-    }, h('span', { class: 'frage-text' }, q.frage), h('span', { class: 'frage-punkte' }, badge)));
+    }, 'Auflösen') : null);
+  field.focus();
+}
 
-  if (status !== 'offen') {
-    const entry = ENTRIES.find((e) => e.id === q.antwort);
-    li.append(h('div', { class: 'frage-loesung' }, `Antwort: ${entry.name}`));
-    return li;
-  }
-  if (!expanded) return li;
-
-  const field = h('input', { type: 'text', spellcheck: 'false', autocomplete: 'off', 'aria-label': 'Antwort' });
-  const feedback = questionFeedback?.id === q.id
-    ? h('p', { class: `frage-meldung ${questionFeedback.cls}` }, questionFeedback.text)
-    : null;
-  li.append(h('form', {
-    class: 'antwort',
-    onsubmit: (event) => {
-      event.preventDefault();
-      const result = answerQuestion(state, q.id, field.value);
-      if (result.status === 'leer') return;
-      if (result.status === 'richtig') {
-        questionFeedback = null;
-        openQuestion = null;
-        floatPoints(result.points);
-        showQuestionResult(q, result);
-        renderHint();
-        saveLocal(state);
-      } else if (result.status === 'falsch') {
-        questionFeedback = { id: q.id, cls: 'schlecht', text: result.canReveal
-          ? `Leider nicht richtig (${result.attempts}. Versuch). Du kannst die Frage jetzt auflösen.`
-          : `Leider nicht richtig (${result.attempts}. Versuch).` };
-      }
-      renderQuestions();
-      update();
-    },
-  },
-  field,
-  h('button', { type: 'submit' }, 'Antworten'),
-  canReveal(state, q) ? h('button', {
-    type: 'button', class: 'aufloesen',
-    onclick: () => {
-      const entry = revealQuestion(state, q.id);
-      if (!entry) return;
-      openQuestion = null;
-      saveLocal(state);
-      renderQuestions();
-    },
-  }, 'Auflösen') : null,
-  feedback));
-  return li;
+/** Wechselt im offenen Overlay zur nächsten Frage, ohne einen neuen Verlaufseintrag. */
+function showQuestionInPlace(id) {
+  currentQuestion = id;
+  questionFeedback = null;
+  questionSolved = null;
+  renderQuestionView();
 }
 
 /** Zeigt eine richtige Antwort auch in der großen Rückmeldung links. */
 function showQuestionResult(q, result) {
   const box = $('rueckmeldung');
-  box.replaceChildren(...[
+  fill(box, [
     h('p', { class: 'titel gut' }, `+${fmt(result.points)} Erkenntnis – Frage richtig beantwortet`),
     h('div', { class: 'fund' },
       h('div', { class: 'fund-kopf' },
@@ -353,7 +507,7 @@ function showQuestionResult(q, result) {
       h('div', { class: 'fund-art' }, q.frage),
       h('p', { class: 'fund-fakt' }, result.entry.fact)),
     result.boost ? h('p', { class: 'hinweis' }, `${result.boost.name}: ×${fmt(result.boost.factor)}`) : null,
-  ].filter(Boolean));
+  ]);
   pushHistory(result.points, `Frage: ${result.entry.name}`);
 }
 
@@ -420,7 +574,7 @@ function renderHint() {
     .filter((w) => w.length >= 4);
   let fact = entry.fact;
   for (const w of words) fact = fact.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), '…');
-  card.replaceChildren(
+  fill(card,
     h('p', { class: 'titel' }, '📝 Spickzettel'),
     h('p', {}, `Gesucht: ${CATEGORIES[entry.cat]} aus ${AREA_NAMES[entry.area]}, Stufe ${entry.tier}, beginnt mit „${entry.name[0]}“.`),
     h('p', { class: 'hinweis' }, fact),
@@ -532,7 +686,7 @@ $('reset-knopf').addEventListener('click', () => {
   if (!confirm('Wirklich alles löschen? Erkenntnis, freigeschaltete Bereiche und Codex gehen verloren.')) return;
   clearLocal();
   state = newState();
-  history.length = 0;
+  recent.length = 0;
   $('verlauf').replaceChildren();
   rerenderAll();
 });
