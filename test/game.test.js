@@ -1,22 +1,75 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  buildingCost, buyBuilding, buyUpgrade, newState, rate, restore, submit, tick,
+  buyBereich, isOpen, newState, restore, submit, unlockPrice,
 } from '../src/game.js';
-import { REPEAT_COOLDOWN_MS, TIER_POINTS } from '../src/content.js';
+import {
+  REPEAT_COOLDOWN_MS, START_BEREICHE, TIER_POINTS, UNLOCK_PRICES,
+} from '../src/content.js';
 
-test('Erstentdeckung bringt den Grundwert der Stufe', () => {
+/** Zustand mit allen Bereichen offen – für Tests, die nicht ums Freischalten gehen. */
+function allOpen() {
   const s = newState();
-  const r = submit(s, 'F = m·a', 1_000);
+  s.unlocked = ['person', 'einheit', 'teilchen', 'phaenomen', 'gesetz', 'formel', 'konstante'];
+  return s;
+}
+
+test('Zu Beginn sind nur Personen offen', () => {
+  const s = newState();
+  assert.deepEqual(s.unlocked, START_BEREICHE);
+  assert.deepEqual(START_BEREICHE, ['person']);
+
+  const person = submit(s, 'Marie Curie', 0);
+  assert.equal(person.status, 'treffer');
+  assert.equal(person.gained, TIER_POINTS[1]);
+
+  const formel = submit(s, 'F = m·a', 1);
+  assert.equal(formel.status, 'gesperrt');
+  assert.equal(formel.gained, 0);
+  assert.equal(formel.locked[0].cat, 'formel');
+  assert.equal(s.discovered.newton2, undefined, 'gesperrte Einträge werden nicht gemerkt');
+});
+
+test('Gesperrte Konstanten verraten nichts über den Wert', () => {
+  const s = newState();
+  assert.equal(submit(s, 'c = 2e8', 0).status, 'gesperrt');
+});
+
+test('Mehrdeutige Eingabe zählt nur für offene Bereiche', () => {
+  const s = newState();
+  const r = submit(s, 'Newton', 0);
   assert.equal(r.status, 'treffer');
-  assert.equal(r.gained, TIER_POINTS[1]);
-  assert.equal(r.items[0].art, 'neu');
-  assert.ok(s.discovered.newton2);
-  assert.equal(s.insight, TIER_POINTS[1]);
+  assert.deepEqual(r.items.map((i) => i.entry.id), ['newton']);
+  assert.deepEqual(r.locked.map((e) => e.id), ['u_newton']);
+});
+
+test('Bereiche kauft man mit Erkenntnis, der Preis steigt mit jedem Kauf', () => {
+  const s = newState();
+  assert.equal(unlockPrice(s), UNLOCK_PRICES[0]);
+  assert.equal(buyBereich(s, 'teilchen'), false, 'zu wenig Erkenntnis');
+
+  s.insight = UNLOCK_PRICES[0] + 5;
+  assert.ok(buyBereich(s, 'teilchen'));
+  assert.ok(isOpen(s, 'teilchen'));
+  assert.equal(s.insight, 5);
+  assert.equal(unlockPrice(s), UNLOCK_PRICES[1]);
+  assert.equal(submit(s, 'Myon', 0).status, 'treffer');
+
+  s.insight = 1e9;
+  assert.equal(buyBereich(s, 'teilchen'), false, 'nicht doppelt');
+  assert.equal(buyBereich(s, 'gibtsnicht'), false);
+  for (const b of ['einheit', 'phaenomen', 'gesetz', 'formel', 'konstante']) assert.ok(buyBereich(s, b), b);
+  assert.equal(unlockPrice(s), null, 'alles offen');
+});
+
+test('Erkenntnis entsteht nur durch Eingaben (Issue #1)', async () => {
+  const game = await import('../src/game.js');
+  assert.equal(game.tick, undefined);
+  assert.equal(game.rate, undefined);
 });
 
 test('Wiederholung: erst Abklingzeit, dann Trinkgeld', () => {
-  const s = newState();
+  const s = allOpen();
   submit(s, 'Myon', 0);
   const early = submit(s, 'Myon', 10_000);
   assert.equal(early.gained, 0);
@@ -29,12 +82,12 @@ test('Wiederholung: erst Abklingzeit, dann Trinkgeld', () => {
 });
 
 test('Konstante mit Wert: Name und Wert werden getrennt entdeckt', () => {
-  const s = newState();
+  const s = allOpen();
   const r = submit(s, 'c = 3e8 m/s', 0);
   assert.deepEqual(r.items.map((i) => i.art), ['neu', 'wert']);
   assert.equal(r.gained, TIER_POINTS[1] * 3);
 
-  const s2 = newState();
+  const s2 = allOpen();
   submit(s2, 'Lichtgeschwindigkeit', 0);
   const r2 = submit(s2, 'c = 299792458', 100_000);
   assert.deepEqual(r2.items.map((i) => i.art), ['wert']);
@@ -42,53 +95,28 @@ test('Konstante mit Wert: Name und Wert werden getrennt entdeckt', () => {
 
 test('Combo steigert den Wert schneller Treffer', () => {
   const s = newState();
-  submit(s, 'Elektron', 0);
-  submit(s, 'Proton', 1_000);
-  const third = submit(s, 'Neutron', 2_000);
+  submit(s, 'Isaac Newton', 0);
+  submit(s, 'Galilei', 1_000);
+  const third = submit(s, 'Einstein', 2_000);
   assert.equal(third.combo, 3);
   assert.equal(third.gained, Math.round(TIER_POINTS[1] * 1.2));
 
-  const late = submit(s, 'Photon', 60_000);
+  const late = submit(s, 'Marie Curie', 60_000);
   assert.equal(late.combo, 1);
-});
-
-test('Einrichtungen kosten mit jedem Kauf mehr und produzieren', () => {
-  const s = newState();
-  s.insight = 1_000;
-  assert.equal(buildingCost(s, 'apfelbaum'), 20);
-  assert.ok(buyBuilding(s, 'apfelbaum'));
-  assert.equal(buildingCost(s, 'apfelbaum'), 23);
-  assert.equal(s.insight, 980);
-  assert.ok(rate(s) > 0);
-  const before = s.insight;
-  tick(s, 10);
-  assert.ok(Math.abs(s.insight - before - rate(s) * 10) < 1e-9);
-  s.insight = 0;
-  assert.equal(buyBuilding(s, 'apfelbaum'), false);
-});
-
-test('Gebiets-Upgrade braucht Entdeckungen und verdoppelt', () => {
-  const s = newState();
-  s.insight = 1_000;
-  buyBuilding(s, 'apfelbaum');
-  assert.equal(buyUpgrade(s, 'mechanik_1'), false, 'noch gesperrt');
-  for (const raw of ['F=ma', 'p=mv', 'Reibung', 'Auftrieb', 'Hebelgesetz']) submit(s, raw, 0);
-  const before = rate(s);
-  assert.ok(buyUpgrade(s, 'mechanik_1'));
-  assert.equal(rate(s), before * 2);
-  assert.equal(buyUpgrade(s, 'mechanik_1'), false, 'nur einmal');
 });
 
 test('Spielstand übersteht Speichern und verwirft Unsinn', () => {
   const s = newState();
-  submit(s, 'Ohmsches Gesetz', 0);
-  s.buildings.apfelbaum = 3;
+  submit(s, 'Max Planck', 0);
+  s.insight = 500;
+  s.totalInsight = 500;
+  buyBereich(s, 'formel');
   const copy = restore(JSON.parse(JSON.stringify(s)));
   assert.deepEqual({ ...copy, combo: null }, { ...s, combo: null }); // Combo wird bewusst nicht gespeichert
 
-  const dirty = restore({ insight: -5, buildings: { apfelbaum: 'x', gibtsnicht: 4 }, discovered: { erfunden: 1 }, upgrades: ['nope'] });
+  const dirty = restore({ insight: -5, unlocked: ['formel', 'quatsch'], discovered: { erfunden: 1 }, buildings: { apfelbaum: 3 } });
   assert.equal(dirty.insight, 0);
-  assert.equal(dirty.buildings.apfelbaum, 0);
+  assert.deepEqual(dirty.unlocked, ['person', 'formel'], 'Startbereich bleibt immer offen');
   assert.deepEqual(dirty.discovered, {});
-  assert.deepEqual(dirty.upgrades, []);
+  assert.equal(dirty.buildings, undefined, 'alte Einrichtungen fallen weg');
 });

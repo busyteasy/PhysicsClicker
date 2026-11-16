@@ -2,8 +2,12 @@
 
 Ein Browserspiel im Stil der Idle-/Clicker-Spiele. Statt zu klicken, **tippt man
 Physikwissen** in ein Eingabefeld. Jede erkannte Eingabe bringt **Erkenntnis**
-(die Spielwährung). Mit Erkenntnis baut man Forschungseinrichtungen, die von
-selbst weiter Erkenntnis erzeugen.
+(die Spielwährung). Zu Beginn kann man nur **Physikerinnen und Physiker**
+eingeben; mit Erkenntnis schaltet man nach und nach weitere **Bereiche** frei
+(Einheiten, Teilchen, Formeln …).
+
+**Grundregel:** Erkenntnis entsteht ausschließlich durch Eingaben. Nichts im
+Spiel erzeugt Erkenntnis von selbst (siehe Issue #1).
 
 Phase 1 ist ein **rein deutsches Spiel**: Oberfläche, Rückmeldungen, Fun Facts
 und die Namen in der Wissensdatenbank sind deutsch. Formeln und Einheiten sind
@@ -44,8 +48,7 @@ bis 5 (Spezialwissen).
 ## Punkte
 
 - **Erstentdeckung:** volle Punktzahl, der Eintrag kommt in den Codex.
-  Grundwert je Stufe: 10 / 30 / 80 / 200 / 500, dazu Stufe × 5 Sekunden der
-  aktuellen Produktion, damit Tippen auch später wertvoll bleibt.
+  Grundwert je Stufe: 10 / 30 / 80 / 200 / 500.
 - **Konstante mit korrektem Wert:** zusätzliche Entdeckung mit doppeltem Wert.
 - **Trinkgeld für Wiederholungen:** 5 % des Werts, aber für denselben Eintrag
   höchstens einmal pro 60 Sekunden. Verhindert Spammen, lässt das Tippen aber
@@ -53,26 +56,26 @@ bis 5 (Spezialwissen).
 - **Combo:** Treffer im Abstand von höchstens 8 Sekunden erhöhen einen
   Multiplikator um je 10 % (bis ×2).
 
-## Einrichtungen (passives Einkommen)
+## Bereiche freischalten
 
-Acht Einrichtungen, je eine pro Gebiet, Preis steigt pro Kauf um Faktor 1,15:
+Die Bereiche sind die Kategorien der Wissensdatenbank. Offen ist am Anfang nur
+**Personen**. Die übrigen sechs kauft man mit Erkenntnis frei – in beliebiger
+Reihenfolge, so dass jede und jeder mit dem eigenen Lieblingsthema weitermachen
+kann. Der Preis hängt nur davon ab, der wievielte Bereich es ist:
 
-Apfelbaum → Linsenschleiferei → Dampfmaschine → Elektrolabor → Sternwarte →
-Spektrallabor → Atomuhr → Teilchenbeschleuniger
+| Freischaltung | 1.  | 2.  | 3.    | 4.    | 5.    | 6.    |
+|---------------|-----|-----|-------|-------|-------|-------|
+| Preis         | 100 | 500 | 1.200 | 2.500 | 4.500 | 7.000 |
 
-## Upgrades – an Wissen gekoppelt
+Eingaben aus einem gesperrten Bereich werden erkannt, aber nicht gewertet und
+nicht gemerkt; das Spiel sagt, welcher Bereich dafür nötig ist. Mehrdeutige
+Eingaben wie `Newton` zählen nur für die offenen Bereiche.
 
-- Pro Gebiet zwei Upgrades, freigeschaltet bei 5 bzw. 15 Entdeckungen in diesem
-  Gebiet. Wirkung: Eingaben aus dem Gebiet **und** die zugehörige Einrichtung ×2.
-- Allgemeine Upgrades nach Gesamtzahl der Entdeckungen: Tippwert ×1,5 / ×2 / ×3,
-  längeres Combo-Fenster, „Wissensnetz“ (+1 % Produktion je Entdeckung),
-  „Peer Review“ (Produktion ×2).
-- Noch gesperrte Upgrades werden mit ihrer Bedingung angezeigt – das zeigt, wo
-  es sich lohnt, weiterzulernen.
+Einrichtungen und Upgrades sind vorerst gestrichen.
 
 ## Codex
 
-Zeigt pro Gebiet den Fortschritt, alle entdeckten Einträge mit Fun Fact und
+Zeigt pro Bereich den Fortschritt (gesperrte Bereiche ausgegraut), alle entdeckten Einträge mit Fun Fact und
 wie viele Einträge je Stufe noch fehlen.
 
 ## Speichern
