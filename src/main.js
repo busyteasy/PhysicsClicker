@@ -1,11 +1,11 @@
 // Oberfläche: verbindet Spiellogik und DOM.
 
 import { CATEGORIES, ENTRIES } from '../data/index.js';
-import { AREAS, AREA_NAMES, BUILDINGS, UPGRADES } from './content.js';
+import { AREAS, AREA_NAMES, BUILDINGS, HOME_AREA_FACTOR, UPGRADES } from './content.js';
 import { formatNumber as fmt } from './format.js';
 import {
-  areaCount, buildingCost, buildingRate, buyBuilding, buyUpgrade, comboMultiplier,
-  comboWindow, discoveryCount, isUnlocked, newState, rate, submit, tick,
+  areaCount, buildingBonus, buildingCost, buyBuilding, buyUpgrade, comboMultiplier,
+  comboWindow, discoveryCount, facilityBonus, isUnlocked, newState, submit,
 } from './game.js';
 import { clearLocal, exportState, importState, loadLocal, saveLocal } from './save.js';
 import { isRelation } from './normalize.js';
@@ -185,7 +185,7 @@ function renderBuildings() {
     if (mode === 'teaser') teaserShown = true;
 
     row.li.hidden = mode === 'aus';
-    const key = `${mode}|${count}|${cost}|${buildingRate(state, b.id)}`;
+    const key = `${mode}|${count}|${cost}|${buildingBonus(state, b.id)}`;
     if (row.shown !== key) {
       row.shown = key;
       row.button.classList.toggle('teaser', mode === 'teaser');
@@ -197,15 +197,15 @@ function renderBuildings() {
           h('span', { class: 'zahlen' }, h('span', { class: 'preis' }, fmt(cost)), ' Erkenntnis'),
         );
       } else {
-        const each = buildingRate(state, b.id);
+        const each = buildingBonus(state, b.id);
         row.button.replaceChildren(
           h('span', { class: 'name' }, b.name),
           h('span', { class: 'anzahl' }, count),
           h('span', { class: 'beschr' }, b.desc),
           h('span', { class: 'zahlen' },
             h('span', { class: 'preis' }, fmt(cost)), ' · ',
-            `+${fmt(each)}/s je Stück`,
-            count ? ` · zusammen ${fmt(each * count)}/s` : ''),
+            `+${fmt(each)} je Treffer (×${HOME_AREA_FACTOR} in ${AREA_NAMES[b.area]})`,
+            count ? ` · zusammen +${fmt(each * count)}` : ''),
         );
       }
     }
@@ -388,7 +388,8 @@ function updateCombo(now) {
 
 function update() {
   $('betrag').textContent = fmt(state.insight);
-  $('rate').textContent = `${fmt(rate(state))} pro Sekunde`;
+  const bonus = facilityBonus(state, null);
+  $('rate').textContent = bonus ? `+${fmt(bonus)} Bonus je Treffer durch Einrichtungen` : 'Erkenntnis gibt es nur für Eingaben';
   document.title = `${fmt(state.insight)} Erkenntnis – PhysicsClicker`;
   renderBuildings();
   renderUpgrades();
@@ -403,14 +404,8 @@ function rerenderAll() {
   update();
 }
 
-let last = Date.now();
-setInterval(() => {
-  const now = Date.now();
-  const seconds = Math.min(3600, Math.max(0, (now - last) / 1000));
-  last = now;
-  tick(state, seconds);
-  update();
-}, 100);
+// Nur Anzeige (Combo-Balken, Kaufbarkeit) – Erkenntnis entsteht ausschließlich durch Eingaben.
+setInterval(update, 100);
 
 setInterval(() => saveLocal(state), 10_000);
 document.addEventListener('visibilitychange', () => { if (document.hidden) saveLocal(state); });

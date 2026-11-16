@@ -1,9 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import * as game from '../src/game.js';
 import {
-  buildingCost, buyBuilding, buyUpgrade, newState, rate, restore, submit, tick,
-} from '../src/game.js';
-import { REPEAT_COOLDOWN_MS, TIER_POINTS } from '../src/content.js';
+  BUILDINGS, HOME_AREA_FACTOR, REPEAT_COOLDOWN_MS, TIER_POINTS,
+} from '../src/content.js';
+
+const {
+  buildingBonus, buildingCost, buyBuilding, buyUpgrade, facilityBonus, newState, restore, submit,
+} = game;
 
 test('Erstentdeckung bringt den Grundwert der Stufe', () => {
   const s = newState();
@@ -52,30 +56,48 @@ test('Combo steigert den Wert schneller Treffer', () => {
   assert.equal(late.combo, 1);
 });
 
-test('Einrichtungen kosten mit jedem Kauf mehr und produzieren', () => {
+test('Einrichtungen kosten mit jedem Kauf mehr', () => {
   const s = newState();
   s.insight = 1_000;
   assert.equal(buildingCost(s, 'apfelbaum'), 20);
   assert.ok(buyBuilding(s, 'apfelbaum'));
   assert.equal(buildingCost(s, 'apfelbaum'), 23);
   assert.equal(s.insight, 980);
-  assert.ok(rate(s) > 0);
-  const before = s.insight;
-  tick(s, 10);
-  assert.ok(Math.abs(s.insight - before - rate(s) * 10) < 1e-9);
   s.insight = 0;
   assert.equal(buyBuilding(s, 'apfelbaum'), false);
 });
 
-test('Gebiets-Upgrade braucht Entdeckungen und verdoppelt', () => {
+test('Einrichtungen erzeugen nichts von selbst (Issue #1)', () => {
+  const s = newState();
+  s.buildings.apfelbaum = 10;
+  s.buildings.beschleuniger = 3;
+  assert.equal(game.tick, undefined, 'es gibt keine passive Produktion mehr');
+  assert.equal(game.rate, undefined);
+  assert.equal(s.insight, 0);
+});
+
+test('Einrichtungen geben einen Bonus je Treffer, im eigenen Gebiet doppelt', () => {
+  const s = newState();
+  s.buildings.apfelbaum = 3; // Mechanik
+  assert.equal(facilityBonus(s, 'optik'), 3 * BUILDINGS[0].bonus);
+  assert.equal(facilityBonus(s, 'mechanik'), 3 * BUILDINGS[0].bonus * HOME_AREA_FACTOR);
+
+  const optik = submit(s, 'Regenbogen', 0);           // Stufe 1, Optik
+  assert.equal(optik.gained, TIER_POINTS[1] + 3 * BUILDINGS[0].bonus);
+  const mechanik = submit(s, 'Reibung', 600_000);     // Stufe 1, Mechanik
+  assert.equal(mechanik.gained, TIER_POINTS[1] + 3 * BUILDINGS[0].bonus * HOME_AREA_FACTOR);
+});
+
+test('Gebiets-Upgrade braucht Entdeckungen und verdoppelt Eingaben und Einrichtung', () => {
   const s = newState();
   s.insight = 1_000;
   buyBuilding(s, 'apfelbaum');
   assert.equal(buyUpgrade(s, 'mechanik_1'), false, 'noch gesperrt');
   for (const raw of ['F=ma', 'p=mv', 'Reibung', 'Auftrieb', 'Hebelgesetz']) submit(s, raw, 0);
-  const before = rate(s);
+  const before = buildingBonus(s, 'apfelbaum');
+  s.insight = 1_000;
   assert.ok(buyUpgrade(s, 'mechanik_1'));
-  assert.equal(rate(s), before * 2);
+  assert.equal(buildingBonus(s, 'apfelbaum'), before * 2);
   assert.equal(buyUpgrade(s, 'mechanik_1'), false, 'nur einmal');
 });
 

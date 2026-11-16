@@ -4,7 +4,7 @@ import { ENTRIES } from '../data/index.js';
 import { buildIndex, match } from './matcher.js';
 import {
   BUILDINGS, COMBO_MAX, COMBO_STEP, COMBO_WINDOW_MS, COST_GROWTH,
-  PRODUCTION_SECONDS_PER_TIER, REPEAT_COOLDOWN_MS, REPEAT_SHARE,
+  HOME_AREA_FACTOR, REPEAT_COOLDOWN_MS, REPEAT_SHARE,
   TIER_POINTS, UPGRADES, VALUE_FACTOR,
 } from './content.js';
 
@@ -37,7 +37,12 @@ export function areaMultiplier(state, area) {
 }
 
 export function typingMultiplier(state) {
-  return boughtEffects(state).reduce((m, e) => (e.typing ? m * e.typing : m), 1);
+  let m = 1;
+  for (const e of boughtEffects(state)) {
+    if (e.typing) m *= e.typing;
+    if (e.network) m *= 1 + e.network * discoveryCount(state);
+  }
+  return m;
 }
 
 export function comboWindow(state) {
@@ -56,23 +61,25 @@ export function areaCount(state, area) {
   return n;
 }
 
-function productionMultiplier(state) {
-  let m = 1;
-  for (const e of boughtEffects(state)) {
-    if (e.production) m *= e.production;
-    if (e.network) m *= 1 + e.network * discoveryCount(state);
-  }
-  return m;
+function facilityMultiplier(state) {
+  return boughtEffects(state).reduce((m, e) => (e.facilities ? m * e.facilities : m), 1);
 }
 
-export function buildingRate(state, id) {
+/** Bonus, den ein einzelnes Exemplar der Einrichtung auf Treffer außerhalb ihres Gebiets gibt. */
+export function buildingBonus(state, id) {
   const b = BUILDING_BY_ID.get(id);
-  return b.rate * areaMultiplier(state, b.area) * productionMultiplier(state);
+  return b.bonus * areaMultiplier(state, b.area) * facilityMultiplier(state);
 }
 
-/** Erkenntnis pro Sekunde */
-export function rate(state) {
-  return BUILDINGS.reduce((sum, b) => sum + state.buildings[b.id] * buildingRate(state, b.id), 0);
+/**
+ * Fester Bonus aller Einrichtungen auf einen Treffer im Gebiet `area`.
+ * Einrichtungen erzeugen nie selbst Erkenntnis – sie wirken nur auf Eingaben.
+ */
+export function facilityBonus(state, area) {
+  return BUILDINGS.reduce((sum, b) => {
+    const home = b.area === area ? HOME_AREA_FACTOR : 1;
+    return sum + state.buildings[b.id] * buildingBonus(state, b.id) * home;
+  }, 0);
 }
 
 export function comboMultiplier(count) {
@@ -83,9 +90,8 @@ export function comboMultiplier(count) {
 
 function entryValue(state, entry, isValue) {
   const factor = isValue ? VALUE_FACTOR : 1;
-  const typed = TIER_POINTS[entry.tier] * areaMultiplier(state, entry.area) * typingMultiplier(state);
-  const production = rate(state) * entry.tier * PRODUCTION_SECONDS_PER_TIER;
-  return (typed + production) * factor;
+  const base = TIER_POINTS[entry.tier] * areaMultiplier(state, entry.area);
+  return (base + facilityBonus(state, entry.area)) * typingMultiplier(state) * factor;
 }
 
 function repeatItem(state, entry, key, isValue, now) {
@@ -178,13 +184,6 @@ export function buyUpgrade(state, id) {
   state.insight -= u.cost;
   state.upgrades.push(id);
   return true;
-}
-
-/** Fortschritt der Zeit: passive Produktion */
-export function tick(state, seconds) {
-  const gain = rate(state) * seconds;
-  state.insight += gain;
-  state.totalInsight += gain;
 }
 
 // ---------- Speichern ----------
