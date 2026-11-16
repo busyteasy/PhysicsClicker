@@ -1,4 +1,4 @@
-import { F, G, K, P, U, W, inArea } from './helpers.js';
+import { E, F, G, K, P, U, W, inArea } from './helpers.js';
 
 export default inArea('mechanik', [
   F('newton2', 1, 'F = m·a', ['a=F/m'], 'Newtons zweites Axiom: Kraft ist Masse mal Beschleunigung.'),
@@ -60,4 +60,10 @@ export default inArea('mechanik', [
 
   K('erdbeschleunigung', 1, 'Erdbeschleunigung', ['Fallbeschleunigung', 'Ortsfaktor'], ['g'], [[9.81, ['m/s^2', 'N/kg', 'ms^-2']]], 'Rund 9,81 m/s² – am Äquator etwas weniger, an den Polen etwas mehr.'),
   K('gravitationskonstante', 3, 'Gravitationskonstante', ['newtonsche Gravitationskonstante'], ['G'], [[6.674e-11, ['m^3/(kgs^2)', 'm^3kg^-1s^-2', 'Nm^2/kg^2', 'm^3/kg/s^2']]], 'Eine der am ungenauesten bekannten Naturkonstanten.'),
+
+  E('pisa', 1, 'Galileis Fallversuch', ['Fallversuch von Galilei', 'Turm von Pisa', 'Galileis Fallexperiment'], 'Ob Galilei wirklich Kugeln vom schiefen Turm fallen ließ, ist umstritten – seine Versuche mit schiefen Ebenen sind dagegen belegt.'),
+  E('foucault', 2, 'Foucaultsches Pendel', ['Foucault-Pendel', 'Foucaultpendel'], 'Léon Foucault zeigte 1851 im Pariser Panthéon, dass sich die Erde dreht.'),
+  E('cavendish', 3, 'Cavendish-Experiment', ['Cavendish-Versuch', 'Gravitationswaage'], 'Henry Cavendish bestimmte 1798 mit einer Drehwaage die Dichte der Erde – und damit indirekt die Gravitationskonstante.'),
+  E('magdeburg', 1, 'Magdeburger Halbkugeln', ['Magdeburger Halbkugel'], 'Otto von Guericke führte in den 1650er-Jahren vor, dass selbst Pferdegespanne zwei luftleer gepumpte Halbkugeln nicht trennen konnten.'),
+  E('torricelli', 2, 'Torricelli-Versuch', ['Torricelli-Experiment', 'Quecksilberbarometer'], 'Evangelista Torricelli zeigte 1643 mit einer Quecksilbersäule, dass die Luft einen Druck ausübt.'),
 ]);

@@ -1,4 +1,4 @@
-import { F, G, K, P, U, W, inArea } from './helpers.js';
+import { E, F, G, K, P, U, W, inArea } from './helpers.js';
 
 export default inArea('astro', [
   G('kepler1', 2, 'Erstes Keplersches Gesetz', ['1. keplersches Gesetz', 'erstes Kepler-Gesetz', 'Ellipsensatz'], 'Planeten laufen auf Ellipsen, in deren einem Brennpunkt die Sonne steht.'),
@@ -45,4 +45,7 @@ export default inArea('astro', [
   U('u_ae', 2, 'Astronomische Einheit', [], 'Der mittlere Abstand zwischen Erde und Sonne, rund 150 Millionen Kilometer.'),
 
   K('hubble_k', 3, 'Hubble-Konstante', ['Hubble-Parameter'], ['H0', 'H_0'], [[70, ['km/(sMpc)', 'km/s/Mpc', 'km/(Mpcs)'], 0.06]], 'Ihr genauer Wert ist umstritten: Die Messungen liegen zwischen etwa 67 und 73 km/s pro Megaparsec.'),
+
+  E('jupitermonde', 1, 'Galileis Jupitermonde', ['Entdeckung der Jupitermonde', 'galileische Monde'], 'Galilei entdeckte 1610 vier Monde um Jupiter – nicht alles kreist um die Erde.'),
+  E('penzias_wilson', 3, 'Entdeckung der Hintergrundstrahlung', ['Penzias und Wilson', 'Penzias-Wilson-Experiment'], 'Arno Penzias und Robert Wilson hielten 1964 das Rauschen ihrer Antenne zuerst für Taubendreck.'),
 ]);

@@ -27,6 +27,7 @@ Kein Server, keine KI – das Spiel läuft komplett im Browser.
 | Teilchen   | `Myon`, `Higgs-Boson`                       |
 | Person     | `Emmy Noether`, `Marie Curie`               |
 | Einheit    | `Tesla`, `1 N = 1 kg·m/s²`                  |
+| Experiment | `Foucaultsches Pendel`, `Millikan-Versuch`  |
 
 Jeder Eintrag gehört zu einem von acht **Gebieten** (Mechanik, Optik,
 Wärmelehre, Elektrizität & Magnetismus, Astrophysik, Quantenphysik,
@@ -59,19 +60,49 @@ bis 5 (Spezialwissen).
 ## Bereiche freischalten
 
 Die Bereiche sind die Kategorien der Wissensdatenbank. Offen ist am Anfang nur
-**Personen**. Die übrigen sechs kauft man mit Erkenntnis frei – in beliebiger
+**Personen**. Die übrigen sieben kauft man mit Erkenntnis frei – in beliebiger
 Reihenfolge, so dass jede und jeder mit dem eigenen Lieblingsthema weitermachen
 kann. Der Preis hängt nur davon ab, der wievielte Bereich es ist:
 
-| Freischaltung | 1.  | 2.  | 3.    | 4.    | 5.    | 6.    |
-|---------------|-----|-----|-------|-------|-------|-------|
-| Preis         | 100 | 500 | 1.200 | 2.500 | 4.500 | 7.000 |
+| Freischaltung | 1.  | 2.  | 3.    | 4.    | 5.    | 6.    | 7.     |
+|---------------|-----|-----|-------|-------|-------|-------|--------|
+| Preis         | 100 | 500 | 1.200 | 2.500 | 4.500 | 7.000 | 10.000 |
 
 Eingaben aus einem gesperrten Bereich werden erkannt, aber nicht gewertet und
 nicht gemerkt; das Spiel sagt, welcher Bereich dafür nötig ist. Mehrdeutige
 Eingaben wie `Newton` zählen nur für die offenen Bereiche.
 
-Einrichtungen und Upgrades sind vorerst gestrichen.
+Einrichtungen sind vorerst gestrichen.
+
+## Upgrades (Einmal-Effekte)
+
+Upgrades werden mit Erkenntnis gekauft, wirken kurz und sind dann verbraucht.
+Das macht das Spiel taktischer: erst einen Multiplikator kaufen, dann das
+schwierigste Wissen eingeben.
+
+| Upgrade       | Preis | Wirkung                                             |
+|---------------|-------|-----------------------------------------------------|
+| Geistesblitz  | 40    | nächste gewertete Eingabe oder Antwort ×2           |
+| Heureka!      | 150   | nächste gewertete Eingabe oder Antwort ×3           |
+| Konzentration | 120   | nächste 5 gewertete Eingaben oder Antworten ×1,5    |
+| Kaffeepause   | 80    | 60 Sekunden lang doppeltes Combo-Fenster            |
+| Eselsbrücke   | 100   | 2 Minuten lang keine Abklingzeit bei Wiederholungen |
+| Spickzettel   | 60    | Hinweis auf einen unentdeckten Eintrag (offener Bereich, leichteste Stufe; Gebiet, Anfangsbuchstabe, Fun Fact ohne Namen) |
+
+Balance: Es wirkt immer nur **ein** Multiplikator gleichzeitig, ungewertete
+Eingaben verbrauchen ihn nicht, und jedes Upgrade wird mit jedem Kauf um 15 %
+teurer.
+
+## Fragekatalog
+
+Ein Reiter mit Fragen, nach Bereichen geordnet (z. B. „Wer entdeckte 1896 die
+Radioaktivität?“). Klick auf eine Frage öffnet ein Antwortfeld.
+
+- Die Antwort ist ein Eintrag der Wissensdatenbank und wird genauso tolerant
+  erkannt wie jede andere Eingabe; bei Konstanten-Fragen zählt der Zahlenwert.
+- Punkte: doppelter Grundwert der Fragen-Stufe, einmal pro Frage.
+- Fragen aus gesperrten Bereichen sind sichtbar, aber nicht beantwortbar.
+- Nach drei Fehlversuchen kann man die Frage auflösen – dann ohne Punkte.
 
 ## Codex
 

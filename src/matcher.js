@@ -75,18 +75,36 @@ function matchConstant(index, raw) {
 
   let unitWrong = null;
   for (const id of candidates) {
-    const entry = index.byId.get(id);
-    for (const spec of entry.values) {
-      const tolerance = spec.tol ?? DEFAULT_TOLERANCE;
-      const off = Math.abs(quantity.value - spec.v) / Math.abs(spec.v);
-      if (off > tolerance) continue;
-      const unitOk = !quantity.unit || spec.units.some((u) => normUnit(u) === quantity.unit);
-      if (unitOk) return { kind: 'treffer', ids: [id], wert: id };
-      unitWrong = id;
-    }
+    const check = checkQuantity(index.byId.get(id), quantity);
+    if (check === 'ok') return { kind: 'treffer', ids: [id], wert: id };
+    if (check === 'einheit') unitWrong = id;
   }
   if (unitWrong) return { kind: 'einheitFalsch', id: unitWrong };
   return { kind: 'wertFalsch', id: [...candidates][0] };
+}
+
+/** Vergleicht eine Größe mit den Werten einer Konstante: 'ok' | 'einheit' | null */
+function checkQuantity(entry, quantity) {
+  let result = null;
+  for (const spec of entry.values) {
+    const tolerance = spec.tol ?? DEFAULT_TOLERANCE;
+    const off = Math.abs(quantity.value - spec.v) / Math.abs(spec.v);
+    if (off > tolerance) continue;
+    if (!quantity.unit || spec.units.some((u) => normUnit(u) === quantity.unit)) return 'ok';
+    result = 'einheit';
+  }
+  return result;
+}
+
+/**
+ * Prüft, ob `raw` den Wert der Konstante `entry` nennt – mit oder ohne
+ * Formelzeichen davor ("299792458 m/s" oder "c = 3e8").
+ */
+export function checkValue(entry, raw) {
+  const text = String(raw);
+  const quantity = parseQuantity(text.includes('=') ? text.slice(text.lastIndexOf('=') + 1) : text);
+  if (!quantity || !entry.values) return null;
+  return checkQuantity(entry, quantity);
 }
 
 function matchFuzzy(index, word) {

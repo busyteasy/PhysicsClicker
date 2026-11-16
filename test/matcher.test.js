@@ -42,6 +42,15 @@ test('Begriffe: Groß/klein, Umlaute, Artikel, Satzzeichen', () => {
   assert.deepEqual(ids('Ørsted'), ['oersted']);
 });
 
+test('Experimente (Issue #5)', () => {
+  assert.deepEqual(ids('Öltröpfchenversuch'), ['millikan']);
+  assert.deepEqual(ids('Foucault-Pendel'), ['foucault']);
+  assert.deepEqual(ids('Goldfolienexperiment'), ['rutherford_streu']);
+  assert.deepEqual(ids('Schrödingers Katze'), ['katze']);
+  assert.equal(ENTRIES.find((e) => e.id === 'katze').cat, 'experiment');
+  assert.ok(ENTRIES.filter((e) => e.cat === 'experiment').length >= 30);
+});
+
 test('Mehrdeutige Namen zählen für Person und Einheit', () => {
   assert.deepEqual(ids('Newton'), ['newton', 'u_newton']);
   assert.deepEqual(ids('Tesla'), ['tesla_p', 'u_tesla']);

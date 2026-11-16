@@ -1,4 +1,4 @@
-import { F, G, K, P, U, W, inArea } from './helpers.js';
+import { E, F, G, K, P, U, W, inArea } from './helpers.js';
 
 export default inArea('elektro', [
   F('ohm_f', 1, 'U = R·I', ['R=U/I', 'I=U/R'], 'Spannung gleich Widerstand mal Stromstärke.'),
@@ -58,4 +58,10 @@ export default inArea('elektro', [
   K('elementarladung', 2, 'Elementarladung', [], ['e'], [[1.602176634e-19, ['C', 'As']]], 'Die kleinste frei vorkommende Ladung – Quarks tragen Drittel davon.'),
   K('eps0', 3, 'Elektrische Feldkonstante', ['Permittivität des Vakuums', 'Vakuumpermittivität'], ['ε0', 'ε_0', 'epsilon0'], [[8.8541878e-12, ['F/m', 'As/(Vm)', 'As/Vm', 'C/(Vm)']]], 'Sie bestimmt, wie stark elektrische Felder im Vakuum wirken.'),
   K('mu0', 4, 'Magnetische Feldkonstante', ['Vakuumpermeabilität', 'Permeabilität des Vakuums'], ['μ0', 'μ_0', 'mu0'], [[1.25663706e-6, ['N/A^2', 'Vs/(Am)', 'Vs/Am', 'H/m']]], 'Zusammen mit ε₀ legt sie die Lichtgeschwindigkeit fest: c² = 1/(ε₀·μ₀).'),
+
+  E('oersted_versuch', 2, 'Ørsted-Versuch', ['Oersted-Versuch', 'Ørsted-Experiment'], 'Eine Kompassnadel neben einem stromdurchflossenen Draht zeigte 1820 erstmals, dass Strom und Magnetismus zusammenhängen.'),
+  E('drachen', 1, 'Franklins Drachenexperiment', ['Drachenexperiment', 'Drachenversuch'], 'Benjamin Franklin soll 1752 bei Gewitter einen Drachen steigen lassen haben, um zu zeigen, dass Blitze elektrisch sind – lebensgefährlich.'),
+  E('millikan', 2, 'Millikan-Versuch', ['Millikan-Experiment', 'Öltröpfchenversuch', 'Öltröpfchenexperiment'], 'Schwebende Öltröpfchen zeigten 1909, dass Ladung nur in Vielfachen der Elementarladung vorkommt.'),
+  E('hertz_versuch', 3, 'Hertzscher Versuch', ['Hertz-Experiment'], 'Heinrich Hertz erzeugte und empfing 1886 bis 1888 als Erster elektromagnetische Wellen.'),
+  E('galvani', 2, 'Galvanis Froschschenkelversuch', ['Froschschenkelversuch', 'Froschschenkel-Experiment'], 'Zuckende Froschschenkel brachten Luigi Galvani um 1780 auf die Spur der „tierischen Elektrizität“.'),
 ]);

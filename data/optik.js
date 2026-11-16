@@ -1,4 +1,4 @@
-import { F, G, P, U, W, inArea } from './helpers.js';
+import { E, F, G, P, U, W, inArea } from './helpers.js';
 
 export default inArea('optik', [
   F('lichtwelle', 1, 'c = λ·f', ['c=λν'], 'Für jede Welle gilt: Geschwindigkeit gleich Wellenlänge mal Frequenz.'),
@@ -19,7 +19,7 @@ export default inArea('optik', [
   P('interferenz', 2, 'Interferenz', [], 'Sie erzeugt die schillernden Farben von Seifenblasen und Ölfilmen.'),
   P('polarisation', 2, 'Polarisation', [], 'Polfilter in Sonnenbrillen schlucken spiegelnde Reflexe.'),
   P('regenbogen', 1, 'Regenbogen', [], 'Entsteht durch Brechung und Reflexion in Regentropfen – immer gegenüber der Sonne.'),
-  P('doppelspalt', 2, 'Doppelspaltexperiment', ['Doppelspalt', 'Doppelspaltversuch'], 'Thomas Young zeigte damit um 1802 die Wellennatur des Lichts.'),
+  E('doppelspalt', 2, 'Doppelspaltexperiment', ['Doppelspalt', 'Doppelspaltversuch'], 'Thomas Young zeigte damit um 1802 die Wellennatur des Lichts.'),
   P('rayleigh', 3, 'Rayleigh-Streuung', [], 'Kurzwelliges Licht wird stärker gestreut – deshalb ist der Himmel blau.'),
   P('fata_morgana', 2, 'Fata Morgana', ['Luftspiegelung'], 'Heiße Luft über dem Boden bricht das Licht so, dass der Himmel wie Wasser aussieht.'),
   P('brennpunkt', 1, 'Brennpunkt', ['Fokus', 'Brennweite'], 'Parallel einfallendes Licht trifft sich hinter einer Sammellinse im Brennpunkt.'),
@@ -33,4 +33,8 @@ export default inArea('optik', [
   U('u_dioptrie', 2, 'Dioptrie', ['dpt'], 'Eine Dioptrie entspricht einer Brennweite von einem Meter.'),
   U('u_candela', 2, 'Candela', [], 'SI-Einheit der Lichtstärke – ungefähr so hell wie eine Kerze.'),
   U('u_lux', 2, 'Lux', [], 'Ein sonniger Sommertag bringt bis zu 100 000 Lux.'),
+
+  E('prisma', 1, 'Newtons Prismenversuch', ['Prismenversuch', 'Prismenexperiment'], 'Newton zeigte um 1666, dass weißes Licht aus allen Farben des Regenbogens besteht.'),
+  E('fizeau', 3, 'Fizeau-Experiment', ['Fizeau-Versuch', 'Zahnradmethode'], 'Hippolyte Fizeau maß 1849 die Lichtgeschwindigkeit mit einem rotierenden Zahnrad und einem Spiegel in acht Kilometern Entfernung.'),
+  E('roemer', 3, 'Rømers Lichtgeschwindigkeitsmessung', ['Rømers Messung', 'Römers Messung'], 'Ole Rømer schloss 1676 aus Verspätungen der Verfinsterungen des Jupitermonds Io, dass Licht eine endliche Geschwindigkeit hat.'),
 ]);

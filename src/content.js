@@ -30,19 +30,42 @@ export const BEREICHE = [
     desc: 'Gleichungen mit „=“. Leerzeichen, Malpunkte und Reihenfolge sind egal.' },
   { id: 'konstante', name: 'Konstanten', beispiel: 'Lichtgeschwindigkeit, h = 6,626·10⁻³⁴ Js',
     desc: 'Naturkonstanten – mit korrektem Wert gibt es doppelt.' },
+  { id: 'experiment', name: 'Experimente', beispiel: 'Foucaultsches Pendel, Millikan-Versuch, Schrödingers Katze',
+    desc: 'Berühmte Versuche und Gedankenexperimente.' },
 ];
 
 export const BEREICH_NAMES = Object.fromEntries(BEREICHE.map((b) => [b.id, b.name]));
 export const START_BEREICHE = ['person'];
 
 // Preis des n-ten freigekauften Bereichs (unabhängig davon, welcher es ist)
-export const UNLOCK_PRICES = [100, 500, 1_200, 2_500, 4_500, 7_000];
+export const UNLOCK_PRICES = [100, 500, 1_200, 2_500, 4_500, 7_000, 10_000];
 
 // Grundwert einer Erstentdeckung je Stufe (Index = Stufe)
 export const TIER_POINTS = [0, 10, 30, 80, 200, 500];
 export const VALUE_FACTOR = 2;          // Konstante mit korrektem Wert
+export const QUESTION_FACTOR = 2;       // Fragen bringen das Doppelte ihrer Stufe
+export const QUESTION_TRIES = 3;        // nach so vielen Fehlversuchen darf man auflösen
 export const REPEAT_SHARE = 0.05;       // Trinkgeld für Wiederholungen
 export const REPEAT_COOLDOWN_MS = 60_000;
 export const COMBO_WINDOW_MS = 8_000;
 export const COMBO_STEP = 0.1;
 export const COMBO_MAX = 2;
+
+// Einmal-Upgrades: werden gekauft, wirken kurz und sind dann verbraucht.
+// Es kann immer nur ein Multiplikator (mult) gleichzeitig aktiv sein; jeder
+// Kauf macht dasselbe Upgrade um BOOST_PRICE_GROWTH teurer.
+export const BOOST_PRICE_GROWTH = 1.15;
+export const BOOSTS = [
+  { id: 'geistesblitz', name: 'Geistesblitz', price: 40, effect: { mult: 2, uses: 1 },
+    desc: 'Die nächste gewertete Eingabe oder Antwort zählt doppelt.' },
+  { id: 'heureka', name: 'Heureka!', price: 150, effect: { mult: 3, uses: 1 },
+    desc: 'Die nächste gewertete Eingabe oder Antwort zählt dreifach.' },
+  { id: 'konzentration', name: 'Konzentration', price: 120, effect: { mult: 1.5, uses: 5 },
+    desc: 'Die nächsten 5 gewerteten Eingaben oder Antworten zählen 1,5-fach.' },
+  { id: 'kaffeepause', name: 'Kaffeepause', price: 80, effect: { comboMs: 8_000, durationMs: 60_000 },
+    desc: 'Eine Minute lang ist das Combo-Fenster doppelt so lang.' },
+  { id: 'eselsbruecke', name: 'Eselsbrücke', price: 100, effect: { noCooldown: true, durationMs: 120_000 },
+    desc: 'Zwei Minuten lang keine Abklingzeit bei Wiederholungen.' },
+  { id: 'spickzettel', name: 'Spickzettel', price: 60, effect: { hint: true },
+    desc: 'Ein Hinweis auf einen Eintrag, den du noch nicht entdeckt hast.' },
+];

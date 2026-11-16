@@ -1,4 +1,4 @@
-import { F, G, K, P, U, W, inArea } from './helpers.js';
+import { E, F, G, K, P, U, W, inArea } from './helpers.js';
 
 export default inArea('quanten', [
   F('photon_energie', 2, 'E = h·f', ['E=hν', 'E=ħω'], 'Die Energie eines Lichtquants hängt nur von seiner Frequenz ab.'),
@@ -24,7 +24,7 @@ export default inArea('quanten', [
   P('spin', 2, 'Spin', ['Elektronenspin'], 'Ein Eigendrehimpuls ohne klassisches Gegenstück.'),
   P('compton', 3, 'Compton-Effekt', ['Compton-Streuung'], 'Röntgenlicht verliert beim Stoß mit Elektronen Energie – wie ein Teilchen.'),
   P('laser', 2, 'Laser', ['stimulierte Emission'], 'Kunstwort für Lichtverstärkung durch stimulierte Emission von Strahlung.'),
-  P('katze', 2, 'Schrödingers Katze', ['Schrödingerkatze'], 'Ein Gedankenexperiment von 1935, das die Deutung der Quantenmechanik zuspitzt.'),
+  E('katze', 2, 'Schrödingers Katze', ['Schrödingerkatze'], 'Ein Gedankenexperiment von 1935, das die Deutung der Quantenmechanik zuspitzt.'),
   P('quantenzahlen', 3, 'Quantenzahlen', ['Quantenzahl', 'Hauptquantenzahl'], 'Vier Quantenzahlen beschreiben den Zustand eines Elektrons im Atom.'),
   P('bec', 4, 'Bose-Einstein-Kondensat', ['BEC'], 'Kurz über dem absoluten Nullpunkt verhalten sich viele Atome wie ein einziges Quantenobjekt.'),
   P('wellenfunktion', 3, 'Wellenfunktion', ['Psi-Funktion'], 'Ihr Betragsquadrat gibt die Aufenthaltswahrscheinlichkeit an.'),
@@ -48,4 +48,10 @@ export default inArea('quanten', [
   K('elektronenmasse', 3, 'Elektronenmasse', ['Ruhemasse des Elektrons', 'Masse des Elektrons'], ['me', 'm_e'], [[9.1093837e-31, ['kg']], [0.511, ['MeV/c^2'], 0.01]], 'Rund 1836-mal leichter als ein Proton.'),
   K('rydberg', 5, 'Rydberg-Konstante', [], ['R∞', 'Rinf', 'R_∞'], [[1.0973731568e7, ['1/m', 'm^-1']]], 'Eine der am genauesten gemessenen Naturkonstanten.'),
   K('feinstruktur', 5, 'Feinstrukturkonstante', ['sommerfeldsche Feinstrukturkonstante'], ['α', 'alpha'], [[0.0072973525693, ['']]], 'Ungefähr 1/137 – Richard Feynman nannte sie eines der größten Rätsel der Physik.'),
+
+  E('stern_gerlach', 3, 'Stern-Gerlach-Versuch', ['Stern-Gerlach-Experiment'], 'Ein Magnetfeld spaltete 1922 einen Strahl aus Silberatomen in zwei Teile – ein früher Hinweis auf den Spin.'),
+  E('franck_hertz', 3, 'Franck-Hertz-Versuch', ['Franck-Hertz-Experiment'], 'James Franck und Gustav Hertz zeigten 1914, dass Atome Energie nur in festen Portionen aufnehmen.'),
+  E('davisson_germer', 4, 'Davisson-Germer-Experiment', ['Davisson-Germer-Versuch'], 'Elektronen wurden 1927 an einem Nickelkristall gebeugt – Materiewellen gibt es wirklich.'),
+  E('bell_test', 4, 'Bell-Test', ['Bell-Experiment', 'Aspect-Experiment'], 'Seit den 1970er-Jahren bestätigen solche Experimente die Quantenverschränkung; 2022 gab es dafür den Nobelpreis.'),
+  E('hallwachs', 3, 'Hallwachs-Versuch', ['Hallwachs-Experiment'], 'Wilhelm Hallwachs zeigte 1888, dass UV-Licht eine negativ geladene Zinkplatte entlädt – eine frühe Beobachtung des Photoeffekts.'),
 ]);

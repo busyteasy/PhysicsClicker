@@ -1,4 +1,4 @@
-import { F, G, K, P, W, inArea } from './helpers.js';
+import { E, F, G, K, P, W, inArea } from './helpers.js';
 
 export default inArea('relativ', [
   F('emc2', 2, 'E = m·c²', ['m=E/c^2'], 'Schon ein Gramm Masse entspricht rund 25 Millionen Kilowattstunden.'),
@@ -23,7 +23,7 @@ export default inArea('relativ', [
   P('gravitationslinse', 3, 'Gravitationslinse', ['Gravitationslinseneffekt', 'Einsteinring'], 'Massen lenken Licht ab – ferne Galaxien erscheinen verzerrt oder doppelt.'),
   P('grav_rotverschiebung', 4, 'Gravitative Rotverschiebung', ['Gravitationsrotverschiebung'], 'Licht verliert Energie, wenn es aus einem Schwerefeld aufsteigt.'),
   P('lorentz_trafo', 3, 'Lorentz-Transformation', [], 'Sie rechnet Raum- und Zeitkoordinaten zwischen bewegten Bezugssystemen um.'),
-  P('michelson_morley', 3, 'Michelson-Morley-Experiment', ['Michelson-Morley-Versuch'], 'Suchte 1887 den Äther – und fand ihn nicht.'),
+  E('michelson_morley', 3, 'Michelson-Morley-Experiment', ['Michelson-Morley-Versuch'], 'Suchte 1887 den Äther – und fand ihn nicht.'),
   P('periheldrehung', 4, 'Periheldrehung des Merkur', ['Periheldrehung', 'Merkurperihel'], 'Die ART erklärte die fehlenden 43 Bogensekunden pro Jahrhundert.'),
 
   W('einstein', 1, 'Albert Einstein', ['Einstein'], 'Bekam den Nobelpreis nicht für die Relativitätstheorie, sondern für den Photoeffekt.'),
@@ -33,4 +33,10 @@ export default inArea('relativ', [
   W('michelson', 3, 'Albert A. Michelson', ['Michelson', 'Albert Michelson'], 'Erster US-amerikanischer Nobelpreisträger in den Naturwissenschaften.'),
 
   K('lichtgeschwindigkeit', 1, 'Lichtgeschwindigkeit', ['Vakuumlichtgeschwindigkeit'], ['c', 'c0', 'c_0'], [[299792458, ['m/s', 'ms^-1']], [299792.458, ['km/s']], [1.0792528488e9, ['km/h']]], 'Exakt 299 792 458 m/s – der Meter ist darüber definiert.'),
+
+  E('eddington', 3, 'Eddingtons Sonnenfinsternis-Expedition', ['Sonnenfinsternis 1919', 'Eddington-Experiment'], 'Die Lichtablenkung an der Sonne bestätigte 1919 Einsteins Allgemeine Relativitätstheorie.'),
+  E('ligo', 3, 'LIGO', ['LIGO-Experiment', 'Gravitationswellendetektor'], 'Vier Kilometer lange Laserarme maßen 2015 eine Längenänderung von weniger als einem Tausendstel Protonendurchmesser.'),
+  E('hafele_keating', 4, 'Hafele-Keating-Experiment', ['Hafele-Keating-Versuch'], 'Atomuhren flogen 1971 in Linienflugzeugen um die Welt und gingen danach messbar anders als am Boden.'),
+  E('pound_rebka', 5, 'Pound-Rebka-Experiment', ['Pound-Rebka-Versuch'], 'Robert Pound und Glen Rebka maßen 1959 in einem gut 22 Meter hohen Turm die gravitative Rotverschiebung.'),
+  E('fahrstuhl', 3, 'Einsteins Fahrstuhl', ['Einstein-Fahrstuhl', 'Fahrstuhl-Gedankenexperiment'], 'Im geschlossenen Fahrstuhl lässt sich Schwerkraft nicht von Beschleunigung unterscheiden.'),
 ]);

@@ -196,13 +196,14 @@ h2.klein {
 
 /* ---------- Reiter ---------- */
 
-.reiter { display: flex; gap: 4px; border-bottom: 1px solid var(--linie); margin: -6px -6px 18px; }
+.reiter { display: flex; flex-wrap: wrap; gap: 2px; border-bottom: 1px solid var(--linie); margin: -6px -6px 18px; }
 .reiter button {
-  border: 0; background: none; padding: 10px 14px; cursor: pointer; font-weight: 600;
+  flex: none; white-space: nowrap;
+  border: 0; background: none; padding: 10px 10px; cursor: pointer; font-weight: 600;
   color: var(--tinte-leise); border-bottom: 3px solid transparent; margin-bottom: -1px;
 }
 .reiter button[aria-selected="true"] { color: var(--akzent); border-bottom-color: var(--akzent); }
-#codex-zahl { font-weight: 400; font-size: 0.85em; }
+#codex-zahl, #fragen-zahl { font-weight: 400; font-size: 0.85em; }
 
 /* ---------- Bereiche ---------- */
 
@@ -227,6 +228,71 @@ h2.klein {
 }
 .freischalten:hover:not(:disabled) { filter: brightness(1.08); }
 .freischalten:disabled { opacity: 0.45; cursor: default; }
+
+/* ---------- Upgrades ---------- */
+
+.upgrades { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.upgrade {
+  width: 100%; height: 100%; text-align: left; padding: 10px 12px; border-radius: var(--radius);
+  background: var(--flaeche); border: 1px solid var(--linie); cursor: pointer;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.upgrade:not(:disabled):hover { border-color: var(--akzent); }
+.upgrade:disabled { cursor: default; opacity: 0.55; }
+.upgrade .name { font-weight: 700; }
+.upgrade .beschr { font-size: 0.82rem; color: var(--tinte-leise); }
+.upgrade .preis { margin-top: auto; padding-top: 6px; font-weight: 700; color: var(--akzent); font-size: 0.9rem; }
+
+.aktiv { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.aktiv:empty { display: none; }
+.aktiv li {
+  font-size: 0.82rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+  background: var(--marker); color: var(--tinte);
+}
+.spickzettel {
+  margin-top: 12px; padding: 10px 14px; border-radius: var(--radius);
+  border: 1px dashed var(--akzent); background: var(--flaeche);
+}
+.spickzettel p { margin: 0; }
+.spickzettel .titel { font-weight: 700; margin-bottom: 4px; }
+.spickzettel .hinweis { margin-top: 4px; color: var(--tinte-leise); font-size: 0.9rem; }
+
+/* ---------- Fragen ---------- */
+
+.fragen-gruppe + .fragen-gruppe { margin-top: 18px; }
+.fragen-gruppe h3 {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 0.95rem; margin: 0 0 8px;
+}
+.fragen-gruppe .zahl { font-weight: 400; font-size: 0.85rem; color: var(--tinte-leise); }
+.fragen-gruppe.zu { opacity: 0.6; }
+.fragen-gruppe .offen { font-size: 0.85rem; color: var(--tinte-leise); margin: 0; }
+.fragen-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.frage { border: 1px solid var(--linie); border-radius: var(--radius); background: var(--flaeche); }
+.frage-kopf {
+  width: 100%; display: flex; gap: 12px; align-items: baseline; justify-content: space-between;
+  text-align: left; padding: 10px 12px; border: 0; background: none; cursor: pointer;
+}
+.frage-kopf:disabled { cursor: default; }
+.frage.offen .frage-kopf:hover { color: var(--akzent); }
+.frage-punkte { flex: none; font-weight: 700; color: var(--akzent); font-variant-numeric: tabular-nums; }
+.frage.richtig { border-color: var(--gut); }
+.frage.richtig .frage-punkte { color: var(--gut); }
+.frage.aufgeloest .frage-punkte { color: var(--tinte-leise); font-weight: 400; font-size: 0.85rem; }
+.frage-loesung { padding: 0 12px 10px; font-size: 0.85rem; color: var(--tinte-leise); }
+.antwort { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 12px; }
+.antwort input {
+  flex: 1 1 160px; min-width: 0; padding: 8px 10px; border-radius: var(--radius);
+  border: 2px solid var(--linie); background: var(--flaeche); outline: none;
+}
+.antwort input:focus { border-color: var(--akzent); }
+.antwort button {
+  border: 0; border-radius: var(--radius); padding: 0 14px; min-height: 38px;
+  background: var(--akzent); color: var(--akzent-text); font-weight: 600; cursor: pointer;
+}
+.antwort .aufloesen { background: var(--flaeche-2); color: var(--tinte); border: 1px solid var(--linie); }
+.frage-meldung { flex-basis: 100%; margin: 2px 0 0; font-size: 0.88rem; }
+.frage-meldung.schlecht { color: var(--schlecht); }
 
 /* ---------- Codex ---------- */
 
