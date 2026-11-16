@@ -74,6 +74,17 @@ Eingaben wie `Newton` zählen nur für die offenen Bereiche.
 
 Einrichtungen und Upgrades sind vorerst gestrichen.
 
+## Fragekatalog
+
+Ein Reiter mit Fragen, nach Bereichen geordnet (z. B. „Wer entdeckte 1896 die
+Radioaktivität?“). Klick auf eine Frage öffnet ein Antwortfeld.
+
+- Die Antwort ist ein Eintrag der Wissensdatenbank und wird genauso tolerant
+  erkannt wie jede andere Eingabe; bei Konstanten-Fragen zählt der Zahlenwert.
+- Punkte: doppelter Grundwert der Fragen-Stufe, einmal pro Frage.
+- Fragen aus gesperrten Bereichen sind sichtbar, aber nicht beantwortbar.
+- Nach drei Fehlversuchen kann man die Frage auflösen – dann ohne Punkte.
+
 ## Codex
 
 Zeigt pro Bereich den Fortschritt (gesperrte Bereiche ausgegraut), alle entdeckten Einträge mit Fun Fact und

@@ -1,14 +1,19 @@
 // Spiellogik ohne DOM – damit sie sich mit Node testen lässt.
 
 import { ENTRIES } from '../data/index.js';
-import { buildIndex, match } from './matcher.js';
+import FRAGEN from '../data/fragen.js';
+import { buildIndex, checkValue, match } from './matcher.js';
 import {
-  BEREICHE, COMBO_MAX, COMBO_STEP, COMBO_WINDOW_MS, REPEAT_COOLDOWN_MS,
-  REPEAT_SHARE, START_BEREICHE, TIER_POINTS, UNLOCK_PRICES, VALUE_FACTOR,
+  BEREICHE, COMBO_MAX, COMBO_STEP, COMBO_WINDOW_MS, QUESTION_FACTOR, QUESTION_TRIES,
+  REPEAT_COOLDOWN_MS, REPEAT_SHARE, START_BEREICHE, TIER_POINTS, UNLOCK_PRICES, VALUE_FACTOR,
 } from './content.js';
 
 export const INDEX = buildIndex(ENTRIES);
 const BEREICH_IDS = new Set(BEREICHE.map((b) => b.id));
+
+/** Fragen mit ihrem Bereich (= Kategorie des Antwort-Eintrags) */
+export const QUESTIONS = FRAGEN.map((q) => ({ ...q, bereich: INDEX.byId.get(q.antwort)?.cat }));
+const QUESTION_BY_ID = new Map(QUESTIONS.map((q) => [q.id, q]));
 
 export function newState() {
   return {
@@ -19,6 +24,9 @@ export function newState() {
     discovered: {},      // Eintrag-ID -> Zeitpunkt
     values: {},          // Konstanten-ID -> Zeitpunkt (Wert gewusst)
     lastSeen: {},        // Schlüssel -> Zeitpunkt der letzten Wertung
+    answered: {},        // Frage-ID -> Zeitpunkt (richtig beantwortet)
+    revealed: {},        // Frage-ID -> Zeitpunkt (aufgelöst, ohne Punkte)
+    attempts: {},        // Frage-ID -> Zahl der Fehlversuche
     combo: { count: 0, until: 0 },
     stats: { inputs: 0, hits: 0 },
   };
@@ -145,6 +153,56 @@ export function submit(state, raw, now = Date.now()) {
   };
 }
 
+// ---------- Fragen ----------
+
+export const questionPoints = (q) => TIER_POINTS[q.tier] * QUESTION_FACTOR;
+
+/** 'offen' | 'gesperrt' | 'richtig' | 'aufgeloest' */
+export function questionStatus(state, q) {
+  if (Object.hasOwn(state.answered, q.id)) return 'richtig';
+  if (Object.hasOwn(state.revealed, q.id)) return 'aufgeloest';
+  return isOpen(state, q.bereich) ? 'offen' : 'gesperrt';
+}
+
+export const canReveal = (state, q) => (state.attempts[q.id] || 0) >= QUESTION_TRIES;
+
+/**
+ * Beantwortet eine Frage aus dem Katalog.
+ * Rückgabe: { status: 'richtig' | 'falsch' | 'leer' | 'nichtOffen', points, attempts, canReveal }
+ */
+export function answerQuestion(state, id, raw, now = Date.now()) {
+  const q = QUESTION_BY_ID.get(id);
+  if (!q || questionStatus(state, q) !== 'offen') return { status: 'nichtOffen', points: 0 };
+  if (!String(raw).trim()) return { status: 'leer', points: 0 };
+
+  const entry = INDEX.byId.get(q.antwort);
+  let correct;
+  if (q.wert) {
+    correct = checkValue(entry, raw) === 'ok';
+  } else {
+    const result = match(INDEX, raw);
+    correct = result.kind === 'treffer' && result.ids.includes(q.antwort);
+  }
+
+  if (!correct) {
+    state.attempts[id] = (state.attempts[id] || 0) + 1;
+    return { status: 'falsch', points: 0, attempts: state.attempts[id], canReveal: canReveal(state, q) };
+  }
+  const points = questionPoints(q);
+  state.answered[id] = now;
+  state.insight += points;
+  state.totalInsight += points;
+  return { status: 'richtig', points, entry };
+}
+
+/** Löst eine Frage nach genug Fehlversuchen auf – ohne Punkte. */
+export function revealQuestion(state, id, now = Date.now()) {
+  const q = QUESTION_BY_ID.get(id);
+  if (!q || questionStatus(state, q) !== 'offen' || !canReveal(state, q)) return null;
+  state.revealed[id] = now;
+  return INDEX.byId.get(q.antwort);
+}
+
 // ---------- Speichern ----------
 
 /** Übernimmt einen gespeicherten Zustand und verwirft Unbekanntes. */
@@ -160,6 +218,9 @@ export function restore(saved) {
   for (const [id, t] of Object.entries(saved.discovered || {})) if (INDEX.byId.has(id)) state.discovered[id] = num(t);
   for (const [id, t] of Object.entries(saved.values || {})) if (INDEX.byId.get(id)?.values) state.values[id] = num(t);
   for (const [k, t] of Object.entries(saved.lastSeen || {})) state.lastSeen[k] = num(t);
+  for (const key of ['answered', 'revealed', 'attempts']) {
+    for (const [id, v] of Object.entries(saved[key] || {})) if (QUESTION_BY_ID.has(id)) state[key][id] = num(v);
+  }
   state.stats = { inputs: num(saved.stats?.inputs), hits: num(saved.stats?.hits) };
   return state;
 }

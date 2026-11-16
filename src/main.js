@@ -4,8 +4,9 @@ import { ENTRIES } from '../data/index.js';
 import { AREA_NAMES, BEREICHE, BEREICH_NAMES } from './content.js';
 import { formatNumber as fmt } from './format.js';
 import {
-  bereichCount, buyBereich, comboMultiplier, comboWindow, discoveryCount,
-  isOpen, newState, submit, unlockPrice,
+  QUESTIONS, answerQuestion, bereichCount, buyBereich, canReveal, comboMultiplier,
+  comboWindow, discoveryCount, isOpen, newState, questionPoints, questionStatus,
+  revealQuestion, submit, unlockPrice,
 } from './game.js';
 import { clearLocal, exportState, importState, loadLocal, saveLocal } from './save.js';
 import { isRelation } from './normalize.js';
@@ -151,8 +152,11 @@ function showFeedback(result, text) {
 
 function addHistory(result, text) {
   const names = [...new Set(result.items.map((i) => i.entry.name))];
-  const label = names.length ? names.join(' / ') : text;
-  history.unshift({ points: result.gained, label });
+  pushHistory(result.gained, names.length ? names.join(' / ') : text);
+}
+
+function pushHistory(points, label) {
+  history.unshift({ points, label });
   history.length = Math.min(history.length, 8);
   $('verlauf').replaceChildren(...history.map((e) => h('li', {},
     h('span', { class: `p${e.points ? '' : ' null'}` }, e.points ? `+${fmt(e.points)}` : '–'),
@@ -179,6 +183,7 @@ for (const tab of document.querySelectorAll('[role="tab"]')) {
       $(`tab-${t.dataset.tab}`).hidden = !active;
     }
     if (tab.dataset.tab === 'optionen') renderStats();
+    if (tab.dataset.tab === 'fragen') renderQuestions();
   });
 }
 
@@ -222,6 +227,7 @@ function renderBereiche(force = false) {
             saveLocal(state);
             renderBereiche(true);
             renderCodex();
+            renderQuestions();
             renderInputHints();
             update();
             input.focus();
@@ -233,6 +239,116 @@ function renderBereiche(force = false) {
   for (const button of list.querySelectorAll('.freischalten')) {
     button.disabled = state.insight < Number(button.dataset.preis);
   }
+}
+
+// ---------- Fragen ----------
+
+let openQuestion = null;     // ID der aufgeklappten Frage
+let questionFeedback = null; // { id, text, cls }
+
+function renderQuestions() {
+  const solved = QUESTIONS.filter((q) => questionStatus(state, q) === 'richtig').length;
+  $('fragen-zahl').textContent = `${solved}/${QUESTIONS.length}`;
+
+  $('fragen').replaceChildren(...BEREICHE.map((b) => {
+    const questions = QUESTIONS.filter((q) => q.bereich === b.id);
+    if (!questions.length) return null;
+    if (!isOpen(state, b.id)) {
+      return h('section', { class: 'fragen-gruppe zu' },
+        h('h3', {}, `🔒 ${b.name}`, h('span', { class: 'zahl' }, `${questions.length} Fragen`)),
+        h('p', { class: 'offen' }, 'Schalte den Bereich frei, um diese Fragen zu beantworten.'));
+    }
+    const done = questions.filter((q) => questionStatus(state, q) === 'richtig').length;
+    return h('section', { class: 'fragen-gruppe' },
+      h('h3', {}, b.name, h('span', { class: 'zahl' }, `${done}/${questions.length}`)),
+      h('ul', { class: 'fragen-liste' }, questions.map(renderQuestion)));
+  }));
+
+  const field = document.querySelector('.antwort input');
+  if (field) field.focus();
+}
+
+function renderQuestion(q) {
+  const status = questionStatus(state, q);
+  const expanded = openQuestion === q.id && status === 'offen';
+  const badge = {
+    offen: `+${fmt(questionPoints(q))}`,
+    richtig: '✓',
+    aufgeloest: 'aufgelöst',
+  }[status];
+
+  const li = h('li', { class: `frage ${status}` },
+    h('button', {
+      type: 'button', class: 'frage-kopf', 'aria-expanded': String(expanded), disabled: status !== 'offen',
+      onclick: () => {
+        openQuestion = expanded ? null : q.id;
+        questionFeedback = null;
+        renderQuestions();
+      },
+    }, h('span', { class: 'frage-text' }, q.frage), h('span', { class: 'frage-punkte' }, badge)));
+
+  if (status !== 'offen') {
+    const entry = ENTRIES.find((e) => e.id === q.antwort);
+    li.append(h('div', { class: 'frage-loesung' }, `Antwort: ${entry.name}`));
+    return li;
+  }
+  if (!expanded) return li;
+
+  const field = h('input', { type: 'text', spellcheck: 'false', autocomplete: 'off', 'aria-label': 'Antwort' });
+  const feedback = questionFeedback?.id === q.id
+    ? h('p', { class: `frage-meldung ${questionFeedback.cls}` }, questionFeedback.text)
+    : null;
+  li.append(h('form', {
+    class: 'antwort',
+    onsubmit: (event) => {
+      event.preventDefault();
+      const result = answerQuestion(state, q.id, field.value);
+      if (result.status === 'leer') return;
+      if (result.status === 'richtig') {
+        questionFeedback = null;
+        openQuestion = null;
+        floatPoints(result.points);
+        showQuestionResult(q, result);
+        saveLocal(state);
+      } else if (result.status === 'falsch') {
+        questionFeedback = { id: q.id, cls: 'schlecht', text: result.canReveal
+          ? `Leider nicht richtig (${result.attempts}. Versuch). Du kannst die Frage jetzt auflösen.`
+          : `Leider nicht richtig (${result.attempts}. Versuch).` };
+      }
+      renderQuestions();
+      update();
+    },
+  },
+  field,
+  h('button', { type: 'submit' }, 'Antworten'),
+  canReveal(state, q) ? h('button', {
+    type: 'button', class: 'aufloesen',
+    onclick: () => {
+      const entry = revealQuestion(state, q.id);
+      if (!entry) return;
+      openQuestion = null;
+      saveLocal(state);
+      renderQuestions();
+    },
+  }, 'Auflösen') : null,
+  feedback));
+  return li;
+}
+
+/** Zeigt eine richtige Antwort auch in der großen Rückmeldung links. */
+function showQuestionResult(q, result) {
+  const box = $('rueckmeldung');
+  box.replaceChildren(
+    h('p', { class: 'titel gut' }, `+${fmt(result.points)} Erkenntnis – Frage richtig beantwortet`),
+    h('div', { class: 'fund' },
+      h('div', { class: 'fund-kopf' },
+        h('span', { class: `fund-name ${result.entry.cat}` }, result.entry.name),
+        h('span', { class: 'marke neu' }, 'Frage'),
+        h('span', { class: 'fund-punkte' }, `+${fmt(result.points)}`)),
+      h('div', { class: 'fund-art' }, q.frage),
+      h('p', { class: 'fund-fakt' }, result.entry.fact)),
+  );
+  pushHistory(result.points, `Frage: ${result.entry.name}`);
 }
 
 // ---------- Codex ----------
@@ -296,6 +412,7 @@ function renderStats() {
     ['Entdeckungen', `${discoveryCount(state)} von ${ENTRIES.length}`],
     ['Offene Bereiche', `${state.unlocked.length} von ${BEREICHE.length}`],
     ['Konstanten mit Wert', Object.keys(state.values).length],
+    ['Fragen beantwortet', `${Object.keys(state.answered).length} von ${QUESTIONS.length}`],
     ['Eingaben', fmt(state.stats.inputs)],
     ['Davon gewertet', fmt(state.stats.hits)],
     ['Erkenntnis insgesamt', fmt(state.totalInsight)],
@@ -368,6 +485,7 @@ function update() {
 function rerenderAll() {
   renderBereiche(true);
   renderCodex();
+  renderQuestions();
   renderStats();
   renderInputHints();
   update();

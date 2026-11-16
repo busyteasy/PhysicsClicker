@@ -47,6 +47,7 @@
     <section class="spalte seiten-spalte" aria-label="Bereiche und Codex">
       <nav class="reiter" role="tablist">
         <button role="tab" data-tab="bereiche" aria-selected="true">Bereiche</button>
+        <button role="tab" data-tab="fragen" aria-selected="false">Fragen <span id="fragen-zahl"></span></button>
         <button role="tab" data-tab="codex" aria-selected="false">Codex <span id="codex-zahl"></span></button>
         <button role="tab" data-tab="optionen" aria-selected="false">Optionen</button>
       </nav>
@@ -55,6 +56,13 @@
         <h2>Bereiche</h2>
         <p class="erklaerung" id="naechster-preis"></p>
         <ul class="bereiche" id="bereiche"></ul>
+      </div>
+
+      <div class="tab" id="tab-fragen" role="tabpanel" hidden>
+        <h2>Fragekatalog</h2>
+        <p class="erklaerung">Klick auf eine Frage, um sie zu beantworten. Jede Frage zählt einmal;
+          nach drei Fehlversuchen kannst du sie auflösen – dann ohne Punkte.</p>
+        <div id="fragen"></div>
       </div>
 
       <div class="tab" id="tab-codex" role="tabpanel" hidden>
