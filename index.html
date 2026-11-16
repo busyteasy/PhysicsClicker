@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhysicsClicker</title>
+  <meta name="description" content="Tippe Physikwissen ein und baue dein Forschungslabor auf.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='4' fill='%232d4fd6'/%3E%3Cellipse cx='16' cy='16' rx='14' ry='5.5' fill='none' stroke='%232d4fd6' stroke-width='2'/%3E%3Cellipse cx='16' cy='16' rx='14' ry='5.5' fill='none' stroke='%232d4fd6' stroke-width='2' transform='rotate(60 16 16)'/%3E%3Cellipse cx='16' cy='16' rx='14' ry='5.5' fill='none' stroke='%232d4fd6' stroke-width='2' transform='rotate(120 16 16)'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="kopf">
+    <h1 class="logo">Physics<span>Clicker</span></h1>
+    <p class="claim">Tippe Physik. Sammle Erkenntnis.</p>
+  </header>
+
+  <main class="layout">
+    <section class="spalte eingabe-spalte" aria-label="Eingabe">
+      <div class="konto">
+        <div class="betrag" id="betrag">0</div>
+        <div class="waehrung">Erkenntnis</div>
+        <div class="rate" id="rate">0 pro Sekunde</div>
+      </div>
+
+      <form class="eingabe" id="eingabe-form" autocomplete="off">
+        <label for="eingabe" class="nur-vorleser">Physikwissen eingeben</label>
+        <input id="eingabe" type="text" spellcheck="false" autocomplete="off" autocapitalize="off"
+               placeholder="z. B. F = m·a, Myon, Ohmsches Gesetz …" maxlength="120" autofocus>
+        <button type="submit">Eintragen</button>
+        <div class="plus-ebene" id="plus-ebene" aria-hidden="true"></div>
+      </form>
+      <p class="hilfe">
+        Formeln mit <code>=</code> · Konstanten gern mit Wert, z. B. <code>c = 3·10^8 m/s</code> ·
+        Begriffe, Gesetze, Teilchen, Personen und Einheiten einfach als Wort
+      </p>
+
+      <div class="combo" id="combo" hidden>
+        <span class="combo-text" id="combo-text"></span>
+        <span class="combo-balken"><span id="combo-fuellung"></span></span>
+      </div>
+
+      <div class="rueckmeldung" id="rueckmeldung" aria-live="polite">
+        <p class="leer">Was weißt du über Physik? Schreib es auf.</p>
+      </div>
+
+      <h2 class="klein">Zuletzt eingetragen</h2>
+      <ol class="verlauf" id="verlauf"></ol>
+    </section>
+
+    <section class="spalte seiten-spalte" aria-label="Labor und Codex">
+      <nav class="reiter" role="tablist">
+        <button role="tab" data-tab="labor" aria-selected="true">Labor</button>
+        <button role="tab" data-tab="codex" aria-selected="false">Codex <span id="codex-zahl"></span></button>
+        <button role="tab" data-tab="optionen" aria-selected="false">Optionen</button>
+      </nav>
+
+      <div class="tab" id="tab-labor" role="tabpanel">
+        <h2>Einrichtungen</h2>
+        <ul class="einrichtungen" id="einrichtungen"></ul>
+        <h2>Upgrades</h2>
+        <ul class="upgrades" id="upgrades"></ul>
+        <p class="gekauft" id="gekauft"></p>
+      </div>
+
+      <div class="tab" id="tab-codex" role="tabpanel" hidden>
+        <div id="codex"></div>
+      </div>
+
+      <div class="tab" id="tab-optionen" role="tabpanel" hidden>
+        <h2>Statistik</h2>
+        <dl class="statistik" id="statistik"></dl>
+
+        <h2>Spielstand</h2>
+        <p class="erklaerung">Der Spielstand wird automatisch in diesem Browser gespeichert.
+          Zum Sichern oder Übertragen kannst du ihn als Text exportieren.</p>
+        <div class="knopfreihe">
+          <button type="button" id="export-knopf">Exportieren</button>
+          <button type="button" id="kopieren-knopf" hidden>Kopieren</button>
+        </div>
+        <textarea id="export-text" rows="3" readonly hidden></textarea>
+
+        <label for="import-text" class="feldname">Spielstand importieren</label>
+        <textarea id="import-text" rows="3" placeholder="Exportierten Text hier einfügen"></textarea>
+        <div class="knopfreihe">
+          <button type="button" id="import-knopf">Importieren</button>
+          <span class="meldung" id="import-meldung"></span>
+        </div>
+
+        <h2>Neu anfangen</h2>
+        <button type="button" class="gefahr" id="reset-knopf">Spielstand löschen</button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

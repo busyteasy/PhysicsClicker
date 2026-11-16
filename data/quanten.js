@@ -1,0 +1,51 @@
+import { F, G, K, P, U, W, inArea } from './helpers.js';
+
+export default inArea('quanten', [
+  F('photon_energie', 2, 'E = h·f', ['E=hν', 'E=ħω'], 'Die Energie eines Lichtquants hängt nur von seiner Frequenz ab.'),
+  F('de_broglie_f', 3, 'λ = h/p', ['p=h/λ', 'λ=h/(mv)'], 'Auch Elektronen haben eine Wellenlänge – das nutzt das Elektronenmikroskop.'),
+  F('unschaerfe_f', 4, 'Δx·Δp ≥ ħ/2', ['ΔxΔp>=h/(4π)', 'ΔxΔp>=h/4π'], 'Ort und Impuls lassen sich nicht gleichzeitig beliebig genau festlegen.'),
+  F('schroedinger_f', 5, 'iħ·∂ψ/∂t = Ĥψ', ['iħdψ/dt=Hψ', 'iħ∂tψ=Hψ'], 'Die zeitabhängige Schrödinger-Gleichung beschreibt, wie sich Quantenzustände entwickeln.'),
+  F('schroedinger_stat', 4, 'Ĥψ = Eψ', [], 'Die stationäre Form liefert die erlaubten Energieniveaus.'),
+  F('photoeffekt_f', 3, 'E_kin = h·f − W_A', ['Ekin=hf-W', 'E=hf-W', 'Ekin=hf-Φ', 'Ekin=hν-WA', 'hf=Ekin+WA', 'hf=WA+Ekin'], 'Für diese Gleichung bekam Einstein den Nobelpreis für Physik 1921.'),
+  F('bohr_f', 4, 'E_n = −13,6 eV/n²', ['E=-13.6eV/n^2', 'En=-13.6/n^2eV'], 'Die Energieniveaus des Wasserstoffatoms im Bohrschen Modell.'),
+
+  G('unschaerfe', 2, 'Heisenbergsche Unschärferelation', ['Unschärferelation', 'Unbestimmtheitsrelation', 'Unschärfeprinzip', 'heisenbergsche Unbestimmtheitsrelation'], '1927 formuliert – Heisenberg war damals 25 Jahre alt.'),
+  G('pauli', 3, 'Pauli-Prinzip', ['paulisches Ausschlussprinzip', 'Ausschlussprinzip', 'Pauli-Ausschlussprinzip', 'Pauli-Verbot'], 'Zwei Elektronen können nie im selben Quantenzustand sein – darum gibt es Chemie.'),
+  G('schroedinger_gl', 3, 'Schrödinger-Gleichung', [], 'Erwin Schrödinger stellte sie 1926 auf.'),
+  G('dualismus', 2, 'Welle-Teilchen-Dualismus', ['Welle-Teilchen-Dualität', 'Dualismus'], 'Licht und Materie zeigen je nach Experiment Wellen- oder Teilcheneigenschaften.'),
+  G('komplementaritaet', 4, 'Komplementaritätsprinzip', ['Komplementarität'], 'Niels Bohrs Idee: Welle und Teilchen sind sich ergänzende Beschreibungen.'),
+  G('korrespondenz', 4, 'Korrespondenzprinzip', [], 'Für große Quantenzahlen geht die Quantenmechanik in die klassische Physik über.'),
+  G('hund', 4, 'Hundsche Regeln', ['hundsche Regel'], 'Sie legen fest, in welcher Reihenfolge Elektronen die Orbitale besetzen.'),
+
+  P('photoeffekt', 2, 'Photoelektrischer Effekt', ['Photoeffekt', 'Fotoeffekt', 'lichtelektrischer Effekt', 'äußerer Photoeffekt'], 'Licht löst Elektronen aus Metall – aber erst ab einer bestimmten Frequenz.'),
+  P('tunneleffekt', 3, 'Tunneleffekt', ['Quantentunneln', 'Tunneln'], 'Teilchen überwinden Barrieren, für die ihre Energie klassisch nicht reicht.'),
+  P('verschraenkung', 3, 'Quantenverschränkung', ['Verschränkung'], 'Einstein nannte sie „spukhafte Fernwirkung“.'),
+  P('superposition', 2, 'Superposition', ['Superpositionsprinzip', 'Überlagerungszustand'], 'Ein Quantensystem kann sich in einer Überlagerung mehrerer Zustände befinden.'),
+  P('spin', 2, 'Spin', ['Elektronenspin'], 'Ein Eigendrehimpuls ohne klassisches Gegenstück.'),
+  P('compton', 3, 'Compton-Effekt', ['Compton-Streuung'], 'Röntgenlicht verliert beim Stoß mit Elektronen Energie – wie ein Teilchen.'),
+  P('laser', 2, 'Laser', ['stimulierte Emission'], 'Kunstwort für Lichtverstärkung durch stimulierte Emission von Strahlung.'),
+  P('katze', 2, 'Schrödingers Katze', ['Schrödingerkatze'], 'Ein Gedankenexperiment von 1935, das die Deutung der Quantenmechanik zuspitzt.'),
+  P('quantenzahlen', 3, 'Quantenzahlen', ['Quantenzahl', 'Hauptquantenzahl'], 'Vier Quantenzahlen beschreiben den Zustand eines Elektrons im Atom.'),
+  P('bec', 4, 'Bose-Einstein-Kondensat', ['BEC'], 'Kurz über dem absoluten Nullpunkt verhalten sich viele Atome wie ein einziges Quantenobjekt.'),
+  P('wellenfunktion', 3, 'Wellenfunktion', ['Psi-Funktion'], 'Ihr Betragsquadrat gibt die Aufenthaltswahrscheinlichkeit an.'),
+  P('atommodell', 2, 'Bohrsches Atommodell', ['Bohr-Modell', 'bohrsches Modell'], 'Elektronen auf festen Bahnen – überholt, aber erstaunlich erfolgreich.'),
+  P('quantencomputer', 3, 'Quantencomputer', ['Qubit', 'Qubits'], 'Er rechnet mit Qubits, die Überlagerungen von 0 und 1 sein können.'),
+
+  W('planck', 1, 'Max Planck', ['Planck'], 'Führte 1900 das Wirkungsquantum ein – nach eigenen Worten aus Verzweiflung.'),
+  W('heisenberg', 2, 'Werner Heisenberg', ['Heisenberg'], 'Entwickelte 1925 auf Helgoland die Matrizenmechanik.'),
+  W('schroedinger_p', 2, 'Erwin Schrödinger', ['Schrödinger'], 'Der Wiener Physiker erhielt 1933 den Nobelpreis.'),
+  W('bohr', 2, 'Niels Bohr', ['Bohr'], 'Sein Institut in Kopenhagen war das Zentrum der frühen Quantenphysik.'),
+  W('pauli_p', 3, 'Wolfgang Pauli', ['Pauli'], 'Postulierte 1930 das Neutrino.'),
+  W('dirac', 3, 'Paul Dirac', ['Dirac'], 'Sagte aus seiner Gleichung das Positron voraus.'),
+  W('de_broglie_p', 3, 'Louis de Broglie', ['de Broglie'], 'Schrieb der Materie in seiner Doktorarbeit 1924 Welleneigenschaften zu.'),
+  W('born', 3, 'Max Born', [], 'Deutete die Wellenfunktion als Wahrscheinlichkeit.'),
+  W('feynman', 3, 'Richard Feynman', ['Feynman'], 'Erfand die Feynman-Diagramme und spielte gern Bongos.'),
+
+  U('u_ev', 2, 'Elektronenvolt', ['Elektronvolt'], 'So viel Energie gewinnt ein Elektron beim Durchlaufen einer Spannung von einem Volt.'),
+
+  K('planck_h', 3, 'Plancksches Wirkungsquantum', ['Planck-Konstante', 'plancksche Konstante', 'Wirkungsquantum'], ['h'], [[6.62607015e-34, ['Js', 'J/Hz']]], 'Seit 2019 exakt festgelegt – damit ist das Kilogramm definiert.'),
+  K('hbar', 4, 'Reduziertes Plancksches Wirkungsquantum', ['reduzierte Planck-Konstante', 'h quer'], ['ħ', 'hbar'], [[1.054571817e-34, ['Js']]], 'h geteilt durch 2π – gesprochen „h quer“.'),
+  K('elektronenmasse', 3, 'Elektronenmasse', ['Ruhemasse des Elektrons', 'Masse des Elektrons'], ['me', 'm_e'], [[9.1093837e-31, ['kg']], [0.511, ['MeV/c^2'], 0.01]], 'Rund 1836-mal leichter als ein Proton.'),
+  K('rydberg', 5, 'Rydberg-Konstante', [], ['R∞', 'Rinf', 'R_∞'], [[1.0973731568e7, ['1/m', 'm^-1']]], 'Eine der am genauesten gemessenen Naturkonstanten.'),
+  K('feinstruktur', 5, 'Feinstrukturkonstante', ['sommerfeldsche Feinstrukturkonstante'], ['α', 'alpha'], [[0.0072973525693, ['']]], 'Ungefähr 1/137 – Richard Feynman nannte sie eines der größten Rätsel der Physik.'),
+]);
