@@ -51,6 +51,20 @@ export const COMBO_WINDOW_MS = 8_000;
 export const COMBO_STEP = 0.1;
 export const COMBO_MAX = 2;
 
+// Countdown-Modus (Testversion, Issue #12): Eine eigene Runde mit frischem
+// Spielstand und einer Uhr, die herunterläuft. Jeder gewertete Treffer bringt
+// Zeit zurück – schwierigeres Wissen mehr. Bei 0 ist die Runde vorbei.
+// Bewusst großzügig: 3 Minuten Start, und schon ein Stufe-1-Begriff bringt
+// 10 Sekunden.
+export const COUNTDOWN = {
+  startMs: 180_000,
+  bonusMs: [0, 10_000, 15_000, 25_000, 40_000, 60_000], // Erstentdeckung je Stufe
+  valueFactor: 1.5,      // Konstante mit Wert: so viel mehr Zeit wie die Stufe
+  repeatMs: 2_000,       // Trinkgeld-Treffer (Wiederholung nach der Abklingzeit)
+  questionFactor: 2,     // richtige Antwort im Fragekatalog
+  maxMs: 600_000,        // höchstens 10 Minuten auf der Uhr
+};
+
 // Einmal-Upgrades: werden gekauft, wirken kurz und sind dann verbraucht.
 // Es kann immer nur ein Multiplikator (mult) gleichzeitig aktiv sein; jeder
 // Kauf macht dasselbe Upgrade um BOOST_PRICE_GROWTH teurer.

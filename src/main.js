@@ -2,14 +2,16 @@
 
 import { CATEGORIES, ENTRIES } from '../data/index.js';
 import * as C from './content.js';
-import { AREA_NAMES, BEREICHE, BEREICH_NAMES, BOOSTS } from './content.js';
+import { AREA_NAMES, BEREICHE, BEREICH_NAMES, BOOSTS, COUNTDOWN } from './content.js';
 import { formatNumber as fmt } from './format.js';
 import {
   INDEX, QUESTIONS, answerQuestion, bereichCount, boostBlocked, boostPrice, buyBereich,
-  buyBoost, canReveal, comboMultiplier, comboWindow, discoveryCount, isOpen, newState,
-  nextOpenQuestion, questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
+  buyBoost, canReveal, comboMultiplier, comboWindow, countdownLeft, countdownOver, discoveryCount, isOpen,
+  newCountdownRun, newState, nextOpenQuestion, questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
 } from './game.js';
-import { clearLocal, exportState, importState, loadLocal, saveLocal } from './save.js';
+import {
+  clearLocal, exportState, importState, loadLocal, loadRecord, saveLocal, saveRecord,
+} from './save.js';
 import { isRelation } from './normalize.js';
 import { mindmap } from './mindmap.js';
 import { wikiUrl } from './wiki.js';
@@ -57,6 +59,8 @@ form.addEventListener('submit', (event) => {
   const text = input.value;
   const result = submit(state, text);
   if (result.status === 'leer') return;
+  if (result.status === 'vorbei') { showCountdownEnd(); return; }
+  if (result.timeBonus > 0) showTimeBonus(result.timeBonus);
 
   showFeedback(result, text);
   flash(result.gained > 0 ? 'treffer' : 'wackeln');
@@ -317,7 +321,9 @@ function renderBereiche(force = false) {
 
 // Jedes Overlay legt einen Eintrag in den Browserverlauf. So schließt die
 // Zurück-Taste von Browser oder Handy das Overlay statt die Seite zu verlassen.
-const overlays = { frage: $('frage-overlay'), hilfe: $('hilfe-overlay'), mindmap: $('mindmap-overlay') };
+const overlays = {
+  frage: $('frage-overlay'), hilfe: $('hilfe-overlay'), mindmap: $('mindmap-overlay'), countdown: $('countdown-overlay'),
+};
 let activeOverlay = null;
 let overlayReturnFocus = null;
 
@@ -340,10 +346,13 @@ function closeOverlay() {
 
 function hideOverlay() {
   if (!activeOverlay) return;
+  const closed = activeOverlay;
   overlays[activeOverlay].hidden = true;
   activeOverlay = null;
   document.body.classList.remove('overlay-offen');
   overlayReturnFocus?.focus?.();
+  // Wer das Ende-Fenster einer Countdown-Runde schließt, kehrt ins normale Spiel zurück.
+  if (closed === 'countdown' && state.countdown && countdownOver(state)) leaveCountdown();
 }
 
 window.addEventListener('popstate', hideOverlay);
@@ -565,7 +574,9 @@ function renderQuestionView() {
         event.preventDefault();
         const result = answerQuestion(state, q.id, field.value);
         if (result.status === 'leer') return;
+        if (result.status === 'vorbei') { showCountdownEnd(); return; }
         if (result.status === 'richtig') {
+          if (result.timeBonus > 0) showTimeBonus(result.timeBonus);
           questionSolved = result;
           floatPoints(result.points);
           showQuestionResult(q, result);
@@ -817,6 +828,102 @@ $('reset-knopf').addEventListener('click', () => {
   rerenderAll();
 });
 
+// ---------- Countdown-Modus (#12) ----------
+
+const clock = (ms) => {
+  const total = Math.ceil(ms / 1000);
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+};
+let countdownEndShown = false;
+
+function renderCountdownInfo() {
+  $('countdown-erklaerung').textContent = `Eine eigene Testrunde mit frischem Spielstand – dein normaler `
+    + `Spielstand bleibt unberührt. Die Uhr startet bei ${clock(COUNTDOWN.startMs)} Minuten und läuft herunter. `
+    + `Jede neue Entdeckung bringt Zeit zurück: von ${fmt(COUNTDOWN.bonusMs[1] / 1000)} Sekunden (Stufe 1) `
+    + `bis ${fmt(COUNTDOWN.bonusMs[5] / 1000)} Sekunden (Stufe 5), Fragen das ${fmt(COUNTDOWN.questionFactor)}-Fache. `
+    + `Bei 0:00 ist die Runde vorbei.`;
+  const record = loadRecord();
+  $('countdown-rekord').textContent = record
+    ? `Dein Rekord: ${fmt(record.insight)} Erkenntnis, ${record.found === 1 ? '1 Eintrag' : `${record.found} Einträge`}, `
+      + `${clock(record.durationMs)} durchgehalten.`
+    : '';
+}
+
+function startCountdown() {
+  if (!state.countdown) saveLocal(state); // normalen Spielstand sichern
+  state = newCountdownRun();
+  countdownEndShown = false;
+  recent.length = 0;
+  $('verlauf').replaceChildren();
+  fill($('rueckmeldung'), h('p', { class: 'leer' }, 'Die Uhr läuft! Jede neue Entdeckung bringt Zeit zurück.'));
+  document.querySelector('[data-tab="bereiche"]').click();
+  rerenderAll();
+  input.focus();
+}
+
+function leaveCountdown() {
+  state = loadLocal() ?? newState();
+  countdownEndShown = false;
+  recent.length = 0;
+  $('verlauf').replaceChildren();
+  fill($('rueckmeldung'), h('p', { class: 'leer' }, 'Zurück im normalen Spiel.'));
+  rerenderAll();
+}
+
+function showTimeBonus(ms) {
+  const el = $('countdown-bonus');
+  el.textContent = `+${fmt(ms / 1000)} s`;
+  el.classList.remove('neu');
+  void el.offsetWidth;
+  el.classList.add('neu');
+}
+
+function showCountdownEnd() {
+  if (!state.countdown || countdownEndShown) return;
+  const expired = countdownOver(state);
+  if (!expired) state.countdown.endedAt = Date.now(); // freiwillig beendet
+  countdownEndShown = true;
+  const run = {
+    insight: state.totalInsight,
+    found: discoveryCount(state),
+    durationMs: state.countdown.endedAt - state.countdown.startedAt,
+    date: new Date().toISOString().slice(0, 10),
+  };
+  const isRecord = saveRecord(run);
+  const record = loadRecord();
+  fill($('countdown-inhalt'),
+    h('h2', { id: 'countdown-titel', class: 'countdown-titel' }, expired ? 'Zeit abgelaufen!' : 'Runde beendet'),
+    isRecord ? h('p', { class: 'titel gut' }, '🏆 Neuer Rekord!') : null,
+    h('dl', { class: 'statistik' },
+      h('dt', {}, 'Erkenntnis'), h('dd', {}, fmt(run.insight)),
+      h('dt', {}, 'Entdeckt'), h('dd', {}, run.found === 1 ? '1 Eintrag' : `${run.found} Einträge`),
+      h('dt', {}, 'Durchgehalten'), h('dd', {}, clock(run.durationMs)),
+      !isRecord && record ? [h('dt', {}, 'Rekord'), h('dd', {}, `${fmt(record.insight)} Erkenntnis`)] : null),
+    h('p', { class: 'erklaerung' }, 'Dein normaler Spielstand ist unverändert.'),
+    h('div', { class: 'knopfreihe' },
+      h('button', { type: 'button', class: 'primaer', onclick: () => { startCountdown(); closeOverlay(); } }, 'Neue Runde'),
+      h('button', { type: 'button', class: 'zweitrangig', onclick: closeOverlay }, 'Zurück zum normalen Spiel')));
+  openOverlay('countdown');
+  $('countdown-inhalt').querySelector('.primaer').focus();
+}
+
+$('countdown-start').addEventListener('click', startCountdown);
+$('countdown-ende').addEventListener('click', () => {
+  if (confirm('Runde jetzt beenden?')) showCountdownEnd();
+});
+
+function updateCountdown(now) {
+  const run = Boolean(state.countdown);
+  document.body.classList.toggle('countdown-aktiv', run);
+  $('countdown').hidden = !run;
+  if (!run) return;
+  const left = countdownLeft(state, now);
+  $('countdown-zeit').textContent = clock(left);
+  $('countdown').classList.toggle('knapp', left <= 30_000);
+  $('countdown-fuellung').style.width = `${Math.min(100, (left / COUNTDOWN.startMs) * 100)}%`;
+  if (countdownOver(state, now)) showCountdownEnd();
+}
+
 // ---------- Anzeige ----------
 
 function updateCombo(now) {
@@ -839,6 +946,7 @@ function update() {
   renderBoosts();
   renderActive(now);
   updateCombo(now);
+  updateCountdown(now);
 }
 
 function rerenderAll() {
@@ -849,6 +957,7 @@ function rerenderAll() {
   renderHint();
   renderStats();
   renderInputHints();
+  renderCountdownInfo();
   update();
 }
 

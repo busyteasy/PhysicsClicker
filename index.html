@@ -18,6 +18,16 @@
 
   <main class="layout">
     <section class="spalte eingabe-spalte" aria-label="Eingabe">
+      <div class="countdown" id="countdown" hidden>
+        <div class="countdown-kopf">
+          <span class="countdown-label">⏱ Countdown-Runde</span>
+          <button type="button" class="countdown-ende" id="countdown-ende">Runde beenden</button>
+        </div>
+        <div class="countdown-zeit" id="countdown-zeit" role="timer" aria-live="off">3:00</div>
+        <div class="countdown-balken"><span id="countdown-fuellung"></span></div>
+        <div class="countdown-bonus" id="countdown-bonus" aria-live="polite"></div>
+      </div>
+
       <div class="konto">
         <div class="betrag" id="betrag">0</div>
         <div class="waehrung">Erkenntnis</div>
@@ -90,6 +100,13 @@
         <h2>Statistik</h2>
         <dl class="statistik" id="statistik"></dl>
 
+        <h2>Countdown-Modus <span class="test-marke">Test</span></h2>
+        <p class="erklaerung" id="countdown-erklaerung"></p>
+        <div class="knopfreihe">
+          <button type="button" id="countdown-start">Countdown-Runde starten</button>
+        </div>
+        <p class="erklaerung" id="countdown-rekord"></p>
+
         <h2>Spielstand</h2>
         <p class="erklaerung">Der Spielstand wird automatisch in diesem Browser gespeichert.
           Zum Sichern oder Übertragen kannst du ihn als Text exportieren.</p>
@@ -114,6 +131,10 @@
 
   <div class="overlay" id="frage-overlay" role="dialog" aria-modal="true" aria-labelledby="frage-titel" hidden>
     <div class="overlay-karte frage-gross" id="frage-gross"></div>
+  </div>
+
+  <div class="overlay" id="countdown-overlay" role="dialog" aria-modal="true" aria-labelledby="countdown-titel" hidden>
+    <div class="overlay-karte countdown-karte" id="countdown-inhalt"></div>
   </div>
 
   <div class="overlay" id="mindmap-overlay" role="dialog" aria-modal="true" aria-labelledby="mindmap-titel" hidden>

@@ -519,3 +519,45 @@ textarea {
 .mm-bezuege .mm-knoten { font-size: 0.78rem; background: var(--flaeche); }
 
 .mm-gesperrt { font-size: 0.85rem; color: var(--tinte-leise); margin: 14px 0 0; }
+
+/* ---------- Countdown-Modus (#12) ---------- */
+
+.test-marke {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; vertical-align: middle;
+  padding: 2px 7px; border-radius: 999px; background: var(--marker); color: var(--tinte);
+}
+.countdown {
+  position: relative; margin: 0 0 14px; padding: 10px 14px 12px; border-radius: var(--radius);
+  border: 2px solid var(--akzent); background: var(--flaeche-2); text-align: center;
+}
+.countdown-kopf { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.countdown-label { font-size: 0.85rem; font-weight: 700; color: var(--akzent); }
+.countdown-ende {
+  border: 1px solid var(--linie); background: var(--flaeche); border-radius: 8px;
+  padding: 3px 10px; font-size: 0.8rem; cursor: pointer;
+}
+.countdown-zeit {
+  font-size: clamp(2rem, 7vw, 2.6rem); font-weight: 800; line-height: 1.1; margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.countdown-balken { height: 8px; border-radius: 4px; background: var(--flaeche); overflow: hidden; margin-top: 6px; }
+.countdown-balken span { display: block; height: 100%; background: var(--akzent); transition: width 0.1s linear; }
+.countdown.knapp { border-color: var(--schlecht); }
+.countdown.knapp .countdown-zeit { color: var(--schlecht); animation: puls 1s infinite; }
+.countdown.knapp .countdown-balken span { background: var(--schlecht); }
+@keyframes puls { 50% { opacity: 0.55; } }
+.countdown-bonus {
+  position: absolute; right: 14px; top: 40px; font-weight: 800; color: var(--gut); opacity: 0; pointer-events: none;
+}
+.countdown-bonus.neu { animation: zeitbonus 1.2s ease-out; }
+@keyframes zeitbonus {
+  0% { opacity: 0; transform: translateY(6px); } 15% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-14px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .countdown.knapp .countdown-zeit, .countdown-bonus.neu { animation: none; }
+  .countdown-bonus.neu { opacity: 1; }
+}
+.countdown-karte { max-width: 480px; }
+.countdown-titel { margin: 0 0 10px; font-size: 1.6rem; }
+.countdown-karte .statistik { margin: 12px 0; font-size: 1.05rem; }

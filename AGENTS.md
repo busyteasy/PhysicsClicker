@@ -50,7 +50,8 @@ index.html        Seite: Eingabe-Spalte, Reiter (Bereiche, Fragen, Upgrades, Cod
 style.css         „Laborheft“-Look; Farben als CSS-Variablen in :root, Dunkelmodus per prefers-color-scheme
 src/
   content.js      Balance + Stammdaten: AREAS, BEREICHE, Preise, TIER_POINTS, BOOSTS …
-  game.js         Zustand und Regeln: newState, submit, buyBereich, answerQuestion, buyBoost, restore …
+  game.js         Zustand und Regeln: newState, submit, buyBereich, answerQuestion, buyBoost, restore,
+                  Countdown-Modus (newCountdownRun, countdownLeft, countdownOver) …
   matcher.js      buildIndex(ENTRIES) und match(index, eingabe) – Eingabe → Einträge
   normalize.js    Vereinheitlicht Wörter, Formeln, Einheiten; parseQuantity liest Zahlen
   save.js         localStorage, Export/Import als Base64-Text
@@ -65,7 +66,7 @@ data/
   fragen.js       Fragekatalog
   bezuege.js      Person → zugehörige Einträge (für die Mindmap)
   wiki.js         Wikipedia-Artikeltitel je Eintrag-ID (Pflicht für jede Fragen-Antwort, Test)
-test/             data, matcher, game, fragen, upgrades, wiki, mindmap
+test/             data, matcher, game, fragen, upgrades, wiki, mindmap, countdown
 ```
 
 ### Begriffe
@@ -137,6 +138,8 @@ Die Antwort braucht außerdem einen Wikipedia-Titel in `data/wiki.js` (Test).
 ### Spielstand-Format ändern
 
 Der Zustand liegt in `localStorage` unter `physicsclicker-spielstand-v1`.
+Countdown-Runden (`state.countdown` gesetzt) werden von `saveLocal` nie gespeichert;
+ihr Rekord liegt separat unter `physicsclicker-countdown-rekord`.
 Spielende haben echte Spielstände – **niemals einfach brechen**:
 
 - Neue Felder in `newState()` mit Standardwert anlegen.
@@ -151,7 +154,7 @@ Spielende haben echte Spielstände – **niemals einfach brechen**:
   mit möglichen `null`-Werten aufrufen (sonst steht „null“ auf der Seite).
 - Keine Modul-Variable `history` nennen – sie verdeckt `window.history`
   (Overlays nutzen `window.history.pushState`). Die Verlaufsliste heißt `recent`.
-- Overlays (`frage`, `hilfe`, `mindmap`) über `openOverlay(name)` / `closeOverlay()` öffnen
+- Overlays (`frage`, `hilfe`, `mindmap`, `countdown`) über `openOverlay(name)` / `closeOverlay()` öffnen
   und schließen; sie legen einen History-Eintrag an, damit Escape, der
   „Zurück“-Knopf und die Browser-/Handy-Zurück-Taste funktionieren.
 - Teure Listen (Bereiche, Upgrades) rendern nur neu, wenn sich ihre „Signatur“

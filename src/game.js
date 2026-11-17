@@ -4,7 +4,7 @@ import { ENTRIES } from '../data/index.js';
 import FRAGEN from '../data/fragen.js';
 import { buildIndex, checkValue, match } from './matcher.js';
 import {
-  BEREICHE, BOOSTS, BOOST_PRICE_GROWTH, COMBO_MAX, COMBO_STEP, COMBO_WINDOW_MS,
+  BEREICHE, BOOSTS, BOOST_PRICE_GROWTH, COMBO_MAX, COUNTDOWN, COMBO_STEP, COMBO_WINDOW_MS,
   QUESTION_FACTOR, QUESTION_TRIES, REPEAT_COOLDOWN_MS, REPEAT_SHARE, START_BEREICHE,
   TIER_POINTS, UNLOCK_PRICES, VALUE_FACTOR,
 } from './content.js';
@@ -32,6 +32,7 @@ export function newState() {
     combo: { count: 0, until: 0 },
     boosts: newBoosts(),
     stats: { inputs: 0, hits: 0 },
+    countdown: null,     // { startedAt, endsAt, endedAt } nur im Countdown-Modus (#12)
   };
 }
 
@@ -86,6 +87,46 @@ export function comboMultiplier(count) {
   return Math.min(COMBO_MAX, 1 + COMBO_STEP * Math.max(0, count - 1));
 }
 
+// ---------- Countdown-Modus (#12) ----------
+
+/** Neue Countdown-Runde: frischer Spielstand mit laufender Uhr. */
+export function newCountdownRun(now = Date.now()) {
+  const state = newState();
+  state.countdown = { startedAt: now, endsAt: now + COUNTDOWN.startMs, endedAt: null };
+  return state;
+}
+
+/** Restzeit in ms (0, wenn abgelaufen oder kein Countdown läuft). */
+export function countdownLeft(state, now = Date.now()) {
+  const c = state.countdown;
+  if (!c || c.endedAt != null) return 0;
+  return Math.max(0, c.endsAt - now);
+}
+
+/** Prüft die Uhr und beendet die Runde, wenn sie abgelaufen ist. */
+export function countdownOver(state, now = Date.now()) {
+  const c = state.countdown;
+  if (!c) return false;
+  if (c.endedAt == null && now >= c.endsAt) c.endedAt = c.endsAt;
+  return c.endedAt != null;
+}
+
+/** Zeitbonus für die gewerteten Teile einer Eingabe. */
+function itemTimeBonus(item) {
+  if (item.points <= 0) return 0;
+  const base = COUNTDOWN.bonusMs[item.entry.tier];
+  if (item.art === 'neu') return base;
+  if (item.art === 'wert') return Math.round(base * COUNTDOWN.valueFactor);
+  return COUNTDOWN.repeatMs;
+}
+
+function addTime(state, ms, now) {
+  if (!state.countdown || ms <= 0) return 0;
+  const before = state.countdown.endsAt;
+  state.countdown.endsAt = Math.min(before + ms, now + COUNTDOWN.maxMs);
+  return Math.max(0, state.countdown.endsAt - before);
+}
+
 // ---------- Eingaben ----------
 
 function entryValue(entry, isValue) {
@@ -110,6 +151,7 @@ function repeatItem(state, entry, key, isValue, now) {
 export function submit(state, raw, now = Date.now()) {
   const result = match(INDEX, raw);
   if (result.kind === 'leer') return { status: 'leer', items: [], gained: 0, locked: [] };
+  if (countdownOver(state, now)) return { status: 'vorbei', items: [], gained: 0, locked: [] };
   state.stats.inputs++;
 
   if (result.kind !== 'treffer') {
@@ -163,8 +205,9 @@ export function submit(state, raw, now = Date.now()) {
   state.insight += gained;
   state.totalInsight += gained;
   if (gained > 0) state.stats.hits++;
+  const timeBonus = addTime(state, items.reduce((s, i) => s + itemTimeBonus(i), 0), now);
   return {
-    status: 'treffer', items, gained, locked,
+    status: 'treffer', items, gained, locked, timeBonus,
     combo: rawTotal > 0 ? combo : 0, multiplier, boost, fuzzy: !!result.fuzzy,
   };
 }
@@ -202,6 +245,7 @@ export function nextOpenQuestion(state, afterId) {
 export function answerQuestion(state, id, raw, now = Date.now()) {
   const q = QUESTION_BY_ID.get(id);
   if (!q || questionStatus(state, q) !== 'offen') return { status: 'nichtOffen', points: 0 };
+  if (countdownOver(state, now)) return { status: 'vorbei', points: 0 };
   if (!String(raw).trim()) return { status: 'leer', points: 0 };
 
   const entry = INDEX.byId.get(q.antwort);
@@ -222,7 +266,8 @@ export function answerQuestion(state, id, raw, now = Date.now()) {
   state.answered[id] = now;
   state.insight += points;
   state.totalInsight += points;
-  return { status: 'richtig', points, entry, boost };
+  const timeBonus = addTime(state, COUNTDOWN.bonusMs[q.tier] * COUNTDOWN.questionFactor, now);
+  return { status: 'richtig', points, entry, boost, timeBonus };
 }
 
 /** Löst eine Frage nach genug Fehlversuchen auf – ohne Punkte. */
