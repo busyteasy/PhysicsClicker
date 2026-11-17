@@ -34,6 +34,13 @@ Wärmelehre, Elektrizität & Magnetismus, Astrophysik, Quantenphysik,
 Relativität, Kern- & Teilchenphysik) und hat eine **Stufe** von 1 (Schulwissen)
 bis 5 (Spezialwissen).
 
+### Sonderzeichen-Tastatur
+
+Unter dem Eingabefeld (und im Fragenfenster) klappt „λ² Sonderzeichen“ eine
+Zeichenleiste aus: griechische Buchstaben, Hoch- und Tiefzahlen und Zeichen wie
+`·`, `√`, `∝`. Ein Tipp setzt das Zeichen an der Schreibmarke ein. Ob die
+Leiste offen ist, merkt sich der Browser.
+
 ### Tolerante Erkennung
 
 - Groß-/Kleinschreibung, Leerzeichen, Bindestriche, Apostrophe egal
