@@ -63,7 +63,7 @@ data/
   mechanik.js …   Ein Gebiet pro Datei (mechanik, optik, waerme, elektro, astro, quanten, relativ, kern)
   fragen.js       Fragekatalog
   wiki.js         Wikipedia-Artikeltitel je Eintrag-ID (Pflicht für jede Fragen-Antwort, Test)
-test/             data, matcher, game, fragen, upgrades
+test/             data, matcher, game, fragen, upgrades, wiki
 ```
 
 ### Begriffe
