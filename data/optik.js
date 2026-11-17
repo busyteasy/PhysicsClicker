@@ -121,4 +121,6 @@ export default inArea('optik', [
   E('e_muenze', 1, 'Münze in der Tasse', ['Münzversuch'], 'Gießt man Wasser in die Tasse, taucht eine verdeckte Münze plötzlich auf – Lichtbrechung.'),
   E('e_farbscheibe', 1, 'Newtonsche Farbscheibe', ['Farbkreisel'], 'Eine schnell drehende Scheibe mit Spektralfarben erscheint fast weiß.'),
   E('e_gitter_laser', 3, 'Wellenlängenbestimmung mit dem Gitter', ['Gitterversuch'], 'Aus Abstand und Lage der Maxima auf dem Schirm berechnet man die Wellenlänge des Laserlichts.'),
+
+  G('g_lichtausbreitung', 1, 'Geradlinige Lichtausbreitung', ['geradlinige Ausbreitung des Lichts'], 'Im selben Stoff breitet sich Licht geradlinig aus – darum entstehen scharfe Schatten.'),
 ]);

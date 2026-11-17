@@ -46,10 +46,12 @@ export const START_BEREICHE = ['person'];
 export const UNLOCK_PRICES = [100, 500, 1_200, 2_500, 4_500, 7_000, 10_000, 14_000, 19_000];
 
 // Klassenstufen (Issue #16): Jede Klasse ist eine eigene, kleinere Spielwelt.
-// Man startet mit „Größen & Begriffe“; die Preise sind auf die Datenmenge
-// einer Klasse zugeschnitten (ein Test prüft, dass sie erreichbar bleiben).
+// Man startet mit „Größen & Begriffe“. Die Preise richten sich nach der
+// Datenmenge der Klasse: Alle Bereiche zusammen kosten diesen Anteil der
+// Erkenntnis, die man in der Klasse insgesamt verdienen kann (ohne Combo).
+// Der n-te Kauf kostet n-mal so viel wie der erste.
 export const KLASSEN_START = ['begriff'];
-export const KLASSEN_UNLOCK_PRICES = [40, 100, 180, 280, 400, 550, 720, 900, 1_100];
+export const KLASSEN_PREIS_ANTEIL = 0.4;
 
 // Grundwert einer Erstentdeckung je Stufe (Index = Stufe)
 export const TIER_POINTS = [0, 10, 30, 80, 200, 500];

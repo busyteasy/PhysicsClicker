@@ -242,4 +242,6 @@ export default inArea('mechanik', [
   E('e_wasserrakete', 1, 'Wasserrakete', [], 'Eine Plastikflasche mit Wasser und Druckluft steigt nach dem Rückstoßprinzip Dutzende Meter hoch.'),
   E('e_fallschnur', 2, 'Fallschnur', [], 'Kugeln in den Abständen 1 : 4 : 9 : 16 schlagen in gleichen Zeitabständen auf – der Weg wächst mit t².'),
   E('e_ultraschall_stehend', 3, 'Stehende Ultraschallwelle', ['Wellenlängenmessung mit Ultraschall'], 'Zwischen Sender und Reflektor misst man die Knotenabstände – sie sind λ/2.'),
+
+  K('k_schall_wasser', 3, 'Schallgeschwindigkeit in Wasser', [], ['v_Wasser'], [[1480, ['m/s'], 0.03]], 'Rund 1480 m/s – mehr als viermal so schnell wie in Luft. Wale hören sich über Hunderte Kilometer.'),
 ]);

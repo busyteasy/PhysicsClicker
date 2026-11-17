@@ -137,4 +137,17 @@ export default {
   d_geiger: 'Geiger-Müller-Zählrohr',
   d_lichtleiter: 'Lichtwellenleiter',
   d_fadenstrahlrohr: 'Fadenstrahlrohr',
+  // Formeln der Klassenstufen
+  geschwindigkeit: 'Geschwindigkeit',
+  brechkraft_f: 'Brechkraft',
+  massstab_f: 'Abbildungsmaßstab',
+  gewichtskraft: 'Gewichtskraft',
+  f_energie_leistung: 'Leistung (Physik)',
+  el_leistung: 'Elektrische Leistung',
+  f_hebel: 'Hebel (Physik)',
+  hooke_f: 'Hookesches Gesetz',
+  leistung: 'Leistung (Physik)',
+  ladung_f: 'Elektrische Ladung',
+  f_el_energie: 'Elektrische Energie',
+  parallelschaltung: 'Parallelschaltung',
 };

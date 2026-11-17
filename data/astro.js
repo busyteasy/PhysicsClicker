@@ -88,4 +88,6 @@ export default inArea('astro', [
   B('b_raumstation', 2, 'Internationale Raumstation', ['ISS', 'Raumstation'], 'Umkreist die Erde in etwa 400 km Höhe rund alle 90 Minuten.'),
   B('b_nebel', 2, 'Sternentstehungsgebiet', ['Gasnebel', 'Molekülwolke'], 'Aus kollabierenden Gas- und Staubwolken entstehen neue Sterne.'),
   W('w_russell', 4, 'Henry Norris Russell', ['Russell'], 'Entwickelte um 1913 mit Ejnar Hertzsprung das nach beiden benannte Diagramm.'),
+
+  K('k_ortsfaktor_mond', 2, 'Ortsfaktor auf dem Mond', ['Fallbeschleunigung auf dem Mond', 'Mondbeschleunigung'], ['g_Mond', 'gMond'], [[1.62, ['N/kg', 'm/s^2'], 0.02]], 'Rund 1,6 N/kg – ein Sechstel des Erdwerts. Die Masse eines Astronauten bleibt dabei gleich.'),
 ]);

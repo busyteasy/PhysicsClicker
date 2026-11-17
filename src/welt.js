@@ -8,7 +8,8 @@ import FRAGEN from '../data/fragen.js';
 import KLASSEN from '../data/klassen/index.js';
 import { buildIndex } from './matcher.js';
 import {
-  BEREICHE, KLASSEN_START, KLASSEN_UNLOCK_PRICES, START_BEREICHE, UNLOCK_PRICES,
+  BEREICHE, KLASSEN_PREIS_ANTEIL, KLASSEN_START, QUESTION_FACTOR, START_BEREICHE, TIER_POINTS,
+  UNLOCK_PRICES,
 } from './content.js';
 
 const ENTRY_BY_ID = new Map(ENTRIES.map((e) => [e.id, e]));
@@ -37,6 +38,15 @@ function makeWelt({ id, name, kurz, klasse = null, entries, fragen, start, price
   };
 }
 
+/** Preise einer Klasse: steigend, zusammen KLASSEN_PREIS_ANTEIL der möglichen Erkenntnis. */
+function klassenPreise(entries, fragen, buyable) {
+  const total = entries.reduce((s, e) => s + TIER_POINTS[e.tier], 0)
+    + fragen.reduce((s, q) => s + TIER_POINTS[q.tier] * QUESTION_FACTOR, 0);
+  const weights = Array.from({ length: buyable }, (_, i) => i + 1);
+  const sum = weights.reduce((a, b) => a + b, 0);
+  return weights.map((w) => Math.max(10, Math.round((KLASSEN_PREIS_ANTEIL * total * w) / sum / 10) * 10));
+}
+
 /** Einträge einer Klasse: dieselben Einträge, aber mit der Stufe innerhalb der Klasse. */
 function klassenEintraege(k) {
   return Object.entries(k.eintraege).map(([id, tier]) => {
@@ -51,11 +61,16 @@ export const FREI = makeWelt({
   entries: ENTRIES, fragen: FRAGEN, start: START_BEREICHE, prices: UNLOCK_PRICES,
 });
 
-export const KLASSEN_WELTEN = KLASSEN.map((k) => makeWelt({
-  id: `k${k.klasse}`, name: `Klasse ${k.klasse}`, kurz: `Kl. ${k.klasse}`, klasse: k.klasse,
-  entries: klassenEintraege(k), fragen: k.fragen, start: KLASSEN_START, prices: KLASSEN_UNLOCK_PRICES,
-  info: { themen: k.themen, quelle: k.quelle },
-}));
+export const KLASSEN_WELTEN = KLASSEN.map((k) => {
+  const entries = klassenEintraege(k);
+  const cats = new Set(entries.map((e) => e.cat));
+  const buyable = [...cats].filter((c) => !KLASSEN_START.includes(c)).length;
+  return makeWelt({
+    id: `k${k.klasse}`, name: `Klasse ${k.klasse}`, kurz: `Kl. ${k.klasse}`, klasse: k.klasse,
+    entries, fragen: k.fragen, start: KLASSEN_START, prices: klassenPreise(entries, k.fragen, buyable),
+    info: { themen: k.themen, quelle: k.quelle },
+  });
+});
 
 const WELTEN = new Map([FREI, ...KLASSEN_WELTEN].map((w) => [w.id, w]));
 
