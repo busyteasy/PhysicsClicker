@@ -46,7 +46,7 @@ Repo liegt, von GitHub Pages ausgeliefert werden können.
 ## Aufbau
 
 ```
-index.html        Seite: Eingabe-Spalte, Reiter (Bereiche, Fragen, Upgrades, Codex, Optionen), Overlays
+index.html        Seite: Eingabe-Spalte, Reiter (Bereiche, Fragen, Upgrades, Codex, Optionen), Overlays (Frage, Hilfe, Mindmap)
 style.css         „Laborheft“-Look; Farben als CSS-Variablen in :root, Dunkelmodus per prefers-color-scheme
 src/
   content.js      Balance + Stammdaten: AREAS, BEREICHE, Preise, TIER_POINTS, BOOSTS …
@@ -55,13 +55,15 @@ src/
   normalize.js    Vereinheitlicht Wörter, Formeln, Einheiten; parseQuantity liest Zahlen
   save.js         localStorage, Export/Import als Base64-Text
   format.js       Zahlenformat (de-DE, „Mio.“, „Mrd.“ …)
+  mindmap.js      mindmap(state): Gebiete → offene Bereiche → Einträge (ohne Namen, solange unentdeckt)
   main.js         UI: Rendering, Overlays, Hauptschleife (update alle 100 ms), Autosave
 data/
   helpers.js      Kurzschreibweisen F, G, P, T, W, U, E, K und inArea – Format ist dort dokumentiert
   index.js        ENTRIES (alle Gebiete zusammen) und CATEGORIES (Einzahl-Bezeichnungen)
   mechanik.js …   Ein Gebiet pro Datei (mechanik, optik, waerme, elektro, astro, quanten, relativ, kern)
   fragen.js       Fragekatalog
-test/             data, matcher, game, fragen, upgrades
+  bezuege.js      Person → zugehörige Einträge (für die Mindmap)
+test/             data, matcher, game, fragen, upgrades, mindmap
 ```
 
 ### Begriffe
@@ -146,7 +148,7 @@ Spielende haben echte Spielstände – **niemals einfach brechen**:
   mit möglichen `null`-Werten aufrufen (sonst steht „null“ auf der Seite).
 - Keine Modul-Variable `history` nennen – sie verdeckt `window.history`
   (Overlays nutzen `window.history.pushState`). Die Verlaufsliste heißt `recent`.
-- Overlays (`frage`, `hilfe`) über `openOverlay(name)` / `closeOverlay()` öffnen
+- Overlays (`frage`, `hilfe`, `mindmap`) über `openOverlay(name)` / `closeOverlay()` öffnen
   und schließen; sie legen einen History-Eintrag an, damit Escape, der
   „Zurück“-Knopf und die Browser-/Handy-Zurück-Taste funktionieren.
 - Teure Listen (Bereiche, Upgrades) rendern nur neu, wenn sich ihre „Signatur“
