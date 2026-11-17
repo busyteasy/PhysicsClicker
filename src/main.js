@@ -7,7 +7,7 @@ import { formatNumber as fmt } from './format.js';
 import {
   INDEX, QUESTIONS, answerQuestion, bereichCount, boostBlocked, boostPrice, buyBereich,
   buyBoost, canReveal, comboMultiplier, comboWindow, discoveryCount, isOpen, newState,
-  questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
+  nextOpenQuestion, questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
 } from './game.js';
 import { clearLocal, exportState, importState, loadLocal, saveLocal } from './save.js';
 import { isRelation } from './normalize.js';
@@ -403,12 +403,6 @@ function showQuestion(id) {
   renderQuestionView();
 }
 
-/** Nächste offene Frage: erst im selben Bereich, dann irgendwo. */
-function nextQuestion(after) {
-  const open = QUESTIONS.filter((q) => q.id !== after.id && questionStatus(state, q) === 'offen');
-  return open.find((q) => q.bereich === after.bereich) ?? open[0] ?? null;
-}
-
 function renderQuestionView() {
   const q = QUESTIONS.find((x) => x.id === currentQuestion);
   const card = $('frage-gross');
@@ -420,7 +414,7 @@ function renderQuestionView() {
 
   if (questionSolved) {
     const { entry, points, boost } = questionSolved;
-    const next = nextQuestion(q);
+    const next = nextOpenQuestion(state, q.id);
     fill(card, top,
       h('p', { class: 'frage-gross-text' }, q.frage),
       h('div', { class: 'frage-erfolg' },
@@ -435,6 +429,7 @@ function renderQuestionView() {
     return;
   }
 
+  const next = nextOpenQuestion(state, q.id);
   const field = h('input', {
     type: 'text', id: 'frage-antwort', spellcheck: 'false', autocomplete: 'off', autocapitalize: 'off',
     placeholder: q.wert ? 'Zahl mit Einheit, z. B. 3·10^8 m/s' : 'Deine Antwort …',
@@ -465,6 +460,10 @@ function renderQuestionView() {
       },
     }, field, h('button', { type: 'submit' }, 'Antworten')),
     questionFeedback ? h('p', { class: `frage-meldung ${questionFeedback.cls}` }, questionFeedback.text) : null,
+    next ? h('button', {
+      type: 'button', class: 'ueberspringen', title: 'Diese Frage erst einmal auslassen – sie bleibt offen.',
+      onclick: () => showQuestionInPlace(next.id),
+    }, 'Überspringen →') : null,
     canReveal(state, q) ? h('button', {
       type: 'button', class: 'aufloesen',
       onclick: () => {
@@ -473,6 +472,7 @@ function renderQuestionView() {
         saveLocal(state);
         questionFeedback = null;
         renderQuestions();
+        const after = nextOpenQuestion(state, q.id);
         fill(card, top,
           h('p', { class: 'frage-gross-text' }, q.frage),
           h('div', { class: 'frage-erfolg' },
@@ -480,7 +480,9 @@ function renderQuestionView() {
             h('p', { class: 'loesung' }, entry.name),
             h('p', { class: 'hinweis' }, entry.fact)),
           h('div', { class: 'knopfreihe' },
+            after ? h('button', { type: 'button', class: 'primaer', onclick: () => showQuestionInPlace(after.id) }, 'Nächste Frage →') : null,
             h('button', { type: 'button', class: 'zweitrangig', onclick: closeOverlay }, 'Zurück zur Liste')));
+        card.querySelector('.primaer, .zweitrangig').focus();
       },
     }, 'Auflösen') : null);
   field.focus();

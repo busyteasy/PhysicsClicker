@@ -106,6 +106,8 @@ Zurück-Taste von Browser bzw. Handy. Nach einer richtigen Antwort führt
 - Punkte: doppelter Grundwert der Fragen-Stufe, einmal pro Frage.
 - Fragen aus gesperrten Bereichen sind sichtbar, aber nicht beantwortbar.
 - Nach drei Fehlversuchen kann man die Frage auflösen – dann ohne Punkte.
+- Mit „Überspringen →“ lässt man eine Frage erst einmal aus; sie bleibt offen.
+  Es geht reihum weiter – erst im selben Bereich, dann in den anderen offenen.
 
 ## Hilfe
 
