@@ -2,10 +2,12 @@
 
 Ein Browserspiel im Stil der Idle-Spiele: Statt zu klicken, tippst du
 **Physikwissen** ein – Formeln, Konstanten (gern mit Wert), Gesetze, Phänomene,
-Teilchen, Personen und Einheiten. Jede erkannte Eingabe bringt Erkenntnis. Am
-Anfang sind nur Personen offen; mit Erkenntnis schaltest du weitere Bereiche frei.
+Teilchen, Personen, Einheiten und Experimente. Jede erkannte Eingabe bringt
+Erkenntnis. Am Anfang sind nur Personen offen; mit Erkenntnis schaltest du weitere
+Bereiche frei.
 
-Das Konzept steht in [KONZEPT.md](KONZEPT.md).
+Das Konzept steht in [KONZEPT.md](KONZEPT.md). Wer am Code mitarbeitet (auch
+Coding-Agents), findet Aufbau, Regeln und Arbeitsablauf in [AGENTS.md](AGENTS.md).
 
 ## Starten
 
