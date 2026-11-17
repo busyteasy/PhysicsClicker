@@ -37,4 +37,11 @@ export default inArea('optik', [
   E('prisma', 1, 'Newtons Prismenversuch', ['Prismenversuch', 'Prismenexperiment'], 'Newton zeigte um 1666, dass weißes Licht aus allen Farben des Regenbogens besteht.'),
   E('fizeau', 3, 'Fizeau-Experiment', ['Fizeau-Versuch', 'Zahnradmethode'], 'Hippolyte Fizeau maß 1849 die Lichtgeschwindigkeit mit einem rotierenden Zahnrad und einem Spiegel in acht Kilometern Entfernung.'),
   E('roemer', 3, 'Rømers Lichtgeschwindigkeitsmessung', ['Rømers Messung', 'Römers Messung'], 'Ole Rømer schloss 1676 aus Verspätungen der Verfinsterungen des Jupitermonds Io, dass Licht eine endliche Geschwindigkeit hat.'),
+
+  // Erweiterung (Issue #8)
+  U('u_steradiant', 3, 'Steradiant', [], 'Einheit des Raumwinkels – die ganze Kugel hat 4π Steradiant.'),
+  U('u_lumen', 2, 'Lumen', [], 'Einheit des Lichtstroms, die auf jeder LED-Packung steht.'),
+  W('fraunhofer', 3, 'Joseph von Fraunhofer', ['Fraunhofer'], 'Entdeckte die dunklen Linien im Spektrum der Sonne.'),
+  W('abbe', 4, 'Ernst Abbe', ['Abbe'], 'Berechnete die Auflösungsgrenze des Mikroskops und baute mit Carl Zeiss die Jenaer Optik auf.'),
+  P('tyndall', 3, 'Tyndall-Effekt', [], 'Darum sieht man Lichtstrahlen im Nebel oder im Staub.'),
 ]);

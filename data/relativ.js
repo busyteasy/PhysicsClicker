@@ -1,4 +1,4 @@
-import { E, F, G, K, P, W, inArea } from './helpers.js';
+import { E, F, G, K, P, T, W, inArea } from './helpers.js';
 
 export default inArea('relativ', [
   F('emc2', 2, 'E = m·c²', ['m=E/c^2'], 'Schon ein Gramm Masse entspricht rund 25 Millionen Kilowattstunden.'),
@@ -39,4 +39,10 @@ export default inArea('relativ', [
   E('hafele_keating', 4, 'Hafele-Keating-Experiment', ['Hafele-Keating-Versuch'], 'Atomuhren flogen 1971 in Linienflugzeugen um die Welt und gingen danach messbar anders als am Boden.'),
   E('pound_rebka', 5, 'Pound-Rebka-Experiment', ['Pound-Rebka-Versuch'], 'Robert Pound und Glen Rebka maßen 1959 in einem gut 22 Meter hohen Turm die gravitative Rotverschiebung.'),
   E('fahrstuhl', 3, 'Einsteins Fahrstuhl', ['Einstein-Fahrstuhl', 'Fahrstuhl-Gedankenexperiment'], 'Im geschlossenen Fahrstuhl lässt sich Schwerkraft nicht von Beschleunigung unterscheiden.'),
+
+  // Erweiterung (Issue #8)
+  T('tachyon', 5, 'Tachyon', ['Tachyonen'], 'Hypothetisches Teilchen, das immer schneller als Licht wäre – nie beobachtet.'),
+  W('poincare', 4, 'Henri Poincaré', ['Poincaré'], 'Kam der speziellen Relativitätstheorie mathematisch sehr nahe.'),
+  W('wheeler', 4, 'John Archibald Wheeler', ['Wheeler'], 'Machte den Begriff „Schwarzes Loch“ populär.'),
+  F('relativ_masse', 4, 'm = γ·m₀', [], 'Die „relativistische Masse“ – heute meist vermieden, aber noch in vielen Schulbüchern.'),
 ]);

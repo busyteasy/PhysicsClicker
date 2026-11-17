@@ -12,6 +12,7 @@
   <header class="kopf">
     <h1 class="logo">Physics<span>Clicker</span></h1>
     <p class="claim">Tippe Physik. Sammle Erkenntnis.</p>
+    <button type="button" class="hilfe-knopf" id="hilfe-knopf" aria-label="Spielanleitung und Punkte" title="Spielanleitung und Punkte">?</button>
   </header>
 
   <main class="layout">
@@ -64,8 +65,9 @@
 
       <div class="tab" id="tab-fragen" role="tabpanel" hidden>
         <h2>Fragekatalog</h2>
-        <p class="erklaerung">Klick auf eine Frage, um sie zu beantworten. Jede Frage zählt einmal;
-          nach drei Fehlversuchen kannst du sie auflösen – dann ohne Punkte.</p>
+        <p class="erklaerung">Klick auf eine Frage – sie öffnet sich groß. Mit „Zurück“, Escape oder der
+          Zurück-Taste kommst du wieder hierher. Jede Frage zählt einmal; nach drei Fehlversuchen
+          kannst du sie auflösen – dann ohne Punkte.</p>
         <div id="fragen"></div>
       </div>
 
@@ -106,6 +108,14 @@
       </div>
     </section>
   </main>
+
+  <div class="overlay" id="frage-overlay" role="dialog" aria-modal="true" aria-labelledby="frage-titel" hidden>
+    <div class="overlay-karte frage-gross" id="frage-gross"></div>
+  </div>
+
+  <div class="overlay" id="hilfe-overlay" role="dialog" aria-modal="true" aria-labelledby="hilfe-titel" hidden>
+    <div class="overlay-karte hilfe-karte" id="hilfe-inhalt"></div>
+  </div>
 
   <script type="module" src="src/main.js"></script>
 </body>

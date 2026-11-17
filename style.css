@@ -74,6 +74,12 @@ code { font-family: var(--mono); font-size: 0.92em; }
 .logo { margin: 0; font-size: 1.6rem; letter-spacing: -0.02em; }
 .logo span { color: var(--akzent); }
 .claim { margin: 0; color: var(--tinte-leise); }
+.hilfe-knopf {
+  margin-left: auto; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--akzent);
+  background: var(--flaeche); color: var(--akzent); font-size: 1.2rem; font-weight: 800; cursor: pointer;
+  align-self: center;
+}
+.hilfe-knopf:hover { background: var(--akzent); color: var(--akzent-text); }
 
 /* ---------- Layout ---------- */
 
@@ -280,19 +286,67 @@ h2.klein {
 .frage.richtig .frage-punkte { color: var(--gut); }
 .frage.aufgeloest .frage-punkte { color: var(--tinte-leise); font-weight: 400; font-size: 0.85rem; }
 .frage-loesung { padding: 0 12px 10px; font-size: 0.85rem; color: var(--tinte-leise); }
-.antwort { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 12px; }
-.antwort input {
-  flex: 1 1 160px; min-width: 0; padding: 8px 10px; border-radius: var(--radius);
+.frage-meldung { margin: 10px 0 0; font-size: 0.95rem; }
+.frage-meldung.schlecht { color: var(--schlecht); }
+
+/* ---------- Overlays (große Frage, Hilfe) ---------- */
+
+body.overlay-offen { overflow: hidden; }
+.overlay {
+  position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-start; justify-content: center;
+  padding: 6vh 16px 16px; background: rgba(15, 20, 30, 0.55); overflow-y: auto;
+}
+.overlay-karte {
+  width: 100%; max-width: 680px; background: var(--flaeche); border-radius: 14px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3); padding: 20px 24px 26px;
+}
+.overlay-leiste { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+.overlay-info { font-size: 0.85rem; color: var(--tinte-leise); }
+.zurueck {
+  border: 1px solid var(--linie); background: var(--flaeche-2); border-radius: var(--radius);
+  padding: 8px 14px; font-weight: 600; cursor: pointer;
+}
+.zurueck:hover { border-color: var(--akzent); color: var(--akzent); }
+
+.frage-gross-text {
+  display: block; font-size: clamp(1.35rem, 4vw, 1.9rem); font-weight: 700; line-height: 1.3; margin: 0 0 8px;
+}
+.frage-wert { margin: 0 0 18px; font-weight: 700; color: var(--akzent); }
+.antwort-gross { display: flex; flex-wrap: wrap; gap: 8px; }
+.antwort-gross input {
+  flex: 1 1 240px; min-width: 0; font-size: 1.2rem; padding: 12px 14px; border-radius: var(--radius);
   border: 2px solid var(--linie); background: var(--flaeche); outline: none;
 }
-.antwort input:focus { border-color: var(--akzent); }
-.antwort button {
-  border: 0; border-radius: var(--radius); padding: 0 14px; min-height: 38px;
-  background: var(--akzent); color: var(--akzent-text); font-weight: 600; cursor: pointer;
+.antwort-gross input:focus { border-color: var(--akzent); }
+.antwort-gross button, .knopfreihe .primaer {
+  border: 0; border-radius: var(--radius); padding: 0 20px; min-height: 48px;
+  background: var(--akzent); color: var(--akzent-text); font-weight: 700; cursor: pointer;
 }
-.antwort .aufloesen { background: var(--flaeche-2); color: var(--tinte); border: 1px solid var(--linie); }
-.frage-meldung { flex-basis: 100%; margin: 2px 0 0; font-size: 0.88rem; }
-.frage-meldung.schlecht { color: var(--schlecht); }
+.aufloesen, .knopfreihe .zweitrangig {
+  margin-top: 12px; border: 1px solid var(--linie); background: var(--flaeche-2); color: var(--tinte);
+  border-radius: var(--radius); padding: 0 16px; min-height: 42px; font-weight: 600; cursor: pointer;
+}
+.knopfreihe .zweitrangig { margin-top: 0; }
+.frage-erfolg { margin: 16px 0; padding: 14px 16px; border-radius: var(--radius); background: var(--flaeche-2); }
+.frage-erfolg p { margin: 0; }
+.frage-erfolg .titel { font-weight: 700; margin-bottom: 6px; }
+.frage-erfolg .titel.gut { color: var(--gut); }
+.frage-erfolg .loesung { font-size: 1.3rem; font-weight: 700; }
+.frage-erfolg .hinweis { margin-top: 6px; color: var(--tinte-leise); }
+
+.hilfe-karte h2 { font-size: 1.4rem; margin: 0 0 10px; }
+.hilfe-karte h3 { font-size: 1.05rem; margin: 22px 0 8px; }
+.hilfe-karte p, .hilfe-karte li { line-height: 1.5; }
+.hilfe-karte ul { padding-left: 20px; margin: 8px 0; }
+.hilfe-tabelle { width: 100%; border-collapse: collapse; font-size: 0.92rem; margin: 6px 0; }
+.hilfe-tabelle th, .hilfe-tabelle td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--linie); vertical-align: top; }
+.hilfe-tabelle th { color: var(--tinte-leise); font-weight: 600; }
+.hilfe-tabelle td:first-child { white-space: nowrap; font-weight: 600; }
+
+@media (max-width: 600px) {
+  .overlay { padding: 0; align-items: stretch; }
+  .overlay-karte { border-radius: 0; min-height: 100%; padding: 16px; }
+}
 
 /* ---------- Codex ---------- */
 

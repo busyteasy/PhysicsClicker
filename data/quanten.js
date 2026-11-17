@@ -54,4 +54,19 @@ export default inArea('quanten', [
   E('davisson_germer', 4, 'Davisson-Germer-Experiment', ['Davisson-Germer-Versuch'], 'Elektronen wurden 1927 an einem Nickelkristall gebeugt – Materiewellen gibt es wirklich.'),
   E('bell_test', 4, 'Bell-Test', ['Bell-Experiment', 'Aspect-Experiment'], 'Seit den 1970er-Jahren bestätigen solche Experimente die Quantenverschränkung; 2022 gab es dafür den Nobelpreis.'),
   E('hallwachs', 3, 'Hallwachs-Versuch', ['Hallwachs-Experiment'], 'Wilhelm Hallwachs zeigte 1888, dass UV-Licht eine negativ geladene Zinkplatte entlädt – eine frühe Beobachtung des Photoeffekts.'),
+
+  // Erweiterung (Issue #8)
+  U('u_angstroem', 3, 'Ångström', ['Angström', 'Angstrom'], '10⁻¹⁰ Meter – ungefähr der Durchmesser eines Atoms.'),
+  K('bohr_radius', 4, 'Bohrscher Radius', ['Bohr-Radius'], ['a0', 'a_0'], [[5.29177e-11, ['m']]], 'Der Radius des Wasserstoffatoms im Grundzustand, rund ein halbes Ångström.'),
+  W('bose', 3, 'Satyendra Nath Bose', ['Bose'], 'Nach ihm sind die Bosonen benannt.'),
+  W('sommerfeld', 3, 'Arnold Sommerfeld', ['Sommerfeld'], 'Wurde 84-mal für den Nobelpreis nominiert, bekam ihn aber nie.'),
+  W('compton_p', 3, 'Arthur Compton', ['Compton'], 'Zeigte 1923, dass Röntgenlicht wie ein Teilchen an Elektronen stößt.'),
+  F('compton_f', 5, 'Δλ = h/(m·c)·(1 − cos θ)', ['Δλ=λc(1-cosθ)'], 'Um so viel verlängert sich die Wellenlänge bei der Compton-Streuung.'),
+  G('planck_gesetz', 3, 'Plancksches Strahlungsgesetz', ['Strahlungsgesetz von Planck'], 'Beschreibt das Spektrum eines Schwarzen Körpers – mit ihm begann die Quantenphysik.'),
+  G('rayleigh_jeans', 4, 'Rayleigh-Jeans-Gesetz', [], 'Sagte für kurze Wellenlängen unendlich viel Strahlung voraus – die „Ultraviolett-Katastrophe“.'),
+  G('moseley', 5, 'Moseleysches Gesetz', ['Gesetz von Moseley'], 'Ordnet Röntgenlinien der Kernladungszahl zu – und brachte Ordnung ins Periodensystem.'),
+  P('fluoreszenz', 2, 'Fluoreszenz', [], 'Stoffe leuchten, solange sie bestrahlt werden – etwa Textmarker unter UV-Licht.'),
+  P('phosphoreszenz', 2, 'Phosphoreszenz', ['Nachleuchten'], 'Leuchtet auch nach dem Bestrahlen weiter – wie Leuchtsterne an der Zimmerdecke.'),
+  P('zeeman', 4, 'Zeeman-Effekt', [], 'Spektrallinien spalten sich im Magnetfeld auf.'),
+  E('quantenradierer', 5, 'Quantenradierer', ['Quantenradierer-Experiment'], 'Löscht man nachträglich die Weg-Information, kehrt das Interferenzmuster zurück.'),
 ]);
