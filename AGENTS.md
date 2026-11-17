@@ -55,13 +55,15 @@ src/
   normalize.js    Vereinheitlicht Wörter, Formeln, Einheiten; parseQuantity liest Zahlen
   save.js         localStorage, Export/Import als Base64-Text
   format.js       Zahlenformat (de-DE, „Mio.“, „Mrd.“ …)
+  wiki.js         wikiUrl(entry): Link zur deutschen Wikipedia (über die Suche mit „go“)
   main.js         UI: Rendering, Overlays, Hauptschleife (update alle 100 ms), Autosave
 data/
   helpers.js      Kurzschreibweisen F, G, P, T, W, U, E, K und inArea – Format ist dort dokumentiert
   index.js        ENTRIES (alle Gebiete zusammen) und CATEGORIES (Einzahl-Bezeichnungen)
   mechanik.js …   Ein Gebiet pro Datei (mechanik, optik, waerme, elektro, astro, quanten, relativ, kern)
   fragen.js       Fragekatalog
-test/             data, matcher, game, fragen, upgrades
+  wiki.js         Wikipedia-Artikeltitel je Eintrag-ID (Pflicht für jede Fragen-Antwort, Test)
+test/             data, matcher, game, fragen, upgrades, wiki
 ```
 
 ### Begriffe
@@ -120,6 +122,7 @@ ID eines Eintrags; die Antwort wird damit genauso tolerant erkannt wie jede
 Eingabe. `wert = true` nur bei Konstanten, dann muss der Zahlenwert genannt
 werden. Der Bereich der Frage ergibt sich aus der Kategorie der Antwort. Jeder
 Bereich braucht mindestens 4 Fragen (Test).
+Die Antwort braucht außerdem einen Wikipedia-Titel in `data/wiki.js` (Test).
 
 ### Neuer Bereich, neues Upgrade, Balance ändern
 

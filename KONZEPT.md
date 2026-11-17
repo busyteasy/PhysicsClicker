@@ -127,6 +127,15 @@ Punktwerten, den Bereichspreisen und den Upgrades. Die Zahlen darin werden aus
 Zeigt pro Bereich den Fortschritt (gesperrte Bereiche ausgegraut), alle entdeckten Einträge mit Fun Fact und
 wie viele Einträge je Stufe noch fehlen.
 
+## Wikipedia-Links
+
+Zu jeder Antwort im Fragekatalog (nach richtiger Antwort, nach dem Auflösen und
+in der Liste) und zu jedem Eintrag im Codex gibt es einen Link „Auf Wikipedia
+nachlesen“. Die Artikeltitel stehen in `data/wiki.js`; Einträge ohne Titel
+verlinken über ihren Namen, Formeln ohne Titel bekommen keinen Link. Der Link
+nutzt die Wikipedia-Suche mit „go“ – gibt es den Artikel, öffnet er direkt,
+sonst erscheinen die Suchergebnisse.
+
 ## Speichern
 
 Automatisch im Browser (localStorage), dazu Export/Import als Text und Reset.

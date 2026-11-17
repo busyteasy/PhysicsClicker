@@ -11,6 +11,7 @@ import {
 } from './game.js';
 import { clearLocal, exportState, importState, loadLocal, saveLocal } from './save.js';
 import { isRelation } from './normalize.js';
+import { wikiUrl } from './wiki.js';
 
 let state = loadLocal() ?? newState();
 
@@ -33,6 +34,12 @@ function h(tag, props = {}, ...children) {
 /** Ersetzt den Inhalt eines Elements; leere Teile (null, false) werden übersprungen. */
 function fill(el, ...children) {
   el.replaceChildren(...children.flat().filter((c) => c != null && c !== false));
+}
+
+/** Link „Auf Wikipedia nachlesen“ (#15) – oder null, wenn es keinen gibt. */
+function wikiLink(entry, text = 'Auf Wikipedia nachlesen') {
+  const href = wikiUrl(entry);
+  return href ? h('a', { class: 'wiki-link', href, target: '_blank', rel: 'noopener' }, `${text} ↗`) : null;
 }
 
 const ENTRIES_BY_BEREICH = Object.fromEntries(BEREICHE.map((b) => [b.id, ENTRIES.filter((e) => e.cat === b.id)]));
@@ -444,7 +451,8 @@ function renderQuestionRow(q) {
       onclick: () => showQuestion(q.id),
     }, h('span', { class: 'frage-text' }, q.frage), h('span', { class: 'frage-punkte' }, badge)));
   if (status !== 'offen') {
-    li.append(h('div', { class: 'frage-loesung' }, `Antwort: ${INDEX.byId.get(q.antwort).name}`));
+    const entry = INDEX.byId.get(q.antwort);
+    li.append(h('div', { class: 'frage-loesung' }, `Antwort: ${entry.name}`, wikiLink(entry, 'Wikipedia')));
   }
   return li;
 }
@@ -476,7 +484,8 @@ function renderQuestionView() {
         h('p', { class: 'titel gut' }, `Richtig! +${fmt(points)} Erkenntnis`),
         h('p', { class: 'loesung' }, entry.name),
         h('p', { class: 'hinweis' }, entry.fact),
-        boost ? h('p', { class: 'hinweis' }, `${boost.name}: ×${fmt(boost.factor)}`) : null),
+        boost ? h('p', { class: 'hinweis' }, `${boost.name}: ×${fmt(boost.factor)}`) : null,
+        wikiLink(entry)),
       h('div', { class: 'knopfreihe' },
         next ? h('button', { type: 'button', class: 'primaer', onclick: () => showQuestionInPlace(next.id) }, 'Nächste Frage →') : null,
         h('button', { type: 'button', class: 'zweitrangig', onclick: closeOverlay }, 'Zurück zur Liste')));
@@ -534,7 +543,8 @@ function renderQuestionView() {
           h('div', { class: 'frage-erfolg' },
             h('p', { class: 'titel' }, 'Aufgelöst – diesmal ohne Punkte.'),
             h('p', { class: 'loesung' }, entry.name),
-            h('p', { class: 'hinweis' }, entry.fact)),
+            h('p', { class: 'hinweis' }, entry.fact),
+            wikiLink(entry)),
           h('div', { class: 'knopfreihe' },
             after ? h('button', { type: 'button', class: 'primaer', onclick: () => showQuestionInPlace(after.id) }, 'Nächste Frage →') : null,
             h('button', { type: 'button', class: 'zweitrangig', onclick: closeOverlay }, 'Zurück zur Liste')));
@@ -674,7 +684,7 @@ function renderCodex() {
                 h('span', { class: 'marke' }, AREA_NAMES[e.area]),
                 h('span', { class: 'marke' }, `Stufe ${e.tier}`),
                 e.values ? h('span', { class: 'marke' }, state.values[e.id] != null ? '✓ Wert' : 'Wert fehlt') : null),
-              h('p', { class: 'fakt' }, e.fact))))
+              h('p', { class: 'fakt' }, e.fact, ' ', wikiLink(e, 'Wikipedia')))))
             : h('p', { class: 'offen' }, open ? 'Noch nichts entdeckt.' : 'Schalte den Bereich frei, um hier Einträge zu sammeln.'),
           missingByTier.length
             ? h('p', { class: 'offen' }, 'Noch offen: ' + missingByTier.map(([t, n]) => `Stufe ${t}: ${n}`).join(' · '))
