@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import FRAGEN from '../data/fragen.js';
+import WIKI from '../data/wiki.js';
+import { wikiUrl } from '../src/wiki.js';
 import { BEREICHE, QUESTION_TRIES, TIER_POINTS } from '../src/content.js';
 import {
   INDEX, QUESTIONS, answerQuestion, newState, questionStatus, revealQuestion,
@@ -82,4 +84,22 @@ test('Auflösen erst nach drei Fehlversuchen und ohne Punkte', () => {
   assert.equal(revealQuestion(s, 'f_relativ').id, 'einstein');
   assert.equal(answerQuestion(s, 'f_relativ', 'Einstein', 10).status, 'nichtOffen');
   assert.equal(s.insight, 0);
+});
+
+test('Jede Antwort im Fragekatalog hat einen Wikipedia-Link (#15)', () => {
+  for (const q of QUESTIONS) {
+    const entry = INDEX.byId.get(q.antwort);
+    assert.ok(Object.hasOwn(WIKI, entry.id), `${q.id}: Titel für ${entry.id} fehlt in data/wiki.js`);
+    const url = wikiUrl(entry);
+    assert.match(url, /^https:\/\/de\.wikipedia\.org\/w\/index\.php\?search=[^&]+&go=Artikel$/, q.id);
+  }
+});
+
+test('data/wiki.js verweist nur auf echte Einträge und hat sinnvolle Titel', () => {
+  for (const [id, title] of Object.entries(WIKI)) {
+    assert.ok(INDEX.byId.has(id), `unbekannte ID ${id}`);
+    assert.ok(title.trim().length >= 3 && !/[=·]/.test(title), `${id}: Titel „${title}“`);
+  }
+  assert.equal(wikiUrl(INDEX.byId.get('einstein')),
+    'https://de.wikipedia.org/w/index.php?search=Albert%20Einstein&go=Artikel');
 });
