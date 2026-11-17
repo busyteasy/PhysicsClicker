@@ -322,7 +322,8 @@ body.overlay-offen { overflow: hidden; }
   border: 0; border-radius: var(--radius); padding: 0 20px; min-height: 48px;
   background: var(--akzent); color: var(--akzent-text); font-weight: 700; cursor: pointer;
 }
-.aufloesen, .knopfreihe .zweitrangig {
+.ueberspringen { margin-right: 8px; }
+.aufloesen, .ueberspringen, .knopfreihe .zweitrangig {
   margin-top: 12px; border: 1px solid var(--linie); background: var(--flaeche-2); color: var(--tinte);
   border-radius: var(--radius); padding: 0 16px; min-height: 42px; font-weight: 600; cursor: pointer;
 }
