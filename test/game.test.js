@@ -10,7 +10,7 @@ import {
 /** Zustand mit allen Bereichen offen – für Tests, die nicht ums Freischalten gehen. */
 function allOpen() {
   const s = newState();
-  s.unlocked = ['person', 'einheit', 'teilchen', 'phaenomen', 'gesetz', 'formel', 'konstante', 'experiment'];
+  s.unlocked = ['person', 'einheit', 'teilchen', 'phaenomen', 'gesetz', 'formel', 'konstante', 'experiment', 'begriff', 'geraet'];
   return s;
 }
 
@@ -58,7 +58,7 @@ test('Bereiche kauft man mit Erkenntnis, der Preis steigt mit jedem Kauf', () =>
   s.insight = 1e9;
   assert.equal(buyBereich(s, 'teilchen'), false, 'nicht doppelt');
   assert.equal(buyBereich(s, 'gibtsnicht'), false);
-  for (const b of ['einheit', 'phaenomen', 'gesetz', 'formel', 'konstante', 'experiment']) assert.ok(buyBereich(s, b), b);
+  for (const b of ['einheit', 'phaenomen', 'gesetz', 'formel', 'konstante', 'experiment', 'begriff', 'geraet']) assert.ok(buyBereich(s, b), b);
   assert.equal(unlockPrice(s), null, 'alles offen');
 });
 

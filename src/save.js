@@ -2,30 +2,49 @@
 
 import { restore } from './game.js';
 
+// Jede Spielwelt hat ihren eigenen Spielstand. Das freie Spiel behält den
+// alten Schlüssel, damit bestehende Spielstände einfach weiterlaufen.
 const KEY = 'physicsclicker-spielstand-v1';
+const MODE_KEY = 'physicsclicker-modus';
+
+export const storageKey = (weltId = 'frei') => (weltId === 'frei' ? KEY : `physicsclicker-${weltId}-v1`);
 
 export function saveLocal(state) {
   // Countdown-Runden (#12) sind Testläufe und überschreiben nie den echten Spielstand.
   if (state.countdown) return false;
   try {
-    localStorage.setItem(KEY, JSON.stringify(state));
+    localStorage.setItem(storageKey(state.welt), JSON.stringify(state));
     return true;
   } catch {
     return false;
   }
 }
 
-export function loadLocal() {
+export function loadLocal(weltId = 'frei') {
   try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? restore(JSON.parse(raw)) : null;
+    const raw = localStorage.getItem(storageKey(weltId));
+    return raw ? restore(JSON.parse(raw), weltId) : null;
   } catch {
     return null;
   }
 }
 
-export function clearLocal() {
-  try { localStorage.removeItem(KEY); } catch { /* egal */ }
+export function clearLocal(weltId = 'frei') {
+  try { localStorage.removeItem(storageKey(weltId)); } catch { /* egal */ }
+}
+
+/** Zuletzt gewählte Spielwelt (für den Startbildschirm). */
+export function loadMode() {
+  try { return localStorage.getItem(MODE_KEY); } catch { return null; }
+}
+
+export function saveMode(weltId) {
+  try { localStorage.setItem(MODE_KEY, weltId); } catch { /* egal */ }
+}
+
+/** Gibt es zu dieser Welt schon einen Spielstand? */
+export function hasSave(weltId) {
+  try { return localStorage.getItem(storageKey(weltId)) != null; } catch { return false; }
 }
 
 export function exportState(state) {
@@ -47,11 +66,12 @@ export function importState(text) {
 }
 
 // Bestwert im Countdown-Modus (#12)
-const RECORD_KEY = 'physicsclicker-countdown-rekord';
+const recordKey = (weltId = 'frei') => (weltId === 'frei'
+  ? 'physicsclicker-countdown-rekord' : `physicsclicker-countdown-rekord-${weltId}`);
 
-export function loadRecord() {
+export function loadRecord(weltId = 'frei') {
   try {
-    const r = JSON.parse(localStorage.getItem(RECORD_KEY));
+    const r = JSON.parse(localStorage.getItem(recordKey(weltId)));
     return r && Number.isFinite(r.insight) ? r : null;
   } catch {
     return null;
@@ -59,9 +79,9 @@ export function loadRecord() {
 }
 
 /** Speichert den Lauf, wenn er besser ist; liefert true bei neuem Rekord. */
-export function saveRecord(run) {
-  const old = loadRecord();
+export function saveRecord(run, weltId = 'frei') {
+  const old = loadRecord(weltId);
   if (old && old.insight >= run.insight) return false;
-  try { localStorage.setItem(RECORD_KEY, JSON.stringify(run)); } catch { /* egal */ }
+  try { localStorage.setItem(recordKey(weltId), JSON.stringify(run)); } catch { /* egal */ }
   return true;
 }

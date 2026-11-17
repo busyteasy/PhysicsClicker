@@ -140,4 +140,19 @@ export default [
   Q('f_higgs_maschine', 3, 'In welchem Beschleuniger wurde 2012 das Higgs-Boson nachgewiesen?', 'lhc'),
   Q('f_daemon', 3, 'Wie heißt das Gedankenexperiment mit einem Wesen, das schnelle und langsame Moleküle sortiert?', 'maxwell_daemon'),
   Q('f_erdumfang', 3, 'Wie heißt der antike Versuch, mit Schattenwinkeln den Erdumfang zu bestimmen?', 'eratosthenes'),
+
+  // Erweiterung Klassenstufen (Issue #16): Größen & Begriffe, Geräte & Bauteile
+  Q('f_frei_dichte', 1, 'Welche Größe ist Masse pro Volumen?', 'b_dichte'),
+  Q('f_frei_stromstaerke', 1, 'Welche Größe misst man in Ampere?', 'b_stromstaerke'),
+  Q('f_frei_teilchenmodell', 1, 'Mit welchem Modell erklärt man, dass Stoffe aus winzigen, ständig bewegten Bausteinen bestehen?', 'b_teilchenmodell'),
+  Q('f_frei_wirkungsgrad', 2, 'Wie heißt der Anteil der nutzbaren an der eingesetzten Energie?', 'b_wirkungsgrad'),
+  Q('f_frei_halbleiter', 2, 'Zu welcher Stoffklasse gehört Silicium, das bei Wärme besser leitet?', 'b_halbleiter'),
+  Q('f_frei_isotop', 2, 'Wie nennt man Atome desselben Elements mit unterschiedlich vielen Neutronen?', 'b_isotop'),
+  Q('f_frei_orbital', 3, 'Wie heißt der Bereich, in dem ein Elektron mit großer Wahrscheinlichkeit nachgewiesen wird?', 'b_orbital'),
+  Q('f_frei_kompass', 1, 'Welches Gerät richtet eine drehbare Magnetnadel nach Norden aus?', 'd_kompass'),
+  Q('f_frei_bimetall', 1, 'Welches Bauteil aus zwei verschiedenen Metallen verbiegt sich beim Erwärmen?', 'd_bimetall'),
+  Q('f_frei_trafo', 2, 'Welches Gerät ändert Wechselspannungen im Verhältnis der Windungszahlen?', 'd_trafo'),
+  Q('f_frei_geiger', 2, 'Mit welchem Gerät macht man einzelne radioaktive Teilchen als Knacken hörbar?', 'd_geiger'),
+  Q('f_frei_lichtleiter', 2, 'Was leitet Licht durch Totalreflexion über große Entfernungen?', 'd_lichtleiter'),
+  Q('f_frei_fadenstrahlrohr', 3, 'In welcher Röhre laufen Elektronen im Magnetfeld auf einer sichtbaren Kreisbahn?', 'd_fadenstrahlrohr'),
 ];

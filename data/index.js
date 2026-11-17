@@ -21,4 +21,6 @@ export const CATEGORIES = {
   person: 'Person',
   einheit: 'Einheit',
   experiment: 'Experiment',
+  begriff: 'Begriff',
+  geraet: 'Gerät',
 };

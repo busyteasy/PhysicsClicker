@@ -122,4 +122,19 @@ export default {
   lhc: 'Large Hadron Collider',
   maxwell_daemon: 'Maxwellscher Dämon',
   eratosthenes: 'Eratosthenes',
+
+  // Erweiterung Klassenstufen (Issue #16)
+  b_dichte: 'Dichte',
+  b_stromstaerke: 'Elektrische Stromstärke',
+  b_teilchenmodell: 'Teilchenmodell',
+  b_wirkungsgrad: 'Wirkungsgrad',
+  b_halbleiter: 'Halbleiter',
+  b_isotop: 'Isotop',
+  b_orbital: 'Atomorbital',
+  d_kompass: 'Kompass',
+  d_bimetall: 'Bimetall',
+  d_trafo: 'Transformator',
+  d_geiger: 'Geiger-Müller-Zählrohr',
+  d_lichtleiter: 'Lichtwellenleiter',
+  d_fadenstrahlrohr: 'Fadenstrahlrohr',
 };
