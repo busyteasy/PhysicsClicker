@@ -183,6 +183,60 @@ function renderInputHints() {
     + (open.length < BEREICHE.length ? ' Weitere Bereiche schaltest du im Reiter „Bereiche“ frei.' : '');
 }
 
+// ---------- Sonderzeichen-Tastatur (#13) ----------
+
+// Zeichen, die man für Formeln und Einheiten braucht, aber auf der normalen
+// (Handy-)Tastatur kaum findet. Großbuchstaben wie Δ werden beim Vergleichen
+// ohnehin zu Kleinbuchstaben – sie stehen hier nur, weil man sie so kennt.
+const ZEICHEN = [
+  ['Griechisch', 'α β γ δ ε η θ λ μ ν π ρ σ τ φ ψ ω Δ Φ Ω ħ'],
+  ['Hoch & tief', '² ³ ⁴ ¹ ⁰ ⁻ ^ ₀ ₁ ₂', 'klein'],
+  ['Zeichen', '· × / √ ½ ∝ ∂ ∞ ° ≥ ( )'],
+];
+const TASTATUR_KEY = 'physicsclicker-tastatur';
+
+let keyboardOpen = (() => {
+  try { return localStorage.getItem(TASTATUR_KEY) === 'offen'; } catch { return false; }
+})();
+
+/** Setzt Text an der Schreibmarke ein, als hätte man ihn getippt. */
+function insertAtCursor(field, text) {
+  const start = field.selectionStart ?? field.value.length;
+  const end = field.selectionEnd ?? start;
+  field.setRangeText(text, start, end, 'end');
+  field.focus();
+}
+
+/** Alle Tastaturen (Eingabe und Fragenfenster) gemeinsam auf- oder zuklappen. */
+function setKeyboardOpen(open) {
+  keyboardOpen = open;
+  try { localStorage.setItem(TASTATUR_KEY, open ? 'offen' : 'zu'); } catch { /* egal */ }
+  for (const panel of document.querySelectorAll('.tastatur')) panel.hidden = !open;
+  for (const button of document.querySelectorAll('.tastatur-knopf')) button.setAttribute('aria-expanded', String(open));
+}
+
+// Knöpfe sollen der Eingabe den Fokus nicht wegnehmen – sonst springt auf dem
+// Handy bei jedem Zeichen die Systemtastatur weg und die Schreibmarke ist verloren.
+const keepFocus = (event) => event.preventDefault();
+
+/** Ausklappbare Zeichenleiste für ein Eingabefeld. */
+function charKeyboard(field, id) {
+  const panel = h('div', { class: 'tastatur', id, hidden: !keyboardOpen },
+    ZEICHEN.map(([name, chars, art]) => h('div', { class: `tasten-gruppe${art ? ` ${art}` : ''}`, role: 'group', 'aria-label': name },
+      h('span', { class: 'tasten-name' }, name),
+      chars.split(' ').map((c) => h('button', {
+        type: 'button', class: 'taste', 'aria-label': `${c} einfügen`,
+        onmousedown: keepFocus, onclick: () => insertAtCursor(field, c),
+      }, c)))));
+  const toggle = h('button', {
+    type: 'button', class: 'tastatur-knopf', 'aria-expanded': String(keyboardOpen), 'aria-controls': id,
+    onmousedown: keepFocus, onclick: () => setKeyboardOpen(!keyboardOpen),
+  }, h('span', { 'aria-hidden': 'true' }, 'λ²'), ' Sonderzeichen');
+  return h('div', { class: 'tastatur-bereich' }, toggle, panel);
+}
+
+$('tastatur-platz').replaceWith(charKeyboard(input, 'tastatur-eingabe'));
+
 // ---------- Reiter ----------
 
 for (const tab of document.querySelectorAll('[role="tab"]')) {
@@ -345,7 +399,8 @@ function renderHelp() {
       h('li', {}, 'Groß- und Kleinschreibung, Leerzeichen und Bindestriche sind egal; „oe“ geht statt „ö“.'),
       h('li', {}, 'Formeln mit „=“: Malpunkte und Reihenfolge sind egal, F = m·a ist dasselbe wie ma = F. Hochzahlen als ² oder ^2.'),
       h('li', {}, 'Konstanten mit Wert: h = 6,626·10^-34 Js oder h = 6.626e-34. Die Einheit ist freiwillig.'),
-      h('li', {}, 'Kleine Tippfehler in langen Begriffen werden verziehen.')),
+      h('li', {}, 'Kleine Tippfehler in langen Begriffen werden verziehen.'),
+      h('li', {}, 'Griechische Buchstaben, Hochzahlen und Zeichen wie √ findest du unter „λ² Sonderzeichen“ – oder du schreibst sie aus: lambda, sqrt, ^2.')),
   );
 }
 
@@ -464,6 +519,7 @@ function renderQuestionView() {
         update();
       },
     }, field, h('button', { type: 'submit' }, 'Antworten')),
+    charKeyboard(field, 'tastatur-frage'),
     questionFeedback ? h('p', { class: `frage-meldung ${questionFeedback.cls}` }, questionFeedback.text) : null,
     canReveal(state, q) ? h('button', {
       type: 'button', class: 'aufloesen',
