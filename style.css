@@ -16,6 +16,14 @@
   --schlecht: #c0392b;
   --schatten: 0 1px 2px rgba(29, 36, 51, 0.06), 0 4px 14px rgba(29, 36, 51, 0.06);
   --radius: 10px;
+  --mm-mechanik: #2d4fd6;
+  --mm-optik: #c27c0e;
+  --mm-waerme: #c0392b;
+  --mm-elektro: #8e44ad;
+  --mm-astro: #16697a;
+  --mm-quanten: #1f8a4c;
+  --mm-relativ: #b83280;
+  --mm-kern: #5b6375;
   --mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color-scheme: light;
@@ -37,6 +45,14 @@
     --warn: #f0a24a;
     --schlecht: #ff7a6b;
     --schatten: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.25);
+    --mm-mechanik: #7d97ff;
+    --mm-optik: #f0b54a;
+    --mm-waerme: #ff7a6b;
+    --mm-elektro: #c08bea;
+    --mm-astro: #4fc3d9;
+    --mm-quanten: #4cc282;
+    --mm-relativ: #f08ac4;
+    --mm-kern: #a7b0c2;
     color-scheme: dark;
   }
 }
@@ -74,8 +90,12 @@ code { font-family: var(--mono); font-size: 0.92em; }
 .logo { margin: 0; font-size: 1.6rem; letter-spacing: -0.02em; }
 .logo span { color: var(--akzent); }
 .claim { margin: 0; color: var(--tinte-leise); }
-.hilfe-knopf {
-  margin-left: auto; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--akzent);
+.mindmap-knopf {
+  margin-left: auto; align-self: center; height: 40px; padding: 0 16px; border-radius: 20px;
+  border: 2px solid var(--akzent); background: var(--flaeche); color: var(--akzent); font-weight: 700; cursor: pointer;
+}
+.mindmap-knopf:hover { background: var(--akzent); color: var(--akzent-text); }
+.hilfe-knopf { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--akzent);
   background: var(--flaeche); color: var(--akzent); font-size: 1.2rem; font-weight: 800; cursor: pointer;
   align-self: center;
 }
@@ -426,3 +446,76 @@ textarea {
 @media (prefers-reduced-motion: reduce) {
   .plus, .eingabe.wackeln input { animation: none; }
 }
+
+/* ---------- Mindmap (#11) ---------- */
+
+.mindmap-oeffnen {
+  width: 100%; margin: 0 0 14px; padding: 10px 14px; border: 1px dashed var(--akzent); border-radius: var(--radius);
+  background: var(--flaeche); color: var(--akzent); font-weight: 700; cursor: pointer;
+}
+.mindmap-oeffnen:hover { background: var(--flaeche-2); }
+.mindmap-karte { max-width: 1000px; }
+.mm-titel { margin: 0 0 12px; font-size: 1.4rem; }
+.mm-zahl { font-size: 0.82rem; font-weight: 400; color: var(--tinte-leise); font-variant-numeric: tabular-nums; }
+
+.mm-wurzel {
+  display: flex; flex-direction: column; align-items: center; width: fit-content; margin: 0 auto;
+  padding: 10px 26px; border-radius: 999px; background: var(--akzent); color: var(--akzent-text);
+}
+.mm-wurzel .mm-zahl { color: inherit; opacity: 0.85; }
+.mm-wurzel-name { font-size: 1.2rem; font-weight: 800; }
+
+.mm-gebiete {
+  position: relative; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px; margin-top: 22px; padding-top: 16px; border-top: 2px solid var(--linie);
+}
+.mm-gebiete::before {
+  content: ""; position: absolute; top: -24px; left: 50%; width: 2px; height: 22px; background: var(--linie);
+}
+.mm-gebiet {
+  --farbe: var(--akzent); position: relative; border: 2px solid var(--farbe); border-radius: 14px;
+  background: var(--flaeche); align-self: start;
+}
+.mm-gebiet::before {
+  content: ""; position: absolute; top: -18px; left: 50%; width: 2px; height: 16px; background: var(--farbe);
+}
+.g-mechanik { --farbe: var(--mm-mechanik); } .g-optik { --farbe: var(--mm-optik); }
+.g-waerme { --farbe: var(--mm-waerme); } .g-elektro { --farbe: var(--mm-elektro); }
+.g-astro { --farbe: var(--mm-astro); } .g-quanten { --farbe: var(--mm-quanten); }
+.g-relativ { --farbe: var(--mm-relativ); } .g-kern { --farbe: var(--mm-kern); }
+.mm-gebiet summary {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  padding: 10px 14px; cursor: pointer; list-style: none;
+}
+.mm-gebiet summary::-webkit-details-marker { display: none; }
+.mm-gebiet-name { font-weight: 800; color: var(--farbe); }
+.mm-gebiet-name::before { content: "▸ "; }
+.mm-gebiet[open] .mm-gebiet-name::before { content: "▾ "; }
+
+.mm-ast { list-style: none; margin: 0 14px 12px 20px; padding: 0 0 0 14px; border-left: 2px solid var(--farbe); }
+.mm-bereich { position: relative; padding: 6px 0; }
+.mm-bereich::before {
+  content: ""; position: absolute; left: -14px; top: 16px; width: 10px; height: 2px; background: var(--farbe);
+}
+.mm-bereich-kopf { font-size: 0.85rem; font-weight: 700; display: flex; gap: 8px; align-items: baseline; margin-bottom: 4px; }
+.mm-knoten-liste { display: flex; flex-wrap: wrap; gap: 5px; }
+.mm-knoten {
+  display: inline-flex; align-items: baseline; padding: 2px 9px; border-radius: 999px; font-size: 0.85rem;
+  border: 1px solid var(--linie); background: var(--flaeche-2); max-width: 100%; overflow-wrap: anywhere;
+}
+.mm-knoten.bekannt { border-color: var(--farbe); background: var(--flaeche); font-weight: 600; }
+.mm-knoten.formel { font-family: var(--mono); }
+.mm-knoten.unbekannt { color: var(--tinte-leise); border-style: dashed; min-width: 30px; justify-content: center; }
+.mm-knoten sub { font-size: 0.65rem; margin-left: 1px; opacity: 0.8; }
+
+.mm-person {
+  flex-basis: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  padding: 5px 6px; border-radius: 10px; background: var(--flaeche-2);
+}
+.mm-bezuege {
+  display: flex; flex-wrap: wrap; gap: 5px; margin-left: 12px; padding: 2px 0 2px 10px;
+  border-left: 2px dashed var(--farbe);
+}
+.mm-bezuege .mm-knoten { font-size: 0.78rem; background: var(--flaeche); }
+
+.mm-gesperrt { font-size: 0.85rem; color: var(--tinte-leise); margin: 14px 0 0; }

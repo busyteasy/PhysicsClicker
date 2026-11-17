@@ -127,6 +127,20 @@ Punktwerten, den Bereichspreisen und den Upgrades. Die Zahlen darin werden aus
 Zeigt pro Bereich den Fortschritt (gesperrte Bereiche ausgegraut), alle entdeckten Einträge mit Fun Fact und
 wie viele Einträge je Stufe noch fehlen.
 
+## Mindmap
+
+Über „Mindmap“ oben rechts oder im Codex öffnet sich eine Übersicht, in der man
+sieht, wo noch etwas fehlt. In der Mitte steht „Physik“, davon gehen die acht
+Gebiete ab (Mechanik, Optik …), darunter die **offenen** Bereiche mit ihren
+Einträgen. Gesperrte Bereiche erscheinen nicht.
+
+- Entdeckte Einträge stehen mit Namen da, unentdeckte als „?“ mit ihrer Stufe.
+- Jedes Gebiet zeigt, wie viele Einträge noch fehlen.
+- Entdeckte Personen tragen ihre **Bezüge** (`data/bezuege.js`): Gesetze,
+  Experimente, Einheiten usw., die nach ihnen benannt sind oder auf sie
+  zurückgehen – z. B. hängen an Einstein seine Experimente, sobald der Bereich
+  Experimente offen ist. Unentdeckte Bezüge stehen als „? Experiment“ da.
+
 ## Wikipedia-Links
 
 Zu jeder Antwort im Fragekatalog (nach richtiger Antwort, nach dem Auflösen und

@@ -12,6 +12,7 @@
   <header class="kopf">
     <h1 class="logo">Physics<span>Clicker</span></h1>
     <p class="claim">Tippe Physik. Sammle Erkenntnis.</p>
+    <button type="button" class="mindmap-knopf" id="mindmap-knopf" title="Mindmap: Was fehlt noch?">Mindmap</button>
     <button type="button" class="hilfe-knopf" id="hilfe-knopf" aria-label="Spielanleitung und Punkte" title="Spielanleitung und Punkte">?</button>
   </header>
 
@@ -81,6 +82,7 @@
       </div>
 
       <div class="tab" id="tab-codex" role="tabpanel" hidden>
+        <button type="button" class="mindmap-oeffnen" id="mindmap-codex">Als Mindmap ansehen – was fehlt noch?</button>
         <div id="codex"></div>
       </div>
 
@@ -112,6 +114,10 @@
 
   <div class="overlay" id="frage-overlay" role="dialog" aria-modal="true" aria-labelledby="frage-titel" hidden>
     <div class="overlay-karte frage-gross" id="frage-gross"></div>
+  </div>
+
+  <div class="overlay" id="mindmap-overlay" role="dialog" aria-modal="true" aria-labelledby="mindmap-titel" hidden>
+    <div class="overlay-karte mindmap-karte" id="mindmap-inhalt"></div>
   </div>
 
   <div class="overlay" id="hilfe-overlay" role="dialog" aria-modal="true" aria-labelledby="hilfe-titel" hidden>

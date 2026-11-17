@@ -11,6 +11,7 @@ import {
 } from './game.js';
 import { clearLocal, exportState, importState, loadLocal, saveLocal } from './save.js';
 import { isRelation } from './normalize.js';
+import { mindmap } from './mindmap.js';
 import { wikiUrl } from './wiki.js';
 
 let state = loadLocal() ?? newState();
@@ -316,7 +317,7 @@ function renderBereiche(force = false) {
 
 // Jedes Overlay legt einen Eintrag in den Browserverlauf. So schließt die
 // Zurück-Taste von Browser oder Handy das Overlay statt die Seite zu verlassen.
-const overlays = { frage: $('frage-overlay'), hilfe: $('hilfe-overlay') };
+const overlays = { frage: $('frage-overlay'), hilfe: $('hilfe-overlay'), mindmap: $('mindmap-overlay') };
 let activeOverlay = null;
 let overlayReturnFocus = null;
 
@@ -416,6 +417,63 @@ $('hilfe-knopf').addEventListener('click', () => {
   openOverlay('hilfe');
   $('hilfe-inhalt').querySelector('.zurueck').focus();
 });
+
+// ---------- Mindmap (#11) ----------
+
+const closedAreas = new Set(); // zugeklappte Gebiete bleiben zu, solange die Seite offen ist
+
+/** Ein Knoten: Name, wenn entdeckt – sonst ein Fragezeichen. */
+function mindmapChip(n, withCategory = false) {
+  return n.known
+    ? h('span', { class: `mm-knoten bekannt ${n.cat}`, title: `${CATEGORIES[n.cat]} · Stufe ${n.tier}` }, n.name)
+    : h('span', { class: 'mm-knoten unbekannt', title: `Noch nicht entdeckt: ${CATEGORIES[n.cat]}, Stufe ${n.tier}` },
+      withCategory ? `? ${CATEGORIES[n.cat]}` : '?', h('sub', {}, n.tier));
+}
+
+function renderMindmap() {
+  const map = mindmap(state);
+  const found = map.areas.reduce((s, a) => s + a.found, 0);
+  const total = map.areas.reduce((s, a) => s + a.total, 0);
+
+  fill($('mindmap-inhalt'),
+    h('div', { class: 'overlay-leiste' },
+      h('button', { type: 'button', class: 'zurueck', onclick: closeOverlay }, '← Zurück'),
+      h('span', { class: 'overlay-info' }, '? = noch nicht entdeckt')),
+    h('h2', { id: 'mindmap-titel', class: 'mm-titel' }, 'Mindmap'),
+    h('div', { class: 'mm-wurzel' },
+      h('span', { class: 'mm-wurzel-name' }, 'Physik'),
+      h('span', { class: 'mm-zahl' }, `${found}/${total} entdeckt`)),
+    h('div', { class: 'mm-gebiete' }, map.areas.filter((a) => a.total > 0).map((a) => {
+      const details = h('details', { class: `mm-gebiet g-${a.id}`, open: !closedAreas.has(a.id) },
+        h('summary', {},
+          h('span', { class: 'mm-gebiet-name' }, a.name),
+          h('span', { class: 'mm-zahl' }, a.missing ? `${a.found}/${a.total} · ${a.missing} fehlen` : `${a.total}/${a.total} ✓`)),
+        h('ul', { class: 'mm-ast' }, a.bereiche.map((b) => h('li', { class: 'mm-bereich' },
+          h('div', { class: 'mm-bereich-kopf' }, b.name, h('span', { class: 'mm-zahl' }, `${b.found}/${b.total}`)),
+          h('div', { class: 'mm-knoten-liste' }, b.nodes.map((n) => (n.links?.length
+            ? h('div', { class: 'mm-person' },
+              mindmapChip(n),
+              h('div', { class: 'mm-bezuege', 'aria-label': `Bezüge von ${n.name}` }, n.links.map((x) => mindmapChip(x, true))))
+            : mindmapChip(n))))))));
+      details.addEventListener('toggle', () => {
+        if (details.open) closedAreas.delete(a.id); else closedAreas.add(a.id);
+      });
+      return details;
+    })),
+    map.locked.length
+      ? h('p', { class: 'mm-gesperrt' }, `Noch gesperrt und deshalb nicht in der Mindmap: ${map.locked.join(', ')}.`)
+      : null,
+    h('p', { class: 'mm-gesperrt' }, 'Entdeckte Personen zeigen, was zu ihnen gehört – zum Beispiel ihre Experimente oder Gesetze, sobald der Bereich offen ist.'),
+  );
+}
+
+function openMindmap() {
+  renderMindmap();
+  openOverlay('mindmap');
+  $('mindmap-inhalt').querySelector('.zurueck').focus();
+}
+$('mindmap-knopf').addEventListener('click', openMindmap);
+$('mindmap-codex').addEventListener('click', openMindmap);
 
 // ---------- Fragen ----------
 
