@@ -5,6 +5,8 @@ import { restore } from './game.js';
 const KEY = 'physicsclicker-spielstand-v1';
 
 export function saveLocal(state) {
+  // Countdown-Runden (#12) sind Testläufe und überschreiben nie den echten Spielstand.
+  if (state.countdown) return false;
   try {
     localStorage.setItem(KEY, JSON.stringify(state));
     return true;
@@ -42,4 +44,24 @@ export function importState(text) {
   } catch {
     throw new Error('Der Text ist kein gültiger Spielstand.');
   }
+}
+
+// Bestwert im Countdown-Modus (#12)
+const RECORD_KEY = 'physicsclicker-countdown-rekord';
+
+export function loadRecord() {
+  try {
+    const r = JSON.parse(localStorage.getItem(RECORD_KEY));
+    return r && Number.isFinite(r.insight) ? r : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Speichert den Lauf, wenn er besser ist; liefert true bei neuem Rekord. */
+export function saveRecord(run) {
+  const old = loadRecord();
+  if (old && old.insight >= run.insight) return false;
+  try { localStorage.setItem(RECORD_KEY, JSON.stringify(run)); } catch { /* egal */ }
+  return true;
 }

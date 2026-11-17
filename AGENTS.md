@@ -50,7 +50,8 @@ index.html        Seite: Eingabe-Spalte, Reiter (Bereiche, Fragen, Upgrades, Cod
 style.css         „Laborheft“-Look; Farben als CSS-Variablen in :root, Dunkelmodus per prefers-color-scheme
 src/
   content.js      Balance + Stammdaten: AREAS, BEREICHE, Preise, TIER_POINTS, BOOSTS …
-  game.js         Zustand und Regeln: newState, submit, buyBereich, answerQuestion, buyBoost, restore …
+  game.js         Zustand und Regeln: newState, submit, buyBereich, answerQuestion, buyBoost, restore,
+                  Countdown-Modus (newCountdownRun, countdownLeft, countdownOver) …
   matcher.js      buildIndex(ENTRIES) und match(index, eingabe) – Eingabe → Einträge
   normalize.js    Vereinheitlicht Wörter, Formeln, Einheiten; parseQuantity liest Zahlen
   save.js         localStorage, Export/Import als Base64-Text
@@ -61,7 +62,7 @@ data/
   index.js        ENTRIES (alle Gebiete zusammen) und CATEGORIES (Einzahl-Bezeichnungen)
   mechanik.js …   Ein Gebiet pro Datei (mechanik, optik, waerme, elektro, astro, quanten, relativ, kern)
   fragen.js       Fragekatalog
-test/             data, matcher, game, fragen, upgrades
+test/             data, matcher, game, fragen, upgrades, countdown
 ```
 
 ### Begriffe
@@ -132,6 +133,8 @@ Bereich braucht mindestens 4 Fragen (Test).
 ### Spielstand-Format ändern
 
 Der Zustand liegt in `localStorage` unter `physicsclicker-spielstand-v1`.
+Countdown-Runden (`state.countdown` gesetzt) werden von `saveLocal` nie gespeichert;
+ihr Rekord liegt separat unter `physicsclicker-countdown-rekord`.
 Spielende haben echte Spielstände – **niemals einfach brechen**:
 
 - Neue Felder in `newState()` mit Standardwert anlegen.
@@ -146,7 +149,7 @@ Spielende haben echte Spielstände – **niemals einfach brechen**:
   mit möglichen `null`-Werten aufrufen (sonst steht „null“ auf der Seite).
 - Keine Modul-Variable `history` nennen – sie verdeckt `window.history`
   (Overlays nutzen `window.history.pushState`). Die Verlaufsliste heißt `recent`.
-- Overlays (`frage`, `hilfe`) über `openOverlay(name)` / `closeOverlay()` öffnen
+- Overlays (`frage`, `hilfe`, `countdown`) über `openOverlay(name)` / `closeOverlay()` öffnen
   und schließen; sie legen einen History-Eintrag an, damit Escape, der
   „Zurück“-Knopf und die Browser-/Handy-Zurück-Taste funktionieren.
 - Teure Listen (Bereiche, Upgrades) rendern nur neu, wenn sich ihre „Signatur“

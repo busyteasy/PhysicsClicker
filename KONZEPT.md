@@ -118,6 +118,25 @@ Punktwerten, den Bereichspreisen und den Upgrades. Die Zahlen darin werden aus
 Zeigt pro Bereich den Fortschritt (gesperrte Bereiche ausgegraut), alle entdeckten Einträge mit Fun Fact und
 wie viele Einträge je Stufe noch fehlen.
 
+## Countdown-Modus (Testversion)
+
+Unter „Optionen“ startet man eine **Countdown-Runde**: ein frischer Spielstand
+mit einer Uhr, die herunterläuft. Der normale Spielstand bleibt unberührt –
+Countdown-Runden werden nie gespeichert. Alle Regeln gelten wie sonst, dazu:
+
+| Ereignis | Zeit |
+|---|---|
+| Start | 3:00 Minuten |
+| Erstentdeckung Stufe 1 / 2 / 3 / 4 / 5 | +10 / 15 / 25 / 40 / 60 s |
+| Konstante mit Wert | das 1,5-Fache der Stufe |
+| Wiederholung mit Trinkgeld | +2 s |
+| Richtige Antwort im Fragekatalog | das Doppelte der Stufe |
+
+Mehr als 10 Minuten passen nicht auf die Uhr. Bei 0:00 ist die Runde vorbei:
+Ein Fenster zeigt Erkenntnis, Entdeckungen und Dauer; der beste Lauf wird als
+Rekord gemerkt. Danach geht es mit „Neue Runde“ weiter oder zurück ins normale
+Spiel. Alle Werte stehen in `COUNTDOWN` in `src/content.js`.
+
 ## Speichern
 
 Automatisch im Browser (localStorage), dazu Export/Import als Text und Reset.
