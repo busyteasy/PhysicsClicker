@@ -125,4 +125,7 @@ export default inArea('waerme', [
   // Schulversuche (Issue #16)
   E('e_kugel_ring', 1, 'Kugel-Ring-Versuch', [], 'Die erhitzte Metallkugel passt nicht mehr durch den Ring – erst wenn sie abkühlt.'),
   E('e_tinte', 1, 'Tintenversuch', ['Diffusionsversuch'], 'Tinte verteilt sich in warmem Wasser viel schneller als in kaltem – die Teilchen bewegen sich schneller.'),
+
+  W('w_wien', 4, 'Wilhelm Wien', [], 'Erhielt 1911 den Nobelpreis für seine Gesetze der Wärmestrahlung.'),
+  W('w_stefan', 4, 'Josef Stefan', [], 'Fand 1879 aus Messungen, dass die Strahlungsleistung mit der vierten Potenz der Temperatur wächst; Boltzmann begründete es theoretisch.'),
 ]);
