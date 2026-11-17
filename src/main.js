@@ -7,13 +7,14 @@ import { formatNumber as fmt } from './format.js';
 import {
   INDEX, QUESTIONS, answerQuestion, bereichCount, boostBlocked, boostPrice, buyBereich,
   buyBoost, canReveal, comboMultiplier, comboWindow, countdownLeft, countdownOver, discoveryCount, isOpen,
-  newCountdownRun, newState,
-  questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
+  newCountdownRun, newState, nextOpenQuestion, questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
 } from './game.js';
 import {
   clearLocal, exportState, importState, loadLocal, loadRecord, saveLocal, saveRecord,
 } from './save.js';
 import { isRelation } from './normalize.js';
+import { mindmap } from './mindmap.js';
+import { wikiUrl } from './wiki.js';
 
 let state = loadLocal() ?? newState();
 
@@ -36,6 +37,12 @@ function h(tag, props = {}, ...children) {
 /** Ersetzt den Inhalt eines Elements; leere Teile (null, false) werden übersprungen. */
 function fill(el, ...children) {
   el.replaceChildren(...children.flat().filter((c) => c != null && c !== false));
+}
+
+/** Link „Auf Wikipedia nachlesen“ (#15) – oder null, wenn es keinen gibt. */
+function wikiLink(entry, text = 'Auf Wikipedia nachlesen') {
+  const href = wikiUrl(entry);
+  return href ? h('a', { class: 'wiki-link', href, target: '_blank', rel: 'noopener' }, `${text} ↗`) : null;
 }
 
 const ENTRIES_BY_BEREICH = Object.fromEntries(BEREICHE.map((b) => [b.id, ENTRIES.filter((e) => e.cat === b.id)]));
@@ -188,6 +195,60 @@ function renderInputHints() {
     + (open.length < BEREICHE.length ? ' Weitere Bereiche schaltest du im Reiter „Bereiche“ frei.' : '');
 }
 
+// ---------- Sonderzeichen-Tastatur (#13) ----------
+
+// Zeichen, die man für Formeln und Einheiten braucht, aber auf der normalen
+// (Handy-)Tastatur kaum findet. Großbuchstaben wie Δ werden beim Vergleichen
+// ohnehin zu Kleinbuchstaben – sie stehen hier nur, weil man sie so kennt.
+const ZEICHEN = [
+  ['Griechisch', 'α β γ δ ε η θ λ μ ν π ρ σ τ φ ψ ω Δ Φ Ω ħ'],
+  ['Hoch & tief', '² ³ ⁴ ¹ ⁰ ⁻ ^ ₀ ₁ ₂', 'klein'],
+  ['Zeichen', '· × / √ ½ ∝ ∂ ∞ ° ≥ ( )'],
+];
+const TASTATUR_KEY = 'physicsclicker-tastatur';
+
+let keyboardOpen = (() => {
+  try { return localStorage.getItem(TASTATUR_KEY) === 'offen'; } catch { return false; }
+})();
+
+/** Setzt Text an der Schreibmarke ein, als hätte man ihn getippt. */
+function insertAtCursor(field, text) {
+  const start = field.selectionStart ?? field.value.length;
+  const end = field.selectionEnd ?? start;
+  field.setRangeText(text, start, end, 'end');
+  field.focus();
+}
+
+/** Alle Tastaturen (Eingabe und Fragenfenster) gemeinsam auf- oder zuklappen. */
+function setKeyboardOpen(open) {
+  keyboardOpen = open;
+  try { localStorage.setItem(TASTATUR_KEY, open ? 'offen' : 'zu'); } catch { /* egal */ }
+  for (const panel of document.querySelectorAll('.tastatur')) panel.hidden = !open;
+  for (const button of document.querySelectorAll('.tastatur-knopf')) button.setAttribute('aria-expanded', String(open));
+}
+
+// Knöpfe sollen der Eingabe den Fokus nicht wegnehmen – sonst springt auf dem
+// Handy bei jedem Zeichen die Systemtastatur weg und die Schreibmarke ist verloren.
+const keepFocus = (event) => event.preventDefault();
+
+/** Ausklappbare Zeichenleiste für ein Eingabefeld. */
+function charKeyboard(field, id) {
+  const panel = h('div', { class: 'tastatur', id, hidden: !keyboardOpen },
+    ZEICHEN.map(([name, chars, art]) => h('div', { class: `tasten-gruppe${art ? ` ${art}` : ''}`, role: 'group', 'aria-label': name },
+      h('span', { class: 'tasten-name' }, name),
+      chars.split(' ').map((c) => h('button', {
+        type: 'button', class: 'taste', 'aria-label': `${c} einfügen`,
+        onmousedown: keepFocus, onclick: () => insertAtCursor(field, c),
+      }, c)))));
+  const toggle = h('button', {
+    type: 'button', class: 'tastatur-knopf', 'aria-expanded': String(keyboardOpen), 'aria-controls': id,
+    onmousedown: keepFocus, onclick: () => setKeyboardOpen(!keyboardOpen),
+  }, h('span', { 'aria-hidden': 'true' }, 'λ²'), ' Sonderzeichen');
+  return h('div', { class: 'tastatur-bereich' }, toggle, panel);
+}
+
+$('tastatur-platz').replaceWith(charKeyboard(input, 'tastatur-eingabe'));
+
 // ---------- Reiter ----------
 
 for (const tab of document.querySelectorAll('[role="tab"]')) {
@@ -260,7 +321,9 @@ function renderBereiche(force = false) {
 
 // Jedes Overlay legt einen Eintrag in den Browserverlauf. So schließt die
 // Zurück-Taste von Browser oder Handy das Overlay statt die Seite zu verlassen.
-const overlays = { frage: $('frage-overlay'), hilfe: $('hilfe-overlay'), countdown: $('countdown-overlay') };
+const overlays = {
+  frage: $('frage-overlay'), hilfe: $('hilfe-overlay'), mindmap: $('mindmap-overlay'), countdown: $('countdown-overlay'),
+};
 let activeOverlay = null;
 let overlayReturnFocus = null;
 
@@ -353,7 +416,8 @@ function renderHelp() {
       h('li', {}, 'Groß- und Kleinschreibung, Leerzeichen und Bindestriche sind egal; „oe“ geht statt „ö“.'),
       h('li', {}, 'Formeln mit „=“: Malpunkte und Reihenfolge sind egal, F = m·a ist dasselbe wie ma = F. Hochzahlen als ² oder ^2.'),
       h('li', {}, 'Konstanten mit Wert: h = 6,626·10^-34 Js oder h = 6.626e-34. Die Einheit ist freiwillig.'),
-      h('li', {}, 'Kleine Tippfehler in langen Begriffen werden verziehen.')),
+      h('li', {}, 'Kleine Tippfehler in langen Begriffen werden verziehen.'),
+      h('li', {}, 'Griechische Buchstaben, Hochzahlen und Zeichen wie √ findest du unter „λ² Sonderzeichen“ – oder du schreibst sie aus: lambda, sqrt, ^2.')),
   );
 }
 
@@ -362,6 +426,63 @@ $('hilfe-knopf').addEventListener('click', () => {
   openOverlay('hilfe');
   $('hilfe-inhalt').querySelector('.zurueck').focus();
 });
+
+// ---------- Mindmap (#11) ----------
+
+const closedAreas = new Set(); // zugeklappte Gebiete bleiben zu, solange die Seite offen ist
+
+/** Ein Knoten: Name, wenn entdeckt – sonst ein Fragezeichen. */
+function mindmapChip(n, withCategory = false) {
+  return n.known
+    ? h('span', { class: `mm-knoten bekannt ${n.cat}`, title: `${CATEGORIES[n.cat]} · Stufe ${n.tier}` }, n.name)
+    : h('span', { class: 'mm-knoten unbekannt', title: `Noch nicht entdeckt: ${CATEGORIES[n.cat]}, Stufe ${n.tier}` },
+      withCategory ? `? ${CATEGORIES[n.cat]}` : '?', h('sub', {}, n.tier));
+}
+
+function renderMindmap() {
+  const map = mindmap(state);
+  const found = map.areas.reduce((s, a) => s + a.found, 0);
+  const total = map.areas.reduce((s, a) => s + a.total, 0);
+
+  fill($('mindmap-inhalt'),
+    h('div', { class: 'overlay-leiste' },
+      h('button', { type: 'button', class: 'zurueck', onclick: closeOverlay }, '← Zurück'),
+      h('span', { class: 'overlay-info' }, '? = noch nicht entdeckt')),
+    h('h2', { id: 'mindmap-titel', class: 'mm-titel' }, 'Mindmap'),
+    h('div', { class: 'mm-wurzel' },
+      h('span', { class: 'mm-wurzel-name' }, 'Physik'),
+      h('span', { class: 'mm-zahl' }, `${found}/${total} entdeckt`)),
+    h('div', { class: 'mm-gebiete' }, map.areas.filter((a) => a.total > 0).map((a) => {
+      const details = h('details', { class: `mm-gebiet g-${a.id}`, open: !closedAreas.has(a.id) },
+        h('summary', {},
+          h('span', { class: 'mm-gebiet-name' }, a.name),
+          h('span', { class: 'mm-zahl' }, a.missing ? `${a.found}/${a.total} · ${a.missing} fehlen` : `${a.total}/${a.total} ✓`)),
+        h('ul', { class: 'mm-ast' }, a.bereiche.map((b) => h('li', { class: 'mm-bereich' },
+          h('div', { class: 'mm-bereich-kopf' }, b.name, h('span', { class: 'mm-zahl' }, `${b.found}/${b.total}`)),
+          h('div', { class: 'mm-knoten-liste' }, b.nodes.map((n) => (n.links?.length
+            ? h('div', { class: 'mm-person' },
+              mindmapChip(n),
+              h('div', { class: 'mm-bezuege', 'aria-label': `Bezüge von ${n.name}` }, n.links.map((x) => mindmapChip(x, true))))
+            : mindmapChip(n))))))));
+      details.addEventListener('toggle', () => {
+        if (details.open) closedAreas.delete(a.id); else closedAreas.add(a.id);
+      });
+      return details;
+    })),
+    map.locked.length
+      ? h('p', { class: 'mm-gesperrt' }, `Noch gesperrt und deshalb nicht in der Mindmap: ${map.locked.join(', ')}.`)
+      : null,
+    h('p', { class: 'mm-gesperrt' }, 'Entdeckte Personen zeigen, was zu ihnen gehört – zum Beispiel ihre Experimente oder Gesetze, sobald der Bereich offen ist.'),
+  );
+}
+
+function openMindmap() {
+  renderMindmap();
+  openOverlay('mindmap');
+  $('mindmap-inhalt').querySelector('.zurueck').focus();
+}
+$('mindmap-knopf').addEventListener('click', openMindmap);
+$('mindmap-codex').addEventListener('click', openMindmap);
 
 // ---------- Fragen ----------
 
@@ -397,7 +518,8 @@ function renderQuestionRow(q) {
       onclick: () => showQuestion(q.id),
     }, h('span', { class: 'frage-text' }, q.frage), h('span', { class: 'frage-punkte' }, badge)));
   if (status !== 'offen') {
-    li.append(h('div', { class: 'frage-loesung' }, `Antwort: ${INDEX.byId.get(q.antwort).name}`));
+    const entry = INDEX.byId.get(q.antwort);
+    li.append(h('div', { class: 'frage-loesung' }, `Antwort: ${entry.name}`, wikiLink(entry, 'Wikipedia')));
   }
   return li;
 }
@@ -411,12 +533,6 @@ function showQuestion(id) {
   renderQuestionView();
 }
 
-/** Nächste offene Frage: erst im selben Bereich, dann irgendwo. */
-function nextQuestion(after) {
-  const open = QUESTIONS.filter((q) => q.id !== after.id && questionStatus(state, q) === 'offen');
-  return open.find((q) => q.bereich === after.bereich) ?? open[0] ?? null;
-}
-
 function renderQuestionView() {
   const q = QUESTIONS.find((x) => x.id === currentQuestion);
   const card = $('frage-gross');
@@ -428,14 +544,15 @@ function renderQuestionView() {
 
   if (questionSolved) {
     const { entry, points, boost } = questionSolved;
-    const next = nextQuestion(q);
+    const next = nextOpenQuestion(state, q.id);
     fill(card, top,
       h('p', { class: 'frage-gross-text' }, q.frage),
       h('div', { class: 'frage-erfolg' },
         h('p', { class: 'titel gut' }, `Richtig! +${fmt(points)} Erkenntnis`),
         h('p', { class: 'loesung' }, entry.name),
         h('p', { class: 'hinweis' }, entry.fact),
-        boost ? h('p', { class: 'hinweis' }, `${boost.name}: ×${fmt(boost.factor)}`) : null),
+        boost ? h('p', { class: 'hinweis' }, `${boost.name}: ×${fmt(boost.factor)}`) : null,
+        wikiLink(entry)),
       h('div', { class: 'knopfreihe' },
         next ? h('button', { type: 'button', class: 'primaer', onclick: () => showQuestionInPlace(next.id) }, 'Nächste Frage →') : null,
         h('button', { type: 'button', class: 'zweitrangig', onclick: closeOverlay }, 'Zurück zur Liste')));
@@ -443,6 +560,7 @@ function renderQuestionView() {
     return;
   }
 
+  const next = nextOpenQuestion(state, q.id);
   const field = h('input', {
     type: 'text', id: 'frage-antwort', spellcheck: 'false', autocomplete: 'off', autocapitalize: 'off',
     placeholder: q.wert ? 'Zahl mit Einheit, z. B. 3·10^8 m/s' : 'Deine Antwort …',
@@ -474,7 +592,12 @@ function renderQuestionView() {
         update();
       },
     }, field, h('button', { type: 'submit' }, 'Antworten')),
+    charKeyboard(field, 'tastatur-frage'),
     questionFeedback ? h('p', { class: `frage-meldung ${questionFeedback.cls}` }, questionFeedback.text) : null,
+    next ? h('button', {
+      type: 'button', class: 'ueberspringen', title: 'Diese Frage erst einmal auslassen – sie bleibt offen.',
+      onclick: () => showQuestionInPlace(next.id),
+    }, 'Überspringen →') : null,
     canReveal(state, q) ? h('button', {
       type: 'button', class: 'aufloesen',
       onclick: () => {
@@ -483,14 +606,18 @@ function renderQuestionView() {
         saveLocal(state);
         questionFeedback = null;
         renderQuestions();
+        const after = nextOpenQuestion(state, q.id);
         fill(card, top,
           h('p', { class: 'frage-gross-text' }, q.frage),
           h('div', { class: 'frage-erfolg' },
             h('p', { class: 'titel' }, 'Aufgelöst – diesmal ohne Punkte.'),
             h('p', { class: 'loesung' }, entry.name),
-            h('p', { class: 'hinweis' }, entry.fact)),
+            h('p', { class: 'hinweis' }, entry.fact),
+            wikiLink(entry)),
           h('div', { class: 'knopfreihe' },
+            after ? h('button', { type: 'button', class: 'primaer', onclick: () => showQuestionInPlace(after.id) }, 'Nächste Frage →') : null,
             h('button', { type: 'button', class: 'zweitrangig', onclick: closeOverlay }, 'Zurück zur Liste')));
+        card.querySelector('.primaer, .zweitrangig').focus();
       },
     }, 'Auflösen') : null);
   field.focus();
@@ -626,7 +753,7 @@ function renderCodex() {
                 h('span', { class: 'marke' }, AREA_NAMES[e.area]),
                 h('span', { class: 'marke' }, `Stufe ${e.tier}`),
                 e.values ? h('span', { class: 'marke' }, state.values[e.id] != null ? '✓ Wert' : 'Wert fehlt') : null),
-              h('p', { class: 'fakt' }, e.fact))))
+              h('p', { class: 'fakt' }, e.fact, ' ', wikiLink(e, 'Wikipedia')))))
             : h('p', { class: 'offen' }, open ? 'Noch nichts entdeckt.' : 'Schalte den Bereich frei, um hier Einträge zu sammeln.'),
           missingByTier.length
             ? h('p', { class: 'offen' }, 'Noch offen: ' + missingByTier.map(([t, n]) => `Stufe ${t}: ${n}`).join(' · '))

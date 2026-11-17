@@ -34,6 +34,13 @@ Wärmelehre, Elektrizität & Magnetismus, Astrophysik, Quantenphysik,
 Relativität, Kern- & Teilchenphysik) und hat eine **Stufe** von 1 (Schulwissen)
 bis 5 (Spezialwissen).
 
+### Sonderzeichen-Tastatur
+
+Unter dem Eingabefeld (und im Fragenfenster) klappt „λ² Sonderzeichen“ eine
+Zeichenleiste aus: griechische Buchstaben, Hoch- und Tiefzahlen und Zeichen wie
+`·`, `√`, `∝`. Ein Tipp setzt das Zeichen an der Schreibmarke ein. Ob die
+Leiste offen ist, merkt sich der Browser.
+
 ### Tolerante Erkennung
 
 - Groß-/Kleinschreibung, Leerzeichen, Bindestriche, Apostrophe egal
@@ -106,6 +113,8 @@ Zurück-Taste von Browser bzw. Handy. Nach einer richtigen Antwort führt
 - Punkte: doppelter Grundwert der Fragen-Stufe, einmal pro Frage.
 - Fragen aus gesperrten Bereichen sind sichtbar, aber nicht beantwortbar.
 - Nach drei Fehlversuchen kann man die Frage auflösen – dann ohne Punkte.
+- Mit „Überspringen →“ lässt man eine Frage erst einmal aus; sie bleibt offen.
+  Es geht reihum weiter – erst im selben Bereich, dann in den anderen offenen.
 
 ## Hilfe
 
@@ -117,6 +126,29 @@ Punktwerten, den Bereichspreisen und den Upgrades. Die Zahlen darin werden aus
 
 Zeigt pro Bereich den Fortschritt (gesperrte Bereiche ausgegraut), alle entdeckten Einträge mit Fun Fact und
 wie viele Einträge je Stufe noch fehlen.
+
+## Mindmap
+
+Über „Mindmap“ oben rechts oder im Codex öffnet sich eine Übersicht, in der man
+sieht, wo noch etwas fehlt. In der Mitte steht „Physik“, davon gehen die acht
+Gebiete ab (Mechanik, Optik …), darunter die **offenen** Bereiche mit ihren
+Einträgen. Gesperrte Bereiche erscheinen nicht.
+
+- Entdeckte Einträge stehen mit Namen da, unentdeckte als „?“ mit ihrer Stufe.
+- Jedes Gebiet zeigt, wie viele Einträge noch fehlen.
+- Entdeckte Personen tragen ihre **Bezüge** (`data/bezuege.js`): Gesetze,
+  Experimente, Einheiten usw., die nach ihnen benannt sind oder auf sie
+  zurückgehen – z. B. hängen an Einstein seine Experimente, sobald der Bereich
+  Experimente offen ist. Unentdeckte Bezüge stehen als „? Experiment“ da.
+
+## Wikipedia-Links
+
+Zu jeder Antwort im Fragekatalog (nach richtiger Antwort, nach dem Auflösen und
+in der Liste) und zu jedem Eintrag im Codex gibt es einen Link „Auf Wikipedia
+nachlesen“. Die Artikeltitel stehen in `data/wiki.js`; Einträge ohne Titel
+verlinken über ihren Namen, Formeln ohne Titel bekommen keinen Link. Der Link
+nutzt die Wikipedia-Suche mit „go“ – gibt es den Artikel, öffnet er direkt,
+sonst erscheinen die Suchergebnisse.
 
 ## Countdown-Modus (Testversion)
 

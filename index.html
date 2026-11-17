@@ -12,6 +12,7 @@
   <header class="kopf">
     <h1 class="logo">Physics<span>Clicker</span></h1>
     <p class="claim">Tippe Physik. Sammle Erkenntnis.</p>
+    <button type="button" class="mindmap-knopf" id="mindmap-knopf" title="Mindmap: Was fehlt noch?">Mindmap</button>
     <button type="button" class="hilfe-knopf" id="hilfe-knopf" aria-label="Spielanleitung und Punkte" title="Spielanleitung und Punkte">?</button>
   </header>
 
@@ -40,6 +41,7 @@
         <button type="submit">Eintragen</button>
         <div class="plus-ebene" id="plus-ebene" aria-hidden="true"></div>
       </form>
+      <div id="tastatur-platz"></div>
       <p class="hilfe" id="hilfe">Offen: Personen.</p>
 
       <ul class="aktiv" id="aktiv" aria-live="polite"></ul>
@@ -76,8 +78,8 @@
       <div class="tab" id="tab-fragen" role="tabpanel" hidden>
         <h2>Fragekatalog</h2>
         <p class="erklaerung">Klick auf eine Frage – sie öffnet sich groß. Mit „Zurück“, Escape oder der
-          Zurück-Taste kommst du wieder hierher. Jede Frage zählt einmal; nach drei Fehlversuchen
-          kannst du sie auflösen – dann ohne Punkte.</p>
+          Zurück-Taste kommst du wieder hierher. Jede Frage zählt einmal. Weißt du etwas nicht, kannst du die Frage
+          überspringen; nach drei Fehlversuchen kannst du sie auflösen – dann ohne Punkte.</p>
         <div id="fragen"></div>
       </div>
 
@@ -90,6 +92,7 @@
       </div>
 
       <div class="tab" id="tab-codex" role="tabpanel" hidden>
+        <button type="button" class="mindmap-oeffnen" id="mindmap-codex">Als Mindmap ansehen – was fehlt noch?</button>
         <div id="codex"></div>
       </div>
 
@@ -132,6 +135,10 @@
 
   <div class="overlay" id="countdown-overlay" role="dialog" aria-modal="true" aria-labelledby="countdown-titel" hidden>
     <div class="overlay-karte countdown-karte" id="countdown-inhalt"></div>
+  </div>
+
+  <div class="overlay" id="mindmap-overlay" role="dialog" aria-modal="true" aria-labelledby="mindmap-titel" hidden>
+    <div class="overlay-karte mindmap-karte" id="mindmap-inhalt"></div>
   </div>
 
   <div class="overlay" id="hilfe-overlay" role="dialog" aria-modal="true" aria-labelledby="hilfe-titel" hidden>

@@ -226,6 +226,19 @@ export function questionStatus(state, q) {
 export const canReveal = (state, q) => (state.attempts[q.id] || 0) >= QUESTION_TRIES;
 
 /**
+ * Nächste offene Frage nach `afterId` – erst im selben Bereich, dann irgendwo.
+ * Es geht reihum durch den Katalog, so dass wiederholtes Überspringen alle
+ * offenen Fragen erreicht und erst danach wieder bei der ersten ankommt.
+ */
+export function nextOpenQuestion(state, afterId) {
+  const i = QUESTIONS.findIndex((q) => q.id === afterId);
+  const after = QUESTIONS[i];
+  const ring = [...QUESTIONS.slice(i + 1), ...QUESTIONS.slice(0, Math.max(0, i))]
+    .filter((q) => questionStatus(state, q) === 'offen');
+  return ring.find((q) => q.bereich === after?.bereich) ?? ring[0] ?? null;
+}
+
+/**
  * Beantwortet eine Frage aus dem Katalog.
  * Rückgabe: { status: 'richtig' | 'falsch' | 'leer' | 'nichtOffen', points, attempts, canReveal }
  */
