@@ -1,0 +1,99 @@
+// Klasse 9 – Doppeljahrgang 9/10, erster Teil: Energie quantitativ (Arbeit,
+// Wärme, spezifische Wärmekapazität, Energieerhaltung, Wirkungsgrad),
+// Elektromagnetismus und Energieversorgung (Induktion, Generator, Motor,
+// Transformator, Wechselstrom), Energiewende und Klima.
+import { Q, QUELLE_SI, S } from './helpers.js';
+
+export default {
+  klasse: 9,
+  themen: ['Energie berechnen: Arbeit, Wärme, Wirkungsgrad', 'Elektromagnetismus und Induktion', 'Generator, Motor und Transformator', 'Energieversorgung und Klima'],
+  quelle: `${QUELLE_SI}, Themenbereiche Energie sowie Magnetismus und Elektrizität (Doppeljahrgang 9/10, Zuordnung zu Jahrgang 9 nach Anhang A3)`,
+  eintraege: {
+    // Größen & Begriffe
+    ...S(1, 'b_energie b_temperatur b_waerme b_innere_energie b_arbeit b_leistung b_wirkungsgrad b_bewegungsenergie b_hoehenenergie b_magnetfeld b_gleichstrom b_wechselstrom b_erneuerbar b_klimawandel b_treibhausgas b_spannung b_stromstaerke'),
+    ...S(2, 'b_spez_waermekapazitaet b_energieentwertung b_energieflussdiagramm b_feldlinien b_hochspannung b_schutzleiter b_waermedaemmung b_spannenergie b_schmelzen b_verdampfen b_energiekette'),
+    ...S(3, 'b_effektivwert b_albedo b_strahlungsgleichgewicht'),
+    // Geräte & Bauteile
+    ...S(1, 'd_elektromotor d_generator d_dynamo d_trafo d_kraftwerk d_windkraftanlage d_spule d_elektromagnet'),
+    ...S(2, 'd_waermepumpe d_verbrennungsmotor d_relais d_lautsprecher d_kalorimeter d_kuehlschrank'),
+    ...S(3, 'd_fi d_netzgeraet'),
+    // Phänomene
+    ...S(1, 'p_magnetwirkung p_waermewirkung p_treibhauseffekt waermeleitung konvektion waermestrahlung'),
+    ...S(2, 'induktion'),
+    ...S(3, 'lorentzkraft p_wirbelstrom'),
+    // Gesetze
+    ...S(1, 'energieerhaltung'),
+    ...S(2, 'hs2 dreifinger'),
+    ...S(3, 'hs1 induktionsgesetz lenz'),
+    // Formeln
+    ...S(1, 'arbeit epot el_leistung f_el_energie f_energie_leistung'),
+    ...S(2, 'ekin waermemenge f_wirkungsgrad leistung'),
+    ...S(3, 'transformator'),
+    // Einheiten
+    ...S(1, 'u_joule u_watt u_kilowattstunde u_grad_celsius'),
+    ...S(2, 'u_hertz'),
+    ...S(3, 'u_kalorie'),
+    // Konstanten
+    ...S(1, 'erdbeschleunigung k_siede_wasser'),
+    ...S(2, 'k_c_wasser'),
+    ...S(3, 'solarkonstante'),
+    // Personen
+    ...S(1, 'joule_p watt_p faraday'),
+    ...S(2, 'oersted w_mayer siemens_p tesla_p w_edison'),
+    ...S(3, 'w_helmholtz w_lenz'),
+    // Experimente
+    ...S(1, 'oersted_versuch'),
+    ...S(2, 'schaufelrad'),
+    ...S(3, 'rumford e_thomson_ring e_leiterschaukel e_waltenhofen'),
+  },
+  fragen: [
+    // Energie quantitativ
+    Q('k9_arbeit', 1, 'Mit welcher Formel berechnet man die mechanische Arbeit aus Kraft und Weg?', 'arbeit'),
+    Q('k9_epot', 1, 'Mit welcher Formel berechnet man die Höhenenergie?', 'epot'),
+    Q('k9_ekin', 2, 'Mit welcher Formel berechnet man die Bewegungsenergie?', 'ekin'),
+    Q('k9_waerme', 1, 'Wie heißt die Energie, die allein wegen eines Temperaturunterschieds übertragen wird?', 'b_waerme'),
+    Q('k9_innere', 2, 'Welche Energie eines Körpers steigt beim Schmelzen, obwohl seine Temperatur gleich bleibt?', 'b_innere_energie'),
+    Q('k9_cwasser_begriff', 2, 'Wie heißt die Stoffeigenschaft, die angibt, wie viel Energie man braucht, um 1 kg um 1 K zu erwärmen?', 'b_spez_waermekapazitaet'),
+    Q('k9_q', 2, 'Mit welcher Formel berechnet man die zum Erwärmen nötige Energie?', 'waermemenge'),
+    Q('k9_cwasser', 3, 'Wie groß ist die spezifische Wärmekapazität von Wasser? (Zahl mit Einheit)', 'k_c_wasser', true),
+    Q('k9_wirkungsgrad', 1, 'Wie heißt das Verhältnis von nutzbarer zu eingesetzter Energie?', 'b_wirkungsgrad'),
+    Q('k9_eta', 2, 'Mit welcher Formel berechnet man den Wirkungsgrad?', 'f_wirkungsgrad'),
+    Q('k9_entwertung', 2, 'Wie nennt man es, dass Energie am Ende als kaum nutzbare Wärme in der Umgebung landet?', 'b_energieentwertung'),
+    Q('k9_hs2', 2, 'Welcher Hauptsatz besagt, dass Wärme von selbst nur vom wärmeren zum kälteren Körper fließt?', 'hs2'),
+    Q('k9_hs1', 3, 'Welcher Hauptsatz besagt, dass sich die innere Energie nur durch Wärme und Arbeit ändert?', 'hs1'),
+    Q('k9_kwh', 1, 'In welcher Einheit wird zu Hause die elektrische Energie abgerechnet?', 'u_kilowattstunde'),
+    Q('k9_euit', 1, 'Mit welcher Formel berechnet man die elektrische Energie aus Spannung, Stromstärke und Zeit?', 'f_el_energie'),
+    Q('k9_joule', 1, 'Nach wem ist die Einheit der Energie benannt?', 'joule_p'),
+    Q('k9_schaufelrad', 2, 'Mit welchem Versuch zeigte Joule, dass mechanische Arbeit Wasser erwärmt?', 'schaufelrad'),
+    Q('k9_rumford', 3, 'Welcher Versuch beim Aufbohren von Kanonenrohren widerlegte 1798 die Vorstellung vom Wärmestoff?', 'rumford'),
+    Q('k9_mayer', 2, 'Welcher Arzt formulierte 1842 den Energieerhaltungssatz?', 'w_mayer'),
+    // Elektromagnetismus
+    Q('k9_oersted', 1, 'Welcher Versuch zeigte 1820, dass elektrischer Strom ein Magnetfeld erzeugt?', 'oersted_versuch'),
+    Q('k9_induktion', 2, 'Wie heißt es, wenn in einer Spule durch ein sich änderndes Magnetfeld eine Spannung entsteht?', 'induktion'),
+    Q('k9_faraday', 1, 'Wer entdeckte 1831 die elektromagnetische Induktion?', 'faraday'),
+    Q('k9_generator', 1, 'Welches Gerät wandelt in Kraftwerken Bewegungsenergie in elektrische Energie um?', 'd_generator'),
+    Q('k9_motor', 1, 'Welches Gerät wandelt elektrische Energie in Bewegungsenergie um?', 'd_elektromotor'),
+    Q('k9_trafo', 1, 'Welches Gerät aus zwei Spulen auf einem Eisenkern ändert Wechselspannungen?', 'd_trafo'),
+    Q('k9_trafo_f', 3, 'Wie hängen beim idealen Transformator Spannungen und Windungszahlen zusammen?', 'transformator'),
+    Q('k9_wechsel', 1, 'Wie heißt der Strom, der im Haushaltsnetz 50-mal pro Sekunde seine Richtung ändert?', 'b_wechselstrom'),
+    Q('k9_hertz', 2, 'In welcher Einheit gibt man an, wie oft der Wechselstrom pro Sekunde wechselt?', 'u_hertz'),
+    Q('k9_effektiv', 3, 'Was für ein Wert sind die 230 V an der Steckdose?', 'b_effektivwert'),
+    Q('k9_hochspannung', 2, 'Wie überträgt man elektrische Energie über weite Strecken mit möglichst geringen Verlusten?', 'b_hochspannung'),
+    Q('k9_lenz', 3, 'Welche Regel besagt, dass der Induktionsstrom seiner Ursache entgegenwirkt?', 'lenz'),
+    Q('k9_ring', 3, 'Bei welchem Versuch springt ein Aluminiumring beim Einschalten von einer Spule?', 'e_thomson_ring'),
+    Q('k9_dreifinger', 2, 'Mit welcher Regel bestimmt man die Richtung der Kraft auf einen stromdurchflossenen Leiter im Magnetfeld?', 'dreifinger'),
+    Q('k9_lorentz', 3, 'Wie heißt die Kraft auf bewegte Ladungen im Magnetfeld, die einen Elektromotor antreibt?', 'lorentzkraft'),
+    Q('k9_wirbel', 3, 'Was bremst eine Metallplatte, die zwischen Magnetpolen hindurchschwingt?', 'p_wirbelstrom'),
+    Q('k9_fi', 3, 'Welcher Schalter trennt den Strom, wenn ein Teil über einen Menschen zur Erde fließt?', 'd_fi'),
+    Q('k9_edison', 2, 'Wer machte die Glühlampe ab 1879 alltagstauglich?', 'w_edison'),
+    Q('k9_tesla', 2, 'Welcher Erfinder gilt als Pionier des Wechselstroms und ist Namensgeber einer Einheit?', 'tesla_p'),
+    // Energieversorgung und Klima
+    Q('k9_erneuerbar', 1, 'Wie nennt man Energie aus Sonne, Wind und Wasser, die auf menschlichen Zeitskalen nicht ausgeht?', 'b_erneuerbar'),
+    Q('k9_windrad', 1, 'Welche Anlage wandelt die Bewegungsenergie des Windes in elektrische Energie um?', 'd_windkraftanlage'),
+    Q('k9_waermepumpe', 2, 'Welches Gerät holt Wärme aus der kalten Umgebung ins warme Haus?', 'd_waermepumpe'),
+    Q('k9_treibhaus', 1, 'Welcher Effekt wird durch zusätzliches Kohlenstoffdioxid in der Atmosphäre verstärkt?', 'p_treibhauseffekt'),
+    Q('k9_daemmung', 2, 'Wodurch verringert man die Wärmeverluste eines Hauses am wirksamsten?', 'b_waermedaemmung'),
+    Q('k9_albedo', 3, 'Wie heißt das Rückstrahlvermögen einer Oberfläche, das bei Schnee besonders groß ist?', 'b_albedo'),
+    Q('k9_solarkonstante', 3, 'Wie heißt die Strahlungsleistung der Sonne pro Quadratmeter oberhalb der Erdatmosphäre?', 'solarkonstante'),
+  ],
+};

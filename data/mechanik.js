@@ -244,4 +244,7 @@ export default inArea('mechanik', [
   E('e_ultraschall_stehend', 3, 'Stehende Ultraschallwelle', ['Wellenlängenmessung mit Ultraschall'], 'Zwischen Sender und Reflektor misst man die Knotenabstände – sie sind λ/2.'),
 
   K('k_schall_wasser', 3, 'Schallgeschwindigkeit in Wasser', [], ['v_Wasser'], [[1480, ['m/s'], 0.03]], 'Rund 1480 m/s – mehr als viermal so schnell wie in Luft. Wale hören sich über Hunderte Kilometer.'),
+
+  K('k_normdruck', 2, 'Normaldruck', ['Luftdruck auf Meereshöhe', 'Normluftdruck'], ['p_n', 'pn', 'p_0'], [[1013.25, ['hPa', 'mbar'], 0.005], [101325, ['Pa'], 0.005], [1.01325, ['bar'], 0.005]], 'Auf jeden Quadratzentimeter drückt die Luft mit rund 10 N – so viel wie ein Kilogramm Gewicht.'),
+  K('k_dichte_wasser', 1, 'Dichte von Wasser', ['Wasserdichte'], ['ρ_W', 'ρ_Wasser', 'rho_W'], [[1, ['g/cm^3', 'kg/l', 'kg/dm^3', 'g/ml'], 0.01], [1000, ['kg/m^3'], 0.01]], 'Rund 1 g/cm³ – ein Liter Wasser hat eine Masse von etwa einem Kilogramm.'),
 ]);

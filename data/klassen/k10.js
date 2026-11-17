@@ -1,0 +1,113 @@
+// Klasse 10 – Doppeljahrgang 9/10, zweiter Teil: Druck und Auftrieb,
+// Thermodynamik der Gase (Kelvin-Skala, Gasgesetze, Stirlingmotor,
+// maximaler Wirkungsgrad), Atom- und Kernphysik, Halbleiter,
+// Präzisierung der Mechanik (Beschleunigung).
+import { Q, QUELLE_SI, S } from './helpers.js';
+
+export default {
+  klasse: 10,
+  themen: ['Druck und Auftrieb', 'Gase und Wärmekraftmaschinen', 'Radioaktivität und Kernenergie', 'Halbleiter, LED und Solarzelle', 'Beschleunigte Bewegungen'],
+  quelle: `${QUELLE_SI}, Themenbereiche Thermodynamik, Atom- und Kernphysik, Magnetismus und Elektrizität (Doppeljahrgang 9/10, Zuordnung zu Jahrgang 10 nach Anhang A3)`,
+  eintraege: {
+    // Größen & Begriffe
+    ...S(1, 'b_druck b_dichte b_luftdruck b_schweredruck b_kern_huelle b_isotop b_ionisierend b_alphastrahlung b_betastrahlung b_strahlenschutz b_halbleiter b_gasdruck b_beschleunigung'),
+    ...S(2, 'b_ueberdruck b_massenzahl b_ordnungszahl b_kernkraft b_nulleffekt b_zaehlrate b_energiedosis b_aequivalentdosis b_dotierung b_pn b_kelvin_skala b_ideales_gas b_pv_diagramm b_kreisprozess b_teilchenmodell b_endlager b_c14 b_tv_diagramm b_beschleunigt'),
+    ...S(3, 'b_isotherm b_isobar b_isochor b_nuklid b_zerfallsreihe b_moderator b_kritisch b_bindungsenergie b_zustandsgroesse b_volumenarbeit'),
+    // Geräte & Bauteile
+    ...S(1, 'd_geiger d_barometer d_manometer d_hydraulik d_solarzelle d_led d_diode d_reaktor'),
+    ...S(2, 'd_stirlingmotor d_dosimeter d_transistor d_araeometer d_ueberlaufgefaess d_tragflaeche'),
+    ...S(3, 'd_fusionsreaktor'),
+    // Teilchen
+    ...S(1, 'proton neutron elektron atomkern'),
+    ...S(2, 'alphateilchen nukleon'),
+    // Phänomene
+    ...S(1, 'radioaktivitaet halbwertszeit gammastrahlung kernspaltung kernfusion auftrieb p_schwimmen'),
+    ...S(2, 'alphazerfall betazerfall kettenreaktion roentgenstrahlung p_dyn_auftrieb nullpunkt'),
+    ...S(3, 'massendefekt'),
+    // Gesetze
+    ...S(1, 'archimedes_prinzip'),
+    ...S(2, 'pascal_prinzip boyle_mariotte gay_lussac'),
+    ...S(3, 'g_amontons hs2'),
+    // Formeln
+    ...S(1, 'druck dichte kelvin_celsius beschleunigung'),
+    ...S(2, 'f_schweredruck auftrieb_f boyle_f f_gay_lussac f_v_at'),
+    ...S(3, 'f_amontons f_gas_allg carnot_f weg_zeit'),
+    // Einheiten
+    ...S(1, 'u_pascal u_bar u_kelvin'),
+    ...S(2, 'u_becquerel u_sievert'),
+    ...S(3, 'u_gray'),
+    // Konstanten
+    ...S(1, 'erdbeschleunigung k_dichte_wasser'),
+    ...S(2, 'k_normdruck'),
+    // Personen
+    ...S(1, 'archimedes pascal_p curie roentgen'),
+    ...S(2, 'torricelli_p guericke kelvin_p becquerel_p rutherford hahn meitner'),
+    ...S(3, 'w_boyle w_gay_lussac w_stirling w_geiger'),
+    // Experimente
+    ...S(1, 'magdeburg e_abschirmung'),
+    ...S(2, 'torricelli e_taucher e_wuerfel'),
+    ...S(3, 'rutherford_streu nebelkammer chicago_pile'),
+  },
+  fragen: [
+    // Druck und Auftrieb
+    Q('k10_druck', 1, 'Wie heißt die Größe Kraft pro Fläche?', 'b_druck'),
+    Q('k10_pfa', 1, 'Mit welcher Formel berechnet man den Druck aus Kraft und Fläche?', 'druck'),
+    Q('k10_pascal', 1, 'In welcher Einheit misst man den Druck im SI-System?', 'u_pascal'),
+    Q('k10_dichte', 1, 'Mit welcher Formel berechnet man die Dichte?', 'dichte'),
+    Q('k10_rho_wasser', 2, 'Wie groß ist die Dichte von Wasser? (Zahl mit Einheit)', 'k_dichte_wasser', true),
+    Q('k10_schweredruck', 2, 'Wie heißt der Druck, der in einer Flüssigkeit durch ihr eigenes Gewicht entsteht?', 'b_schweredruck'),
+    Q('k10_prhogh', 2, 'Mit welcher Formel berechnet man den Schweredruck in einer Flüssigkeit?', 'f_schweredruck'),
+    Q('k10_normdruck', 3, 'Wie groß ist der Luftdruck auf Meereshöhe? (Zahl mit Einheit)', 'k_normdruck', true),
+    Q('k10_barometer', 1, 'Mit welchem Gerät misst man den Luftdruck?', 'd_barometer'),
+    Q('k10_hydraulik', 2, 'Welches Gerät nutzt, dass sich Druck in einer Flüssigkeit gleichmäßig ausbreitet, um große Kräfte zu erzeugen?', 'd_hydraulik'),
+    Q('k10_pascalprinzip', 2, 'Welches Prinzip besagt, dass sich Druck in einer ruhenden Flüssigkeit nach allen Seiten gleich ausbreitet?', 'pascal_prinzip'),
+    Q('k10_archimedes', 1, 'Welches Prinzip besagt, dass die Auftriebskraft gleich der Gewichtskraft der verdrängten Flüssigkeit ist?', 'archimedes_prinzip'),
+    Q('k10_auftrieb', 2, 'Mit welcher Formel berechnet man die Auftriebskraft?', 'auftrieb_f'),
+    Q('k10_guericke', 2, 'Wer zeigte mit Pferdegespannen und zwei Halbkugeln die Kraft des Luftdrucks?', 'guericke'),
+    Q('k10_taucher', 2, 'Welcher Flaschenversuch zeigt Schwimmen, Schweben und Sinken durch Zusammendrücken von Luft?', 'e_taucher'),
+    Q('k10_tragflaeche', 2, 'Was erzeugt am Flugzeug den dynamischen Auftrieb?', 'd_tragflaeche'),
+    // Gase und Wärmekraftmaschinen
+    Q('k10_kelvin', 1, 'In welcher Einheit misst man die absolute Temperatur?', 'u_kelvin'),
+    Q('k10_umrechnung', 1, 'Mit welcher Formel rechnet man Grad Celsius in Kelvin um?', 'kelvin_celsius'),
+    Q('k10_nullpunkt', 2, 'Wie heißt die tiefste mögliche Temperatur bei −273,15 °C?', 'nullpunkt'),
+    Q('k10_boyle', 2, 'Welches Gesetz besagt, dass bei konstanter Temperatur Druck mal Volumen konstant ist?', 'boyle_mariotte'),
+    Q('k10_gaylussac', 2, 'Welches Gesetz beschreibt, dass bei konstantem Druck das Volumen proportional zur absoluten Temperatur ist?', 'gay_lussac'),
+    Q('k10_isotherm', 3, 'Wie heißt eine Zustandsänderung, bei der die Temperatur gleich bleibt?', 'b_isotherm'),
+    Q('k10_stirling', 2, 'Welcher Motor läuft mit einer äußeren Wärmequelle und wird mit einem Kreisprozess im p-V-Diagramm beschrieben?', 'd_stirlingmotor'),
+    Q('k10_pv', 3, 'In welchem Diagramm ist die eingeschlossene Fläche eines Kreisprozesses die abgegebene Arbeit?', 'b_pv_diagramm'),
+    Q('k10_carnot', 3, 'Mit welcher Formel berechnet man den maximal möglichen Wirkungsgrad einer Wärmekraftmaschine?', 'carnot_f'),
+    // Atom- und Kernphysik
+    Q('k10_kernhuelle', 1, 'Wie heißt das Atommodell mit einem winzigen, schweren Kern und einer leichten Elektronenhülle?', 'b_kern_huelle'),
+    Q('k10_isotop', 1, 'Wie nennt man Atome eines Elements mit unterschiedlicher Neutronenzahl?', 'b_isotop'),
+    Q('k10_kernkraft', 2, 'Welche Kraft hält Protonen und Neutronen trotz elektrischer Abstoßung im Kern zusammen?', 'b_kernkraft'),
+    Q('k10_neutron', 1, 'Welches ungeladene Kernteilchen löst die Spaltung von Uran-235 aus?', 'neutron'),
+    Q('k10_alphateilchen', 2, 'Welches Teilchen aus zwei Protonen und zwei Neutronen bildet die Alphastrahlung?', 'alphateilchen'),
+    Q('k10_alpha', 1, 'Welche Strahlung wird schon von einem Blatt Papier abgeschirmt?', 'b_alphastrahlung'),
+    Q('k10_gamma', 2, 'Welche Strahlung besteht aus energiereichen Photonen und braucht dicke Bleiplatten zur Abschirmung?', 'gammastrahlung'),
+    Q('k10_geiger', 1, 'Mit welchem Gerät weist man ionisierende Strahlung als Knacken nach?', 'd_geiger'),
+    Q('k10_nulleffekt', 2, 'Wie heißt die Zählrate, die ein Zählrohr auch ganz ohne Präparat misst?', 'b_nulleffekt'),
+    Q('k10_hwz', 1, 'Wie heißt die Zeit, nach der die Hälfte der radioaktiven Kerne zerfallen ist?', 'halbwertszeit'),
+    Q('k10_aequivalent', 3, 'Welche Dosis berücksichtigt die biologische Wirkung der Strahlungsart und wird in Sievert angegeben?', 'b_aequivalentdosis'),
+    Q('k10_sievert', 2, 'In welcher Einheit gibt man die Äquivalentdosis an?', 'u_sievert'),
+    Q('k10_becquerel', 2, 'In welcher Einheit misst man die Aktivität, also Zerfälle pro Sekunde?', 'u_becquerel'),
+    Q('k10_schutz', 1, 'Wie heißen die Maßnahmen Abstand, Abschirmung und kurze Aufenthaltsdauer zusammen?', 'b_strahlenschutz'),
+    Q('k10_spaltung', 1, 'Welcher Vorgang, entdeckt 1938, zerlegt schwere Kerne wie Uran-235?', 'kernspaltung'),
+    Q('k10_kette', 2, 'Wie heißt es, wenn bei jeder Spaltung freiwerdende Neutronen weitere Spaltungen auslösen?', 'kettenreaktion'),
+    Q('k10_fusion', 1, 'Welcher Vorgang lässt die Sonne leuchten?', 'kernfusion'),
+    Q('k10_c14', 2, 'Mit welcher Methode bestimmt man das Alter organischer Funde?', 'b_c14'),
+    Q('k10_meitner', 2, 'Welche Physikerin deutete 1938 die Kernspaltung physikalisch?', 'meitner'),
+    Q('k10_curie', 1, 'Welche Forscherin entdeckte die Elemente Polonium und Radium?', 'curie'),
+    Q('k10_wuerfel', 2, 'Mit welchem Modellexperiment simuliert man den radioaktiven Zerfall?', 'e_wuerfel'),
+    Q('k10_rutherford', 3, 'Welcher Versuch mit Alphateilchen und Goldfolie führte zum Kern-Hülle-Modell?', 'rutherford_streu'),
+    // Halbleiter
+    Q('k10_halbleiter', 1, 'Zu welcher Stoffgruppe gehört Silicium, das bei Erwärmung besser leitet?', 'b_halbleiter'),
+    Q('k10_dotierung', 2, 'Wie nennt man das gezielte Einbauen von Fremdatomen in einen Halbleiter?', 'b_dotierung'),
+    Q('k10_pn', 2, 'Wie heißt die Grenze zwischen p- und n-dotiertem Halbleiter?', 'b_pn'),
+    Q('k10_diode', 1, 'Welches Bauteil lässt Strom nur in eine Richtung durch?', 'd_diode'),
+    Q('k10_solarzelle', 1, 'Welches Halbleiterbauteil wandelt Licht direkt in elektrische Energie um?', 'd_solarzelle'),
+    // Beschleunigung
+    Q('k10_a', 1, 'Mit welcher Formel berechnet man die Beschleunigung?', 'beschleunigung'),
+    Q('k10_vat', 2, 'Wie schnell ist ein Körper, der aus der Ruhe gleichmäßig beschleunigt? Gesucht ist die Formel.', 'f_v_at'),
+    Q('k10_sat', 3, 'Mit welcher Formel berechnet man den Weg bei gleichmäßig beschleunigter Bewegung aus der Ruhe?', 'weg_zeit'),
+  ],
+};
