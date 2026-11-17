@@ -40,6 +40,7 @@ Läuft mit dem eingebauten Test-Runner von Node (ab Version 18), ohne Abhängigk
 | `src/normalize.js`  | Vereinheitlicht Schreibweisen von Wörtern und Formeln  |
 | `data/*.js`         | Wissensdatenbank, eine Datei pro Gebiet                |
 | `data/bezuege.js`, `src/mindmap.js` | Bezüge Person → Einträge und Daten der Mindmap |
+| `data/wiki.js`, `src/wiki.js` | Wikipedia-Titel und -Links zu den Einträgen  |
 | `test/`             | Tests für Datenbank, Erkennung und Spiellogik          |
 
 ## Neue Einträge hinzufügen

@@ -167,6 +167,30 @@ h2.klein {
 
 .hilfe { font-size: 0.85rem; color: var(--tinte-leise); margin: 8px 2px 0; }
 
+/* ---------- Sonderzeichen-Tastatur ---------- */
+
+.tastatur-bereich { margin-top: 8px; }
+.tastatur-knopf {
+  border: 1px solid var(--linie); background: var(--flaeche-2); color: var(--tinte);
+  border-radius: var(--radius); padding: 4px 12px; min-height: 34px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+}
+.tastatur-knopf span { font-family: var(--mono); color: var(--akzent); }
+.tastatur-knopf[aria-expanded="true"] { border-color: var(--akzent); }
+.tastatur {
+  margin-top: 8px; padding: 10px; border: 1px solid var(--linie); border-radius: var(--radius);
+  background: var(--flaeche); box-shadow: var(--schatten);
+}
+.tasten-gruppe { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.tasten-gruppe + .tasten-gruppe { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--linie); }
+.tasten-name { flex-basis: 100%; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--tinte-leise); }
+.taste {
+  min-width: 40px; min-height: 40px; padding: 0 6px; border: 1px solid var(--linie); border-radius: 8px;
+  background: var(--flaeche-2); font-size: 1.15rem; cursor: pointer; touch-action: manipulation;
+}
+.tasten-gruppe.klein .taste { font-size: 1.6rem; line-height: 1; }
+.taste:hover { border-color: var(--akzent); color: var(--akzent); }
+.taste:active { transform: translateY(1px); }
+
 /* ---------- Combo ---------- */
 
 .combo {
@@ -307,6 +331,10 @@ h2.klein {
 .frage.aufgeloest .frage-punkte { color: var(--tinte-leise); font-weight: 400; font-size: 0.85rem; }
 .frage-loesung { padding: 0 12px 10px; font-size: 0.85rem; color: var(--tinte-leise); }
 .frage-meldung { margin: 10px 0 0; font-size: 0.95rem; }
+.wiki-link { color: var(--akzent); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.wiki-link:hover { text-decoration: underline; }
+.frage-erfolg .wiki-link { display: inline-block; margin-top: 10px; }
+.frage-loesung .wiki-link { margin-left: 8px; }
 .frage-meldung.schlecht { color: var(--schlecht); }
 
 /* ---------- Overlays (große Frage, Hilfe) ---------- */
@@ -342,7 +370,8 @@ body.overlay-offen { overflow: hidden; }
   border: 0; border-radius: var(--radius); padding: 0 20px; min-height: 48px;
   background: var(--akzent); color: var(--akzent-text); font-weight: 700; cursor: pointer;
 }
-.aufloesen, .knopfreihe .zweitrangig {
+.ueberspringen { margin-right: 8px; }
+.aufloesen, .ueberspringen, .knopfreihe .zweitrangig {
   margin-top: 12px; border: 1px solid var(--linie); background: var(--flaeche-2); color: var(--tinte);
   border-radius: var(--radius); padding: 0 16px; min-height: 42px; font-weight: 600; cursor: pointer;
 }

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import FRAGEN from '../data/fragen.js';
 import { BEREICHE, QUESTION_TRIES, TIER_POINTS } from '../src/content.js';
 import {
-  INDEX, QUESTIONS, answerQuestion, newState, questionStatus, revealQuestion,
+  INDEX, QUESTIONS, answerQuestion, newState, nextOpenQuestion, questionStatus, revealQuestion,
 } from '../src/game.js';
 
 const BEREICH_IDS = new Set(BEREICHE.map((b) => b.id));
@@ -82,4 +82,30 @@ test('Auflösen erst nach drei Fehlversuchen und ohne Punkte', () => {
   assert.equal(revealQuestion(s, 'f_relativ').id, 'einstein');
   assert.equal(answerQuestion(s, 'f_relativ', 'Einstein', 10).status, 'nichtOffen');
   assert.equal(s.insight, 0);
+});
+
+test('Überspringen geht reihum durch alle offenen Fragen des Bereichs (#14)', () => {
+  const s = newState(); // nur Personen offen
+  const personen = QUESTIONS.filter((q) => q.bereich === 'person');
+  const seen = [personen[0].id];
+  let id = personen[0].id;
+  for (let i = 1; i < personen.length; i++) {
+    id = nextOpenQuestion(s, id).id;
+    seen.push(id);
+  }
+  assert.deepEqual(new Set(seen), new Set(personen.map((q) => q.id)), 'jede Personen-Frage kommt einmal dran');
+  assert.equal(nextOpenQuestion(s, id).id, personen[0].id, 'danach wieder von vorn');
+  assert.equal(s.insight, 0, 'Überspringen kostet und bringt nichts');
+});
+
+test('Überspringen lässt beantwortete Fragen aus und wechselt notfalls den Bereich (#14)', () => {
+  const s = allOpen();
+  const personen = QUESTIONS.filter((q) => q.bereich === 'person');
+  for (const q of personen.slice(1)) answerQuestion(s, q.id, INDEX.byId.get(q.antwort).name, 0);
+  const next = nextOpenQuestion(s, personen[0].id);
+  assert.notEqual(next.bereich, 'person');
+  assert.equal(questionStatus(s, next), 'offen');
+  const t = newState();
+  for (const q of personen) answerQuestion(t, q.id, INDEX.byId.get(q.antwort).name, 0);
+  assert.equal(nextOpenQuestion(t, personen[0].id), null, 'keine offene Frage mehr');
 });

@@ -56,6 +56,7 @@ src/
   save.js         localStorage, Export/Import als Base64-Text
   format.js       Zahlenformat (de-DE, „Mio.“, „Mrd.“ …)
   mindmap.js      mindmap(state): Gebiete → offene Bereiche → Einträge (ohne Namen, solange unentdeckt)
+  wiki.js         wikiUrl(entry): Link zur deutschen Wikipedia (über die Suche mit „go“)
   main.js         UI: Rendering, Overlays, Hauptschleife (update alle 100 ms), Autosave
 data/
   helpers.js      Kurzschreibweisen F, G, P, T, W, U, E, K und inArea – Format ist dort dokumentiert
@@ -63,7 +64,8 @@ data/
   mechanik.js …   Ein Gebiet pro Datei (mechanik, optik, waerme, elektro, astro, quanten, relativ, kern)
   fragen.js       Fragekatalog
   bezuege.js      Person → zugehörige Einträge (für die Mindmap)
-test/             data, matcher, game, fragen, upgrades, mindmap
+  wiki.js         Wikipedia-Artikeltitel je Eintrag-ID (Pflicht für jede Fragen-Antwort, Test)
+test/             data, matcher, game, fragen, upgrades, wiki, mindmap
 ```
 
 ### Begriffe
@@ -122,6 +124,7 @@ ID eines Eintrags; die Antwort wird damit genauso tolerant erkannt wie jede
 Eingabe. `wert = true` nur bei Konstanten, dann muss der Zahlenwert genannt
 werden. Der Bereich der Frage ergibt sich aus der Kategorie der Antwort. Jeder
 Bereich braucht mindestens 4 Fragen (Test).
+Die Antwort braucht außerdem einen Wikipedia-Titel in `data/wiki.js` (Test).
 
 ### Neuer Bereich, neues Upgrade, Balance ändern
 
