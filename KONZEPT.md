@@ -207,17 +207,36 @@ wie viele Einträge je Stufe noch fehlen.
 
 ## Mindmap
 
-Nur im freien Spiel (Issue #24). Über „Mindmap“ oben rechts oder im Codex öffnet sich eine Übersicht, in der man
-sieht, wo noch etwas fehlt. In der Mitte steht „Physik“, davon gehen die acht
-Gebiete ab (Mechanik, Optik …), darunter die **offenen** Bereiche mit ihren
-Einträgen. Gesperrte Bereiche erscheinen nicht.
+Nur im freien Spiel (Issue #24). Über „Mindmap“ oben rechts oder im Codex öffnet
+sich ein **Sonnensystem** (Issue #31), in dem man sieht, wo noch etwas fehlt:
 
-- Entdeckte Einträge stehen mit Namen da, unentdeckte als „?“ mit ihrer Stufe.
-- Jedes Gebiet zeigt, wie viele Einträge noch fehlen.
-- Entdeckte Personen tragen ihre **Bezüge** (`data/bezuege.js`): Gesetze,
-  Experimente, Einheiten usw., die nach ihnen benannt sind oder auf sie
-  zurückgehen – z. B. hängen an Einstein seine Experimente, sobald der Bereich
-  Experimente offen ist. Unentdeckte Bezüge stehen als „? Experiment“ da.
+- **Sonne** = Physik, mit der Zahl aller entdeckten Einträge.
+- **Planeten** = die acht Gebiete (Mechanik, Optik …). Der Ring um einen Planeten
+  zeigt den Fortschritt, die Zahl darin die entdeckten Einträge.
+- **Monde** = die offenen Bereiche des Gebiets; leer, halb oder ganz gefüllt.
+  Gesperrte Bereiche erscheinen nicht.
+- **Pfeile** zwischen Planeten: Eine entdeckte Person zeigt auf ihre Einträge in
+  einem anderen Gebiet (z. B. Newton → Optik: Prismenversuch), sobald deren
+  Bereich offen ist. Mit jedem freigeschalteten Bereich kommen also neue Pfeile
+  dazu; neue werden beim Öffnen gezeichnet und unter dem Bild genannt. Blasse,
+  gestrichelte Pfeile führen zu noch unentdeckten Einträgen. Welche Pfeile schon
+  gezeigt wurden, steht unter `physicsclicker-mindmap-pfeile` (kein Spielstand).
+
+Tippt man einen Planeten an, zoomt die Mindmap hinein und wird zur Leseansicht:
+
+1. Oben die **Monde** (Bereiche) als Knöpfe mit Fortschrittsring und Zahl.
+2. Darunter die **Begriffe** des gewählten Mondes – entdeckte mit Namen, offene
+   als „?“ mit Stufe. Hinter jedem Begriff steht, zu welcher schon entdeckten
+   Person er gehört (z. B. „? ¹ · Newton“) – unentdeckte Personen bleiben
+   verborgen. Personen mit Bezügen tragen eine Zahl.
+3. Ein Begriff antippen öffnet das **Bezugsbild**: Der Begriff links, rechts
+   untereinander alles, was dazugehört, mit Pfeilen verbunden und ausgeschrieben
+   („F = m·a“, „? Experiment · Optik · Stufe 1“). Bei einer Person sind das ihre
+   Einträge, bei jedem anderen Begriff die Personen, zu denen er gehört. Jede
+   Zeile lässt sich antippen und springt dorthin – auch in ein anderes Gebiet.
+
+Die **Bezüge** stehen in `data/bezuege.js`: Gesetze, Experimente, Einheiten usw.,
+die nach einer Person benannt sind oder auf sie zurückgehen.
 
 ## Wikipedia-Links
 

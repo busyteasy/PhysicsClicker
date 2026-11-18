@@ -14,7 +14,7 @@ import {
   clearLocal, exportState, hasSave, importState, loadLocal, loadMode, loadRecord, saveLocal, saveMode, saveRecord,
 } from './save.js';
 import { isRelation, normWord } from './normalize.js';
-import { mindmap } from './mindmap.js';
+import { bezuege, mindmap } from './mindmap.js';
 import { wikiUrl } from './wiki.js';
 
 // Spielwelt (Issue #16): freies Spiel oder eine Klassenstufe. Jede Welt hat
@@ -550,9 +550,73 @@ function chooseWelt(id) {
 
 $('modus-knopf').addEventListener('click', openStart);
 
-// ---------- Mindmap (#11) ----------
+// ---------- Mindmap als Sonnensystem (#11, #31) ----------
+//
+// Übersicht: Physik ist die Sonne, die Gebiete kreisen als Planeten um sie,
+// jeder offene Bereich ist ein Mond. Pfeile zwischen Planeten zeigen, wo eine
+// entdeckte Person in ein anderes Gebiet hineinreicht. Ein Planet lässt sich
+// antippen: Dann kreisen seine Monde um ihn, die Einträge sind Sterne, und von
+// jeder entdeckten Person führen Pfeile zu ihren Einträgen.
 
-const closedAreas = new Set(); // zugeklappte Gebiete bleiben zu, solange die Seite offen ist
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const PFEILE_KEY = 'physicsclicker-mindmap-pfeile';
+
+/** Wie h(), nur für SVG-Elemente. */
+function sv(tag, attrs = {}, ...children) {
+  const el = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) el.setAttribute(k, v);
+  }
+  for (const c of children.flat(Infinity)) {
+    if (c != null && c !== false) el.append(c instanceof Node ? c : String(c));
+  }
+  return el;
+}
+
+const polar = (cx, cy, r, a) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+const rund = (x) => Math.round(x * 10) / 10;
+const kurzBereich = (name) => name.split(' & ')[0];
+const kurzName = (areaId) => C.AREAS.find((a) => a.id === areaId)?.kurz ?? areaId;
+
+/** Fortschrittsring um einen Kreis (Anteil 0…1), beginnt oben. */
+function ring(cx, cy, r, anteil, cls) {
+  const umfang = 2 * Math.PI * r;
+  return [
+    sv('circle', { cx, cy, r, class: 'mm-ring-spur' }),
+    anteil > 0 ? sv('circle', {
+      cx, cy, r, class: `mm-ring ${cls}`, transform: `rotate(-90 ${cx} ${cy})`,
+      'stroke-dasharray': `${rund(umfang * anteil)} ${rund(umfang)}`,
+    }) : null,
+  ];
+}
+
+/** Gekrümmter Pfeil von a nach b, an beiden Enden um `kurz` gekürzt. */
+function bogen([x1, y1], [x2, y2], kurz1, kurz2, kruemmung = 0.18) {
+  const dx = x2 - x1; const dy = y2 - y1; const len = Math.hypot(dx, dy) || 1;
+  const [ux, uy] = [dx / len, dy / len];
+  const a = [x1 + ux * kurz1, y1 + uy * kurz1];
+  const b = [x2 - ux * kurz2, y2 - uy * kurz2];
+  const c = [(a[0] + b[0]) / 2 - uy * len * kruemmung, (a[1] + b[1]) / 2 + ux * len * kruemmung];
+  return `M${rund(a[0])} ${rund(a[1])} Q${rund(c[0])} ${rund(c[1])} ${rund(b[0])} ${rund(b[1])}`;
+}
+
+/** Pfeilspitzen, eine je Gebietsfarbe. */
+function pfeilSpitzen(areaIds) {
+  return sv('defs', {}, areaIds.map((id) => sv('marker', {
+    id: `mm-spitze-${id}`, viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse',
+  }, sv('path', { d: 'M0 0 L10 5 L0 10 z', class: `mm-spitze g-${id}` }))));
+}
+
+/** Welche Pfeile schon einmal gezeigt wurden – neue werden hervorgehoben. */
+function gesehenePfeile() {
+  try { return new Set(JSON.parse(localStorage.getItem(PFEILE_KEY) || '[]')); } catch { return new Set(); }
+}
+function merkePfeile(keys) {
+  try { localStorage.setItem(PFEILE_KEY, JSON.stringify([...keys])); } catch { /* egal */ }
+}
+
+let mmFokus = null; // angetipptes Gebiet oder null für die Übersicht
 
 /** Ein Knoten: Name, wenn entdeckt – sonst ein Fragezeichen. */
 function mindmapChip(n, withCategory = false) {
@@ -562,45 +626,234 @@ function mindmapChip(n, withCategory = false) {
       withCategory ? `? ${CATEGORIES[n.cat]}` : '?', h('sub', {}, n.tier));
 }
 
+function zeigeGebiet(id) {
+  mmFokus = id;
+  mmBereich = null;
+  mmBegriff = null;
+  renderMindmap();
+  $('mindmap-inhalt').scrollTop = 0;
+  $('mindmap-inhalt').querySelector('.zurueck').focus();
+}
+
+/** Tastatur: Enter/Leertaste lösen wie ein Klick aus. */
+const alsKnopf = (label, action) => ({
+  role: 'button', tabindex: 0, 'aria-label': label, onclick: action,
+  onkeydown: (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); action(); } },
+});
+
+function sonnensystem(map) {
+  const areas = map.areas.filter((a) => a.total > 0);
+  const M = 200; const R = 135;
+  const pos = new Map(areas.map((a, i) => [a.id, polar(M, M, R, (i / areas.length) * 2 * Math.PI - Math.PI / 2)]));
+  const found = areas.reduce((x, a) => x + a.found, 0);
+  const total = areas.reduce((x, a) => x + a.total, 0);
+  const gesehen = gesehenePfeile();
+  const neu = map.links.filter((l) => !gesehen.has(l.key));
+  merkePfeile(new Set([...gesehen, ...map.links.map((l) => l.key)]));
+
+  const svg = sv('svg', { viewBox: '-30 0 460 400', class: 'mm-system', role: 'group', 'aria-label': 'Sonnensystem der Physik' },
+    pfeilSpitzen(areas.map((a) => a.id)),
+    sv('circle', { cx: M, cy: M, r: R, class: 'mm-bahn' }),
+    // Pfeile zwischen den Planeten
+    map.links.filter((l) => pos.has(l.von) && pos.has(l.nach)).map((l) => sv('path', {
+      d: bogen(pos.get(l.von), pos.get(l.nach), 30, 32),
+      class: `mm-pfeil g-${l.von}${l.gefunden ? '' : ' offen'}${neu.includes(l) ? ' neu' : ''}`,
+      'stroke-width': rund(1.5 + Math.min(3, l.anzahl * 0.6)), pathLength: 1,
+      'marker-end': `url(#mm-spitze-${l.von})`,
+    }, sv('title', {}, `${l.personen.join(', ')} → ${AREA_NAMES[l.nach]}: ${l.gefunden} von ${l.anzahl} entdeckt`))),
+    // Sonne
+    sv('circle', { cx: M, cy: M, r: 40, class: 'mm-sonne' }),
+    sv('text', { x: M, y: M - 2, class: 'mm-sonne-name' }, 'Physik'),
+    sv('text', { x: M, y: M + 16, class: 'mm-sonne-zahl' }, `${fmt(found)}/${fmt(total)}`),
+    // Planeten mit Monden
+    areas.map((a) => {
+      const [x, y] = pos.get(a.id);
+      const aussen = Math.atan2(y - M, x - M);
+      const [lx, ly] = polar(x, y, 40, aussen);
+      const anker = Math.abs(Math.cos(aussen)) < 0.3 ? 'middle' : Math.cos(aussen) > 0 ? 'start' : 'end';
+      // Monde auf der Innenseite, der Sonne zugewandt
+      const monde = a.bereiche.map((b, i) => {
+        const spread = Math.min(2.6, 0.42 * (a.bereiche.length - 1));
+        const w = aussen + Math.PI + (a.bereiche.length > 1 ? -spread / 2 + (spread * i) / (a.bereiche.length - 1) : 0);
+        const [mx, my] = polar(x, y, 31, w);
+        return sv('circle', {
+          cx: rund(mx), cy: rund(my), r: 4.5, class: `mm-mond g-${a.id}${b.found === b.total ? ' voll' : b.found ? ' teil' : ''}`,
+        }, sv('title', {}, `${b.name}: ${b.found}/${b.total}`));
+      });
+      return sv('g', {
+        class: `mm-planet g-${a.id}`,
+        ...alsKnopf(`${a.name}: ${a.found} von ${a.total} entdeckt, ${a.bereiche.length} Bereiche. Antippen zum Hineinzoomen.`, () => zeigeGebiet(a.id)),
+      },
+      sv('circle', { cx: rund(x), cy: rund(y), r: 34, class: 'mm-trefferflaeche' }),
+      monde,
+      ring(rund(x), rund(y), 22, a.total ? a.found / a.total : 0, `g-${a.id}`),
+      sv('circle', { cx: rund(x), cy: rund(y), r: 17, class: 'mm-planet-kugel' }),
+      sv('text', { x: rund(x), y: rund(y + 4), class: 'mm-planet-zahl' }, a.found),
+      sv('text', { x: rund(lx), y: rund(ly + 5), class: 'mm-planet-name', 'text-anchor': anker }, a.kurz));
+    }));
+
+  return [
+    svg,
+    neu.length
+      ? h('p', { class: 'mm-neu-hinweis' }, `✦ ${neu.length === 1 ? 'Neuer Pfeil' : `${neu.length} neue Pfeile`}: `
+        + neu.map((l) => `${kurzName(l.von)} → ${kurzName(l.nach)}`).join(', '))
+      : null,
+    h('div', { class: 'mm-planetenliste' }, areas.map((a) => h('button', {
+      type: 'button', class: `mm-planet-knopf g-${a.id}`, onclick: () => zeigeGebiet(a.id),
+    }, h('span', { class: 'mm-punkt', 'aria-hidden': 'true' }), a.kurz, h('span', { class: 'mm-zahl' }, `${a.found}/${a.total}`)))),
+    h('p', { class: 'mm-gesperrt' }, 'Planeten = Gebiete, Monde = offene Bereiche, die Zahl = entdeckte Einträge. '
+      + 'Pfeile zeigen, wo eine entdeckte Person in ein anderes Gebiet hineinreicht – mit jedem freigeschalteten Bereich kommen neue dazu. '
+      + 'Blasse Pfeile führen zu Einträgen, die du noch nicht kennst.'),
+  ];
+}
+
+let mmBereich = null; // gewählter Mond (Bereich) in der Planetenansicht
+let mmBegriff = null; // angetippter Eintrag, dessen Bezüge gezeigt werden
+
+/** Wechselt zu einem Eintrag – notfalls in sein Gebiet und seinen Bereich. */
+function zeigeBegriff(n) {
+  mmBegriff = n.id;
+  mmBereich = n.bereich;
+  if (n.area !== mmFokus) mmFokus = n.area;
+  renderMindmap();
+  $('mindmap-inhalt').querySelector('.mm-bezugsbild')?.scrollIntoView({ block: 'nearest' });
+}
+
+const nodeText = (n) => (n.known ? n.name : `? ${CATEGORIES[n.cat]}`);
+const nachname = (name) => name.split(' ').at(-1);
+
+/**
+ * Bezugsbild: der gewählte Begriff links, alles, was dazugehört, rechts –
+ * verbunden mit Pfeilen und gut lesbar beschriftet.
+ */
+function bezugsBild(info, a) {
+  const { node } = info;
+  const rows = [
+    ...info.nach.map((n) => ({ n, richtung: 'nach' })),
+    ...info.von.map((n) => ({ n, richtung: 'von' })),
+  ];
+  const kopf = h('div', { class: `mm-bezug-kopf g-${node.area}` },
+    h('span', { class: `mm-stern-zeichen${node.known ? ' bekannt' : ''}`, 'aria-hidden': 'true' }, node.known ? '★' : '☆'),
+    h('div', {},
+      h('div', { class: 'mm-bezug-name' }, node.known ? node.name : 'Noch nicht entdeckt'),
+      h('div', { class: 'mm-zahl' }, `${CATEGORIES[node.cat]} · Stufe ${node.tier}${node.area !== a.id ? ` · ${AREA_NAMES[node.area]}` : ''}`)));
+
+  if (!rows.length) {
+    return h('div', { class: 'mm-bezugsbild' }, kopf,
+      h('p', { class: 'mm-bezug-leer' }, node.cat === 'person' && !node.known
+        ? 'Entdecke diese Person, dann siehst du, was zu ihr gehört.'
+        : node.cat === 'person'
+          ? 'Zu dieser Person gibt es in den offenen Bereichen keine weiteren Einträge – vielleicht in einem gesperrten Bereich.'
+          : 'Dieser Begriff hängt an keiner Person in den offenen Bereichen.'));
+  }
+
+  const ZEILE = 42; const H = rows.length * ZEILE + 8; const XL = 22; const XR = 84;
+  const cy = H / 2;
+  const svg = sv('svg', { viewBox: `0 0 400 ${H}`, class: 'mm-bezug-svg', role: 'list', 'aria-label': `Was zu ${nodeText(node)} gehört` },
+    pfeilSpitzen([...new Set([node.area, ...rows.map((r) => r.n.area)])]),
+    sv('circle', { cx: XL, cy, r: 14, class: `mm-bezug-knoten g-${node.area}${node.known ? ' bekannt' : ''}` }),
+    rows.map(({ n, richtung }, i) => {
+      const y = 4 + ZEILE * i + ZEILE / 2;
+      const farbe = richtung === 'nach' ? node.area : n.area;
+      const d = `M${XL + 16} ${cy} C ${XL + 50} ${cy}, ${XR - 46} ${y}, ${XR - 8} ${y}`;
+      const anderesGebiet = n.area !== a.id;
+      return sv('g', {
+        class: `mm-bezug-zeile g-${n.area}`, role: 'listitem',
+        ...alsKnopf(`${nodeText(n)} – öffnen`, () => zeigeBegriff(n)),
+      },
+      sv('path', {
+        d, class: `mm-pfeil g-${farbe}${n.known ? '' : ' offen'}`, 'stroke-width': 2,
+        ...(richtung === 'nach' ? { 'marker-end': `url(#mm-spitze-${farbe})` } : { 'marker-start': `url(#mm-spitze-${farbe})` }),
+      }),
+      sv('rect', { x: XR - 4, y: y - ZEILE / 2 + 3, width: 400 - XR, height: ZEILE - 6, rx: 8, class: 'mm-bezug-flaeche' }),
+      sv('circle', { cx: XR + 8, cy: y, r: 6, class: `mm-bezug-punkt${n.known ? ' bekannt' : ''}` }),
+      sv('text', { x: XR + 22, y: y + 7, class: `mm-bezug-text${n.known ? '' : ' offen'}` },
+        nodeText(n),
+        anderesGebiet ? sv('tspan', { class: 'mm-bezug-gebiet' }, `  ${kurzName(n.area)}`) : null,
+        n.known ? null : sv('tspan', { class: 'mm-bezug-gebiet' }, `  Stufe ${n.tier}`)));
+    }));
+
+  return h('div', { class: 'mm-bezugsbild' }, kopf,
+    h('p', { class: 'mm-bezug-titel' }, info.nach.length ? 'Gehört dazu:' : 'Gehört zu:'),
+    svg,
+    h('p', { class: 'mm-bezug-leer' }, 'Tippe auf einen Eintrag, um dorthin zu springen.'));
+}
+
+function planetAnsicht(map, a) {
+  if (!a.bereiche.some((b) => b.id === mmBereich)) {
+    // Standard: der Bereich mit den meisten Entdeckungen, sonst der erste
+    mmBereich = [...a.bereiche].sort((x, y) => y.found - x.found)[0]?.id ?? null;
+  }
+  const bereich = a.bereiche.find((b) => b.id === mmBereich);
+  const info = mmBegriff ? bezuege(state, mmBegriff) : null;
+  if (info && info.node.area !== a.id) mmBegriff = null;
+
+  // Monde als Knöpfe mit kleinem Fortschrittsring
+  const monde = h('div', { class: `mm-monde g-${a.id}`, role: 'tablist', 'aria-label': 'Bereiche (Monde)' }, a.bereiche.map((b) => {
+    const r = 9; const u = 2 * Math.PI * r;
+    return h('button', {
+      type: 'button', role: 'tab', 'aria-selected': String(b.id === mmBereich),
+      class: `mm-mond-knopf${b.id === mmBereich ? ' aktiv' : ''}`,
+      onclick: () => { mmBereich = b.id; mmBegriff = null; renderMindmap(); },
+    },
+    sv('svg', { viewBox: '0 0 24 24', class: 'mm-mond-ring', 'aria-hidden': 'true' },
+      sv('circle', { cx: 12, cy: 12, r, class: 'mm-ring-spur' }),
+      b.found ? sv('circle', { cx: 12, cy: 12, r, class: 'mm-ring', transform: 'rotate(-90 12 12)', 'stroke-dasharray': `${rund((u * b.found) / b.total)} ${rund(u)}` }) : null),
+    h('span', {}, b.name), h('span', { class: 'mm-zahl' }, `${b.found}/${b.total}`));
+  }));
+
+  const raus = map.links.filter((l) => l.von === a.id);
+  const rein = map.links.filter((l) => l.nach === a.id);
+  return [
+    h('p', { class: 'mm-gebiet-kopf' }, h('span', { class: `mm-punkt g-${a.id}`, 'aria-hidden': 'true' }), a.name,
+      h('span', { class: 'mm-zahl' }, a.missing ? `${a.found}/${a.total} · ${a.missing} fehlen` : `${a.total}/${a.total} ✓`)),
+    monde,
+    bereich ? h('div', { class: `mm-begriffe g-${a.id}` },
+      h('p', { class: 'mm-bezug-leer' }, `${bereich.name}: Tippe auf einen Begriff – dann siehst du, was dazugehört.`),
+      h('div', { class: 'mm-knoten-liste' }, bereich.nodes.map((n) => h('button', {
+        type: 'button',
+        class: `mm-knoten ${n.known ? `bekannt ${n.cat}` : 'unbekannt'}${n.id === mmBegriff ? ' aktiv' : ''}${n.links?.length ? ' mit-bezug' : ''}`,
+        title: n.known ? `${CATEGORIES[n.cat]} · Stufe ${n.tier}` : `Noch nicht entdeckt: ${CATEGORIES[n.cat]}, Stufe ${n.tier}`,
+        onclick: () => { mmBegriff = n.id; renderMindmap(); $('mindmap-inhalt').querySelector('.mm-bezugsbild')?.scrollIntoView({ block: 'nearest' }); },
+      }, n.known ? n.name : '?', n.known ? null : h('sub', {}, n.tier),
+      n.personen.length ? h('span', { class: 'mm-gehoert' }, `· ${n.personen.map(nachname).join(', ')}`) : null,
+      n.links?.length ? h('span', { class: 'mm-anzahl', 'aria-label': `${n.links.length} Bezüge` }, n.links.length) : null)))) : null,
+    info ? bezugsBild(info, a) : null,
+    raus.length || rein.length
+      ? h('div', { class: 'mm-verbindungen' },
+        h('span', { class: 'mm-zahl' }, 'Verbindungen:'),
+        raus.map((l) => h('button', { type: 'button', class: `mm-planet-knopf g-${l.nach}`, onclick: () => zeigeGebiet(l.nach) },
+          `→ ${AREA_NAMES[l.nach]}`, h('span', { class: 'mm-zahl' }, `${l.gefunden}/${l.anzahl}`))),
+        rein.map((l) => h('button', { type: 'button', class: `mm-planet-knopf g-${l.von}`, onclick: () => zeigeGebiet(l.von) },
+          `← ${AREA_NAMES[l.von]}`, h('span', { class: 'mm-zahl' }, `${l.gefunden}/${l.anzahl}`))))
+      : null,
+  ];
+}
+
 function renderMindmap() {
   const map = mindmap(state);
-  const found = map.areas.reduce((s, a) => s + a.found, 0);
-  const total = map.areas.reduce((s, a) => s + a.total, 0);
+  const fokus = mmFokus && map.areas.find((a) => a.id === mmFokus && a.total > 0);
+  if (!fokus) mmFokus = null;
 
   fill($('mindmap-inhalt'),
     h('div', { class: 'overlay-leiste' },
-      h('button', { type: 'button', class: 'zurueck', onclick: closeOverlay }, '← Zurück'),
-      h('span', { class: 'overlay-info' }, '? = noch nicht entdeckt')),
+      fokus
+        ? h('button', { type: 'button', class: 'zurueck', onclick: () => zeigeGebiet(null) }, '← Sonnensystem')
+        : h('button', { type: 'button', class: 'zurueck', onclick: closeOverlay }, '← Zurück'),
+      h('span', { class: 'overlay-info' }, fokus ? 'Mond und Begriff antippen' : 'Planet antippen zum Hineinzoomen')),
     h('h2', { id: 'mindmap-titel', class: 'mm-titel' }, 'Mindmap'),
-    h('div', { class: 'mm-wurzel' },
-      h('span', { class: 'mm-wurzel-name' }, 'Physik'),
-      h('span', { class: 'mm-zahl' }, `${found}/${total} entdeckt`)),
-    h('div', { class: 'mm-gebiete' }, map.areas.filter((a) => a.total > 0).map((a) => {
-      const details = h('details', { class: `mm-gebiet g-${a.id}`, open: !closedAreas.has(a.id) },
-        h('summary', {},
-          h('span', { class: 'mm-gebiet-name' }, a.name),
-          h('span', { class: 'mm-zahl' }, a.missing ? `${a.found}/${a.total} · ${a.missing} fehlen` : `${a.total}/${a.total} ✓`)),
-        h('ul', { class: 'mm-ast' }, a.bereiche.map((b) => h('li', { class: 'mm-bereich' },
-          h('div', { class: 'mm-bereich-kopf' }, b.name, h('span', { class: 'mm-zahl' }, `${b.found}/${b.total}`)),
-          h('div', { class: 'mm-knoten-liste' }, b.nodes.map((n) => (n.links?.length
-            ? h('div', { class: 'mm-person' },
-              mindmapChip(n),
-              h('div', { class: 'mm-bezuege', 'aria-label': `Bezüge von ${n.name}` }, n.links.map((x) => mindmapChip(x, true))))
-            : mindmapChip(n))))))));
-      details.addEventListener('toggle', () => {
-        if (details.open) closedAreas.delete(a.id); else closedAreas.add(a.id);
-      });
-      return details;
-    })),
+    fokus ? planetAnsicht(map, fokus) : sonnensystem(map),
     map.locked.length
       ? h('p', { class: 'mm-gesperrt' }, `Noch gesperrt und deshalb nicht in der Mindmap: ${map.locked.join(', ')}.`)
       : null,
-    h('p', { class: 'mm-gesperrt' }, 'Entdeckte Personen zeigen, was zu ihnen gehört – zum Beispiel ihre Experimente oder Gesetze, sobald der Bereich offen ist.'),
   );
 }
 
 function openMindmap() {
   if (W().klasse) return; // Mindmap gibt es nur im freien Spiel (Issue #24)
+  mmFokus = null;
+  mmBereich = null;
+  mmBegriff = null;
   renderMindmap();
   openOverlay('mindmap');
   $('mindmap-inhalt').querySelector('.zurueck').focus();

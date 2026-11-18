@@ -60,7 +60,9 @@ src/
   normalize.js    Vereinheitlicht Wörter, Formeln, Einheiten; parseQuantity liest Zahlen
   save.js         localStorage, Export/Import als Base64-Text
   format.js       Zahlenformat (de-DE, „Mio.“, „Mrd.“ …)
-  mindmap.js      mindmap(state): Gebiete → offene Bereiche → Einträge (ohne Namen, solange unentdeckt)
+  mindmap.js      mindmap(state): Gebiete → offene Bereiche → Einträge (ohne Namen, solange unentdeckt);
+                  verbindungen(state): Pfeile zwischen Gebieten für das Sonnensystem;
+                  bezuege(state, id): was zu einem Eintrag gehört (für das Bezugsbild)
   wiki.js         wikiUrl(entry): Link zur deutschen Wikipedia (über die Suche mit „go“)
   main.js         UI: Rendering, Overlays, Hauptschleife (update alle 100 ms), Autosave
 data/

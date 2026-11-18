@@ -1,14 +1,14 @@
 // Gebiete, Bereiche und Punktwerte – die Spielbalance an einem Ort.
 
 export const AREAS = [
-  { id: 'mechanik', name: 'Mechanik' },
-  { id: 'optik', name: 'Optik' },
-  { id: 'waerme', name: 'Wärmelehre' },
-  { id: 'elektro', name: 'Elektrizität & Magnetismus' },
-  { id: 'astro', name: 'Astrophysik' },
-  { id: 'quanten', name: 'Quantenphysik' },
-  { id: 'relativ', name: 'Relativität' },
-  { id: 'kern', name: 'Kern- & Teilchenphysik' },
+  { id: 'mechanik', name: 'Mechanik', kurz: 'Mechanik' },
+  { id: 'optik', name: 'Optik', kurz: 'Optik' },
+  { id: 'waerme', name: 'Wärmelehre', kurz: 'Wärme' },
+  { id: 'elektro', name: 'Elektrizität & Magnetismus', kurz: 'Elektro' },
+  { id: 'astro', name: 'Astrophysik', kurz: 'Astro' },
+  { id: 'quanten', name: 'Quantenphysik', kurz: 'Quanten' },
+  { id: 'relativ', name: 'Relativität', kurz: 'Relativität' },
+  { id: 'kern', name: 'Kern- & Teilchenphysik', kurz: 'Kern' },
 ];
 
 export const AREA_NAMES = Object.fromEntries(AREAS.map((a) => [a.id, a.name]));
