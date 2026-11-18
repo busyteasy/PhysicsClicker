@@ -2,9 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ENTRIES } from '../data/index.js';
 import KLASSEN from '../data/klassen/index.js';
-import { QUESTION_FACTOR, TIER_POINTS } from '../src/content.js';
+import { BEREICHE, KLASSEN_BEREICH_REIHENFOLGE } from '../src/content.js';
 import {
-  FREI, KLASSEN_WELTEN, answerQuestion, buyBereich, isOpen, newState, restore, submit, unlockPrice, welt,
+  FREI, KLASSEN_WELTEN, answerQuestion, buyBereich, newState, restore, submit, unlockPrice, welt,
 } from '../src/game.js';
 import { match } from '../src/matcher.js';
 import { wikiUrl } from '../src/wiki.js';
@@ -42,19 +42,25 @@ test('Jede Klasse bietet genug zu spielen', () => {
       assert.ok(n >= 3, `${w.name}: Bereich ${b.name} hat nur ${n} Einträge`);
       assert.ok(q >= 2, `${w.name}: Bereich ${b.name} hat nur ${q} Fragen`);
     }
-    assert.ok(w.start.length === 1 && w.start[0].startsWith('begriff'), `${w.name}: Start mit Größen & Begriffen`);
+    assert.ok(w.bereiche[0].id.startsWith('begriff'), `${w.name}: Größen & Begriffe stehen vorn`);
   }
 });
 
-test('Freikaufen ist in jeder Klasse gut erreichbar', () => {
+// Issue #30: In den Klassen ist alles sofort offen, nur im freien Spiel wird freigeschaltet
+test('In jeder Klasse sind alle Bereiche von Anfang an offen', () => {
   for (const w of KLASSEN_WELTEN) {
-    const points = w.entries.reduce((s, e) => s + TIER_POINTS[e.tier], 0)
-      + w.questions.reduce((s, q) => s + TIER_POINTS[q.tier] * QUESTION_FACTOR, 0);
-    const buyable = w.bereiche.length - w.start.length;
-    const cost = w.prices.slice(0, buyable).reduce((a, b) => a + b, 0);
-    assert.ok(cost <= 0.6 * points, `${w.name}: Freikaufen kostet ${cost}, erreichbar sind ${points}`);
-    assert.ok(w.prices.length >= buyable, `${w.name}: zu wenige Preise`);
+    const s = newState(w.id);
+    assert.deepEqual([...s.unlocked].sort(), w.bereiche.map((b) => b.id).sort(), w.name);
+    assert.equal(unlockPrice(s), null, `${w.name}: nichts zu kaufen`);
+    s.insight = 1e9;
+    assert.ok(w.bereiche.every((b) => !buyBereich(s, b.id)), `${w.name}: Kaufen geht ins Leere`);
+    assert.equal(s.insight, 1e9, 'keine Erkenntnis abgezogen');
   }
+  assert.deepEqual(newState('frei').unlocked, ['person'], 'im freien Spiel bleibt es beim Freischalten');
+});
+
+test('Die Klassen-Reihenfolge der Bereiche kennt jede Kategorie', () => {
+  assert.deepEqual([...KLASSEN_BEREICH_REIHENFOLGE].sort(), BEREICHE.map((b) => b.id).sort());
 });
 
 test('Jede Frage ist mit dem Namen ihrer Antwort lösbar und hat einen Wikipedia-Link', () => {
@@ -80,23 +86,12 @@ test('Eine Klassenwelt kennt nur ihre eigenen Einträge', () => {
   assert.equal(k5.name, 'Klasse 5');
   const s = newState('k5');
   assert.equal(s.welt, 'k5');
-  assert.deepEqual(s.unlocked, ['begriff_einheit']);
   assert.equal(submit(s, 'Stromkreis', 0).status, 'treffer');
+  assert.equal(submit(s, 'Volta', 0).status, 'treffer', 'auch Personen sofort');
   assert.equal(submit(s, 'Schrödinger-Gleichung', 1).status, 'unbekannt', 'gehört nicht zur Klasse 5');
   assert.equal(match(FREI.index, 'Schrödinger-Gleichung').kind, 'treffer', 'im freien Spiel schon');
   // Stufe innerhalb der Klasse statt der Stufe im freien Spiel
   assert.equal(k5.index.byId.get('b_reihe').tier, 1);
-});
-
-test('Freikaufen in einer Klasse nutzt die Klassenpreise', () => {
-  const w = welt('k5');
-  const s = newState('k5');
-  assert.equal(unlockPrice(s), w.prices[0]);
-  s.insight = 1e9;
-  assert.equal(buyBereich(s, 'teilchen'), false, 'Teilchen gibt es in Klasse 5 nicht');
-  for (const b of w.bereiche.slice(1)) assert.ok(buyBereich(s, b.id), b.id);
-  assert.equal(unlockPrice(s), null);
-  assert.ok(w.bereiche.every((b) => isOpen(s, b.id)));
 });
 
 test('Spielstände bleiben in ihrer Welt', () => {
@@ -130,18 +125,18 @@ test('Untere Klassen haben weniger Bereiche als die Oberstufe', () => {
   assert.ok(welt('frei').entries.every((e) => e.bereich === e.cat));
 });
 
-test('Gruppierte Bereiche lassen sich freischalten und bespielen', () => {
+test('Gruppierte Bereiche lassen sich sofort bespielen', () => {
   const s = newState('k5');
-  s.insight = 1e6;
-  assert.ok(buyBereich(s, 'forschung'));
   assert.equal(submit(s, 'Volta', 0).status, 'treffer');
   assert.equal(submit(s, 'Kugel-Ring-Versuch', 1).status, 'treffer');
-  assert.equal(submit(s, 'Volt', 2).status, 'treffer', 'Einheiten stecken im Startbereich');
+  assert.equal(submit(s, 'Volt', 2).status, 'treffer', 'Einheiten stecken in „Größen & Einheiten“');
 });
 
-test('Alte Klassen-Spielstände mit einzelnen Kategorien werden übernommen', () => {
-  const s = restore({ welt: 'k5', insight: 7, unlocked: ['begriff', 'einheit', 'person', 'geraet'], discovered: { volta: 1 } });
-  assert.deepEqual(s.unlocked, ['begriff_einheit', 'forschung', 'geraet']);
+test('Alte Klassen-Spielstände laden – mit allen Bereichen offen und ihrer Erkenntnis', () => {
+  // Stand von vor #26 (einzelne Kategorien) und vor #30 (nur einiges freigekauft)
+  const s = restore({ welt: 'k5', insight: 7, unlocked: ['begriff', 'einheit', 'person'], discovered: { volta: 1 } });
+  assert.deepEqual([...s.unlocked].sort(), welt('k5').bereiche.map((b) => b.id).sort());
+  assert.equal(s.insight, 7);
   assert.ok(s.discovered.volta);
 });
 

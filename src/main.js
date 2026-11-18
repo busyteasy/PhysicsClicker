@@ -479,7 +479,7 @@ const FOLIEN = [
   },
   {
     titel: 'Schalte Bereiche frei',
-    text: 'Mit Erkenntnis öffnest du neue Bereiche – in der Reihenfolge, die du willst.',
+    text: 'Im freien Spiel öffnest du mit Erkenntnis neue Bereiche. In den Klassen ist alles sofort offen.',
     bild: () => tafel(
       pille('offen', '✓ Personen'),
       pille('zu', '🔒 Formeln · 100'),
@@ -584,8 +584,10 @@ function renderHelp() {
     h('p', {}, 'Tippe Physikwissen in das Eingabefeld – Namen, Begriffe, Formeln oder Konstanten. '
       + 'Jede richtige Eingabe bringt Erkenntnis, die Spielwährung. Erkenntnis gibt es ausschließlich '
       + 'für deine Eingaben und Antworten: Nichts läuft von selbst.'),
-    h('p', {}, (W().klasse ? 'Zu Beginn sind nur „Größen & Begriffe“ offen.' : 'Zu Beginn kannst du nur Physikerinnen und Physiker eingeben.')
-      + ' Mit Erkenntnis schaltest du im Reiter „Bereiche“ weitere Bereiche frei – in der Reihenfolge, die du willst. '
+    h('p', {}, (W().klasse
+      ? 'In deiner Klasse sind alle Bereiche von Anfang an offen – du kannst sofort alles eingeben. '
+      : 'Zu Beginn kannst du nur Physikerinnen und Physiker eingeben. Mit Erkenntnis schaltest du im Reiter „Bereiche“ '
+        + 'weitere Bereiche frei – in der Reihenfolge, die du willst. ')
       + 'Alles, was du entdeckst, sammelt sich mit einem Fun Fact im Codex.'),
 
     h('h3', {}, 'Punkte für Eingaben'),
@@ -596,7 +598,7 @@ function renderHelp() {
       h('li', {}, `Konstante mit richtigem Wert (z. B. c = 3·10^8 m/s): zusätzlich das ${fmt(C.VALUE_FACTOR)}-Fache.`),
       h('li', {}, `Wiederholung: ${pct(C.REPEAT_SHARE)} des Werts als Trinkgeld – höchstens alle ${secs(C.REPEAT_COOLDOWN_MS)} pro Eintrag.`),
       h('li', {}, `Combo: Jeder Treffer innerhalb von ${secs(C.COMBO_WINDOW_MS)} nach dem letzten erhöht den Wert um ${pct(C.COMBO_STEP)}, bis höchstens ×${fmt(C.COMBO_MAX)}.`),
-      h('li', {}, 'Einträge aus gesperrten Bereichen werden erkannt, bringen aber noch nichts.')),
+      W().klasse ? null : h('li', {}, 'Einträge aus gesperrten Bereichen werden erkannt, bringen aber noch nichts.')),
 
     h('h3', {}, 'Wenn dir nichts mehr einfällt'),
     h('ul', {},
@@ -609,12 +611,18 @@ function renderHelp() {
       + `also zwischen ${fmt(C.TIER_POINTS[1] * C.QUESTION_FACTOR)} und ${fmt(C.TIER_POINTS[5] * C.QUESTION_FACTOR)} Erkenntnis. `
       + `Nach ${C.QUESTION_TRIES} Fehlversuchen kannst du eine Frage auflösen – dann ohne Punkte.`),
 
-    h('h3', {}, 'Bereiche freischalten'),
-    h('p', {}, W().klasse
-      ? `Du spielst ${W().name}: nur Inhalte dieser Klassenstufe, mit Stufen innerhalb der Klasse (1 = Grundwissen, 4 = Zusatzwissen). Die Preise passen sich der Klasse an.`
-      : 'Du spielst das freie Spiel mit der ganzen Wissensdatenbank.'),
-    table(['Freischaltung', 'Preis'], W().prices.slice(0, W().bereiche.length - W().start.length)
-      .map((p, i) => [`${i + 1}. Bereich`, `${fmt(p)} Erkenntnis`])),
+    ...(W().klasse
+      ? [
+        h('h3', {}, 'Deine Klasse'),
+        h('p', {}, `Du spielst ${W().name}: nur Inhalte dieser Klassenstufe, mit Stufen innerhalb der Klasse `
+          + '(1 = Grundwissen, 4 = Zusatzwissen). Alle Bereiche sind offen; Erkenntnis brauchst du hier für Upgrades und das Lückenwort.'),
+      ]
+      : [
+        h('h3', {}, 'Bereiche freischalten'),
+        h('p', {}, 'Du spielst das freie Spiel mit der ganzen Wissensdatenbank.'),
+        table(['Freischaltung', 'Preis'], W().prices.slice(0, W().bereiche.length - W().start.length)
+          .map((p, i) => [`${i + 1}. Bereich`, `${fmt(p)} Erkenntnis`])),
+      ]),
 
     h('h3', {}, 'Upgrades'),
     h('p', {}, `Einmalige Effekte für den richtigen Moment. Es wirkt immer nur ein Multiplikator gleichzeitig, `
@@ -655,8 +663,6 @@ function klassenUebersicht(w) {
     return h('div', { class: 'klassen-uebersicht leer', id: 'klassen-uebersicht', 'aria-live': 'polite' },
       'Tippe auf eine Klasse, um zu sehen, was drankommt.');
   }
-  const start = w.bereiche.filter((b) => w.start.includes(b.id));
-  const rest = w.bereiche.filter((b) => !w.start.includes(b.id));
   const p = worldProgress(w);
   return h('div', { class: 'klassen-uebersicht', id: 'klassen-uebersicht', 'aria-live': 'polite' },
     h('h3', {}, `Das kommt in ${w.name} dran`),
@@ -664,9 +670,7 @@ function klassenUebersicht(w) {
     h('ul', { class: 'ku-themen' }, w.info.themen.map((t) => h('li', {}, t))),
     h('p', { class: 'ku-zahlen' },
       `${fmt(w.entries.length)} Begriffe zum Eintippen und ${fmt(w.questions.length)} Fragen. `
-      + `Du startest mit „${start.map((b) => b.name).join('“, „')}“`
-      + (rest.length ? `, danach schaltest du ${rest.length === 1 ? 'einen weiteren Bereich' : `${rest.length} weitere Bereiche`} frei: `
-        + `${rest.map((b) => b.name).join(', ')}.` : '.')),
+      + `Alle ${w.bereiche.length} Bereiche sind sofort offen: ${w.bereiche.map((b) => b.name).join(', ')}.`),
     h('button', { type: 'button', class: 'primaer ku-los', onclick: () => chooseWelt(w.id) },
       p ? `Weiter mit ${w.name} →` : `${w.name} spielen →`));
 }

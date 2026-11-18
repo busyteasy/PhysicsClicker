@@ -30,8 +30,8 @@ Spiel (Issue #24).
 
 Tippt man im Startbildschirm auf eine Klasse, erscheint zuerst eine kurze
 **Inhaltsübersicht** (Issue #27/#28): zwei, drei Sätze, worum es geht, die
-Themen, die Zahl der Begriffe und Fragen und welche Bereiche man freischalten
-kann. Erst der Knopf „Klasse N spielen“ wechselt die Welt.
+Themen, die Zahl der Begriffe und Fragen und welche Bereiche es gibt. Erst der
+Knopf „Klasse N spielen“ wechselt die Welt.
 
 | Klasse | Themen |
 |---|---|
@@ -68,14 +68,16 @@ die unteren Klassen weniger, aber vollere Bereiche haben:
 
 Klasse 5 hat so 4 Bereiche, Klasse 12 dagegen 10. In den unteren Klassen
 kommen außerdem nur bekannte Physikerinnen und Physiker vor (nicht mehr z. B.
-William Gilbert, Alhazen oder Lipperhey). Ältere Klassen-Spielstände werden
-übernommen: Ein schon gekaufter Einzelbereich öffnet seine Gruppe.
+William Gilbert, Alhazen oder Lipperhey).
 
-In einer Klasse startet man mit dem Bereich **Größen & Begriffe** (in Klasse 5
-„Größen & Einheiten“). Die Preise
-für weitere Bereiche richten sich nach der Klasse: Alle Bereiche zusammen kosten
-40 % der Erkenntnis, die man in der Klasse ohne Combo verdienen kann; der n-te
-Kauf kostet n-mal so viel wie der erste.
+**Alles sofort offen** (Issue #30): In einer Klasse sind alle Bereiche von
+Anfang an offen – man kann sofort alles eingeben, was zum Stoff gehört. Es gibt
+dort nichts freizuschalten; Erkenntnis braucht man für Upgrades und das
+Lückenwort. Der Reiter „Bereiche“ zeigt nur den Fortschritt je Bereich, mit
+„Größen & Begriffe“ vorn (Reihenfolge: `KLASSEN_BEREICH_REIHENFOLGE` in
+`content.js`). Ältere Klassen-Spielstände laden mit allen Bereichen offen;
+Erkenntnis und Entdeckungen bleiben erhalten. Im freien Spiel bleibt das
+Freischalten wie unten beschrieben.
 
 Phase 1 ist ein **rein deutsches Spiel**: Oberfläche, Rückmeldungen, Fun Facts
 und die Namen in der Wissensdatenbank sind deutsch. Formeln und Einheiten sind
@@ -132,7 +134,7 @@ Leiste offen ist, merkt sich der Browser.
 - **Combo:** Treffer im Abstand von höchstens 8 Sekunden erhöhen einen
   Multiplikator um je 10 % (bis ×2).
 
-## Bereiche freischalten
+## Bereiche freischalten (freies Spiel)
 
 Die Bereiche sind die Kategorien der Wissensdatenbank. Offen ist im freien
 Spiel am Anfang nur **Personen**. Die übrigen neun kauft man mit Erkenntnis frei
@@ -147,8 +149,8 @@ Bereich es ist:
 Seit den Klassenstufen gibt es zwei neue Bereiche: **Größen & Begriffe**
 (physikalische Größen, Fachbegriffe, Modelle – etwa Stromstärke, Dichte,
 Teilchenmodell) und **Geräte & Bauteile** (Messgeräte, Bauteile, technische
-Geräte – etwa Kompass, Sammellinse, Transformator). In den Klassenstufen gelten
-eigene Preise (siehe oben).
+Geräte – etwa Kompass, Sammellinse, Transformator). In den Klassenstufen ist
+alles sofort offen (siehe oben).
 
 Jeder Bereich zeigt **nur ein Beispiel** (Issue #25), damit man die Lösungen
 nicht einfach abtippen kann.

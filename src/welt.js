@@ -8,8 +8,7 @@ import FRAGEN from '../data/fragen.js';
 import KLASSEN from '../data/klassen/index.js';
 import { buildIndex } from './matcher.js';
 import {
-  BEREICH_GRUPPEN, BEREICHE, KLASSEN_PREIS_ANTEIL, KLASSEN_START, QUESTION_FACTOR, START_BEREICHE, TIER_POINTS,
-  UNLOCK_PRICES,
+  BEREICH_GRUPPEN, BEREICHE, KLASSEN_BEREICH_REIHENFOLGE, START_BEREICHE, UNLOCK_PRICES,
 } from './content.js';
 
 const ENTRY_BY_ID = new Map(ENTRIES.map((e) => [e.id, e]));
@@ -50,17 +49,8 @@ function makeWelt({ id, name, kurz, klasse = null, entries: raw, fragen, start: 
     bereichIds: new Set(bereiche.map((b) => b.id)),
     zuBereich,
     start,
-    prices: typeof prices === 'function' ? prices(entries, questions, bereiche.length - start.length) : prices,
+    prices,
   };
-}
-
-/** Preise einer Klasse: steigend, zusammen KLASSEN_PREIS_ANTEIL der möglichen Erkenntnis. */
-function klassenPreise(entries, fragen, buyable) {
-  const total = entries.reduce((s, e) => s + TIER_POINTS[e.tier], 0)
-    + fragen.reduce((s, q) => s + TIER_POINTS[q.tier] * QUESTION_FACTOR, 0);
-  const weights = Array.from({ length: buyable }, (_, i) => i + 1);
-  const sum = weights.reduce((a, b) => a + b, 0);
-  return weights.map((w) => Math.max(10, Math.round((KLASSEN_PREIS_ANTEIL * total * w) / sum / 10) * 10));
 }
 
 /** Einträge einer Klasse: dieselben Einträge, aber mit der Stufe innerhalb der Klasse. */
@@ -79,8 +69,9 @@ export const FREI = makeWelt({
 
 export const KLASSEN_WELTEN = KLASSEN.map((k) => makeWelt({
   id: `k${k.klasse}`, name: `Klasse ${k.klasse}`, kurz: `Kl. ${k.klasse}`, klasse: k.klasse,
-  entries: klassenEintraege(k), fragen: k.fragen, start: KLASSEN_START, gruppen: k.gruppen ?? [],
-  prices: klassenPreise,
+  // Alle Bereiche sind sofort offen (Issue #30) – es gibt nichts zu kaufen
+  entries: klassenEintraege(k), fragen: k.fragen, start: KLASSEN_BEREICH_REIHENFOLGE, gruppen: k.gruppen ?? [],
+  prices: [],
   info: { beschreibung: k.beschreibung, themen: k.themen, quelle: k.quelle },
 }));
 
