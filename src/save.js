@@ -43,6 +43,21 @@ export function saveMode(weltId) {
 }
 
 /** Gibt es zu dieser Welt schon einen Spielstand? */
+// Einführung (Issue #35): nur beim allerersten Besuch zeigen
+const INTRO_KEY = 'physicsclicker-einfuehrung';
+
+/** Erster Besuch: weder Einführung gesehen noch je einen Modus gewählt oder gespielt. */
+export function isFirstVisit() {
+  try {
+    return localStorage.getItem(INTRO_KEY) == null && localStorage.getItem(MODE_KEY) == null
+      && localStorage.getItem(storageKey('frei')) == null;
+  } catch { return false; }
+}
+
+export function markIntroSeen() {
+  try { localStorage.setItem(INTRO_KEY, 'gesehen'); } catch { /* egal */ }
+}
+
 export function hasSave(weltId) {
   try { return localStorage.getItem(storageKey(weltId)) != null; } catch { return false; }
 }

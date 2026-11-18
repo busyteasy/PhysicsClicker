@@ -11,7 +11,8 @@ import {
   weltOf,
 } from './game.js';
 import {
-  clearLocal, exportState, hasSave, importState, loadLocal, loadMode, loadRecord, saveLocal, saveMode, saveRecord,
+  clearLocal, exportState, hasSave, importState, isFirstVisit, loadLocal, loadMode, loadRecord, markIntroSeen, saveLocal,
+  saveMode, saveRecord,
 } from './save.js';
 import { isRelation, normWord } from './normalize.js';
 import { anstoesse } from './anstoss.js';
@@ -413,7 +414,7 @@ function renderBereiche(force = false) {
 // Zurück-Taste von Browser oder Handy das Overlay statt die Seite zu verlassen.
 const overlays = {
   frage: $('frage-overlay'), hilfe: $('hilfe-overlay'), mindmap: $('mindmap-overlay'), countdown: $('countdown-overlay'),
-  start: $('start-overlay'),
+  start: $('start-overlay'), intro: $('intro-overlay'),
 };
 let activeOverlay = null;
 let overlayReturnFocus = null;
@@ -444,6 +445,8 @@ function hideOverlay() {
   overlayReturnFocus?.focus?.();
   // Wer das Ende-Fenster einer Countdown-Runde schließt, kehrt ins normale Spiel zurück.
   if (closed === 'countdown' && state.countdown && countdownOver(state)) leaveCountdown();
+  // Wer die Einführung beim ersten Besuch wegklickt, landet bei der Moduswahl.
+  if (closed === 'intro') introEnde();
 }
 
 window.addEventListener('popstate', hideOverlay);
@@ -456,6 +459,110 @@ document.addEventListener('keydown', (event) => {
 for (const overlay of Object.values(overlays)) {
   overlay.addEventListener('click', (event) => { if (event.target === overlay) closeOverlay(); });
 }
+
+// ---------- Einführung beim ersten Besuch (#35) ----------
+//
+// Vier Folien mit wenig Text und kleinen Bildern aus echten Spielelementen.
+// Danach (oder beim Überspringen) folgt beim ersten Besuch die Moduswahl.
+
+const tafel = (...kinder) => h('div', { class: 'intro-bild', 'aria-hidden': 'true' }, ...kinder);
+const pille = (cls, ...kinder) => h('span', { class: `intro-pille ${cls}` }, ...kinder);
+
+const FOLIEN = [
+  {
+    titel: 'Tippe, was du weißt',
+    text: 'Personen, Begriffe, Formeln, Konstanten – jede richtige Eingabe bringt Erkenntnis.',
+    bild: () => tafel(
+      h('span', { class: 'intro-eingabe' }, 'Isaac Newton', h('span', { class: 'intro-cursor' })),
+      h('span', { class: 'intro-pfeil' }, '↓'),
+      pille('gut', '+10 Erkenntnis')),
+  },
+  {
+    titel: 'Schalte Bereiche frei',
+    text: 'Mit Erkenntnis öffnest du neue Bereiche – in der Reihenfolge, die du willst.',
+    bild: () => tafel(
+      pille('offen', '✓ Personen'),
+      pille('zu', '🔒 Formeln · 100'),
+      pille('zu', '🔒 Experimente')),
+  },
+  {
+    titel: 'Hol mehr heraus',
+    text: 'Beantworte Fragen, tippe schnell hintereinander und kaufe Upgrades.',
+    bild: () => tafel(
+      h('span', { class: 'intro-kachel' }, h('b', {}, '?'), 'Fragen'),
+      h('span', { class: 'intro-kachel' }, h('b', {}, '×1,6'), 'Combo'),
+      h('span', { class: 'intro-kachel' }, h('b', {}, '★'), 'Upgrades')),
+  },
+  {
+    titel: 'Du hängst? Kein Problem',
+    text: 'Weiterdenken, Lückenwort und Mindmap zeigen dir, was noch fehlt.',
+    bild: () => tafel(
+      h('span', { class: 'intro-luecke' }, ['N', null, null, null, null, 'n'].map((c) => h('span', { class: c ? '' : 'leer' }, c ?? ' '))),
+      pille('tipp', 'Zu Newton fehlen noch 4 Gesetze')),
+  },
+];
+
+let folie = 0;
+let introBeimStart = false; // beim ersten Besuch: danach Moduswahl
+
+function renderIntro() {
+  const f = FOLIEN[folie];
+  const letzte = folie === FOLIEN.length - 1;
+  fill($('intro-inhalt'),
+    h('div', { class: 'overlay-leiste' },
+      h('span', { class: 'overlay-info' }, `${folie + 1} / ${FOLIEN.length}`),
+      letzte ? null : h('button', { type: 'button', class: 'intro-skip', onclick: closeOverlay }, 'Überspringen')),
+    f.bild(),
+    h('h2', { id: 'intro-titel', class: 'intro-titel' }, f.titel),
+    h('p', { class: 'intro-text' }, f.text),
+    h('div', { class: 'intro-punkte', role: 'group', 'aria-label': 'Folie wählen' }, FOLIEN.map((x, i) => h('button', {
+      type: 'button', class: `intro-punkt${i === folie ? ' jetzt' : ''}`, 'aria-label': `Folie ${i + 1}: ${x.titel}`,
+      'aria-current': i === folie ? 'step' : false, onclick: () => zeigeFolie(i),
+    }))),
+    h('div', { class: 'intro-knoepfe' },
+      folie > 0 ? h('button', { type: 'button', class: 'zurueck', onclick: () => zeigeFolie(folie - 1) }, '← Zurück') : h('span'),
+      h('button', {
+        type: 'button', class: 'primaer intro-weiter', onclick: () => (letzte ? closeOverlay() : zeigeFolie(folie + 1)),
+      }, letzte ? (introBeimStart ? 'Los geht’s →' : 'Fertig') : 'Weiter →')));
+}
+
+function zeigeFolie(i) {
+  folie = Math.max(0, Math.min(FOLIEN.length - 1, i));
+  renderIntro();
+  $('intro-inhalt').querySelector('.intro-weiter').focus();
+}
+
+function openIntro(beimStart) {
+  introBeimStart = beimStart;
+  folie = 0;
+  renderIntro();
+  openOverlay('intro');
+  $('intro-inhalt').querySelector('.intro-weiter').focus();
+}
+
+/** Nach dem Schließen: merken und beim ersten Besuch weiter zur Moduswahl. */
+function introEnde() {
+  markIntroSeen();
+  if (introBeimStart) {
+    introBeimStart = false;
+    setTimeout(openStart, 0); // erst nachdem der Verlauf aufgeräumt ist
+  }
+}
+
+// Wischen auf dem Handy und Pfeiltasten
+let wischStart = null;
+$('intro-overlay').addEventListener('touchstart', (e) => { wischStart = e.touches[0].clientX; }, { passive: true });
+$('intro-overlay').addEventListener('touchend', (e) => {
+  if (wischStart == null) return;
+  const dx = e.changedTouches[0].clientX - wischStart;
+  wischStart = null;
+  if (Math.abs(dx) > 50) zeigeFolie(folie + (dx < 0 ? 1 : -1));
+});
+document.addEventListener('keydown', (e) => {
+  if (activeOverlay !== 'intro') return;
+  if (e.key === 'ArrowRight') zeigeFolie(folie + 1);
+  if (e.key === 'ArrowLeft') zeigeFolie(folie - 1);
+});
 
 // ---------- Hilfe (Fragezeichen) ----------
 
@@ -473,6 +580,7 @@ function renderHelp() {
       h('button', { type: 'button', class: 'zurueck', onclick: closeOverlay }, '← Zurück'),
       h('span', { class: 'overlay-info' }, 'Anleitung')),
     h('h2', { id: 'hilfe-titel' }, 'So funktioniert PhysicsClicker'),
+    h('button', { type: 'button', class: 'intro-nochmal', onclick: () => openIntro(false) }, 'Einführung noch einmal ansehen'),
     h('p', {}, 'Tippe Physikwissen in das Eingabefeld – Namen, Begriffe, Formeln oder Konstanten. '
       + 'Jede richtige Eingabe bringt Erkenntnis, die Spielwährung. Erkenntnis gibt es ausschließlich '
       + 'für deine Eingaben und Antworten: Nichts läuft von selbst.'),
@@ -1433,4 +1541,6 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) saveL
 window.addEventListener('pagehide', () => saveLocal(state));
 
 rerenderAll();
-openStart(); // Beim Laden wählt man den Spielmodus (#16)
+// Beim allerersten Besuch zuerst die Einführung (#35), sonst gleich die Moduswahl (#16)
+if (isFirstVisit()) openIntro(true);
+else openStart();
