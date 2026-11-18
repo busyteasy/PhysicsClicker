@@ -222,11 +222,16 @@ sich ein **Sonnensystem** (Issue #31), in dem man sieht, wo noch etwas fehlt:
   gestrichelte Pfeile führen zu noch unentdeckten Einträgen. Welche Pfeile schon
   gezeigt wurden, steht unter `physicsclicker-mindmap-pfeile` (kein Spielstand).
 
-Tippt man einen Planeten an, zoomt die Mindmap hinein: Die Monde kreisen um den
-Planeten, jeder Eintrag ist ein **Stern** (hell = entdeckt, blass = noch offen;
-antippen zeigt Name oder Kategorie und Stufe). Von jeder entdeckten Person führen
-Pfeile zu ihren Sternen – auch zu anderen Planeten am Rand, die man antippen kann.
-Darunter steht die Liste mit Namen und „?“ wie bisher.
+Tippt man einen Planeten an, zoomt die Mindmap hinein und wird zur Leseansicht:
+
+1. Oben die **Monde** (Bereiche) als Knöpfe mit Fortschrittsring und Zahl.
+2. Darunter die **Begriffe** des gewählten Mondes – entdeckte mit Namen, offene
+   als „?“ mit Stufe. Personen mit Bezügen tragen eine Zahl.
+3. Ein Begriff antippen öffnet das **Bezugsbild**: Der Begriff links, rechts
+   untereinander alles, was dazugehört, mit Pfeilen verbunden und ausgeschrieben
+   („F = m·a“, „? Experiment · Optik · Stufe 1“). Bei einer Person sind das ihre
+   Einträge, bei jedem anderen Begriff die Personen, zu denen er gehört. Jede
+   Zeile lässt sich antippen und springt dorthin – auch in ein anderes Gebiet.
 
 Die **Bezüge** stehen in `data/bezuege.js`: Gesetze, Experimente, Einheiten usw.,
 die nach einer Person benannt sind oder auf sie zurückgehen.

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import BEZUEGE from '../data/bezuege.js';
 import { BEREICHE } from '../src/content.js';
 import { INDEX, buyBereich, newState, submit } from '../src/game.js';
-import { mindmap, personLinks, verbindungen } from '../src/mindmap.js';
+import { bezuege, mindmap, personLinks, verbindungen } from '../src/mindmap.js';
 
 test('Bezüge: nur Personen als Schlüssel, nur echte Einträge als Ziele', () => {
   for (const [person, ids] of Object.entries(BEZUEGE)) {
@@ -95,4 +95,21 @@ test('Mehr offene Bereiche bringen mehr Pfeile', () => {
   assert.ok(buyBereich(s, 'formel'));
   const nachher = verbindungen(s).reduce((x, v) => x + v.anzahl, 0);
   assert.ok(nachher > vorher, `${vorher} → ${nachher}`);
+});
+
+test('Bezüge eines Eintrags: Person → Einträge, Eintrag → Personen (#31)', () => {
+  const s = newState();
+  s.insight = 1e6;
+  assert.ok(buyBereich(s, 'experiment'));
+  // Unentdeckte Person: keine Bezüge, keine Namen
+  assert.deepEqual(bezuege(s, 'newton').nach, []);
+  submit(s, 'Newton', 0);
+  const b = bezuege(s, 'newton');
+  assert.equal(b.node.name, 'Isaac Newton');
+  assert.ok(b.nach.some((n) => n.id === 'prisma' && n.area === 'optik' && n.name === null));
+  // Umgekehrt: Der Prismenversuch gehört zu Newton
+  const p = bezuege(s, 'prisma');
+  assert.deepEqual(p.von.map((n) => n.name), ['Isaac Newton']);
+  assert.equal(p.node.name, null, 'Prismenversuch selbst noch unentdeckt');
+  assert.equal(bezuege(s, 'gibtesnicht'), null);
 });

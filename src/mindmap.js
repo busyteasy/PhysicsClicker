@@ -59,6 +59,24 @@ export function verbindungen(state) {
   return [...byKey.values()];
 }
 
+/**
+ * Was gehört zu einem Eintrag? Für eine Person ihre Bezüge, für jeden anderen
+ * Eintrag die Personen, auf die er zurückgeht – jeweils nur aus offenen
+ * Bereichen und ohne Namen, solange unentdeckt (Issue #31).
+ */
+export function bezuege(state, id) {
+  const { index } = weltOf(state);
+  const entry = index.byId.get(id);
+  if (!entry) return null;
+  const nach = known(state, id) ? personLinks(state, id) : [];
+  const von = Object.entries(BEZUEGE)
+    .filter(([, ids]) => ids.includes(id))
+    .map(([person]) => index.byId.get(person))
+    .filter((p) => p && isOpen(state, p.bereich))
+    .map((p) => node(state, p));
+  return { node: node(state, entry), nach, von };
+}
+
 export function mindmap(state) {
   const { entries: ENTRIES, bereiche: BEREICHE } = weltOf(state);
   const openBereiche = BEREICHE.filter((b) => isOpen(state, b.id));

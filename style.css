@@ -472,36 +472,26 @@ textarea {
 /* Sonnensystem (#31) */
 .mm-system { display: block; width: 100%; max-width: 560px; margin: 0 auto; overflow: visible; font-family: inherit; }
 .mm-system text { fill: var(--tinte); }
-.mm-system .mm-sonne-name, .mm-system .mm-sonne-zahl, .mm-system .mm-planet-zahl, .mm-system .mm-nachbar-name { text-anchor: middle; }
+.mm-system .mm-sonne-name, .mm-system .mm-sonne-zahl, .mm-system .mm-planet-zahl { text-anchor: middle; }
 .mm-bahn { fill: none; stroke: var(--linie); stroke-width: 1.5; stroke-dasharray: 3 6; }
 .mm-sonne { fill: var(--akzent); }
 .mm-system .mm-sonne-name { fill: var(--akzent-text); font-size: 17px; font-weight: 800; }
 .mm-system .mm-sonne-zahl { fill: var(--akzent-text); font-size: 12px; opacity: 0.85; font-variant-numeric: tabular-nums; }
-.mm-planet, .mm-nachbar, .mm-stern { cursor: pointer; outline: none; }
+.mm-planet { cursor: pointer; outline: none; }
 .mm-trefferflaeche { fill: transparent; }
 .mm-planet-kugel { fill: var(--flaeche); stroke: var(--farbe); stroke-width: 3; }
-.mm-planet:hover .mm-planet-kugel, .mm-planet:focus-visible .mm-planet-kugel,
-.mm-nachbar:hover .mm-planet-kugel, .mm-nachbar:focus-visible .mm-planet-kugel { fill: var(--farbe); }
+.mm-planet:hover .mm-planet-kugel, .mm-planet:focus-visible .mm-planet-kugel { fill: var(--farbe); }
 .mm-planet:hover .mm-planet-zahl, .mm-planet:focus-visible .mm-planet-zahl { fill: var(--flaeche); }
 .mm-system .mm-planet-zahl { font-size: 13px; font-weight: 800; fill: var(--farbe); font-variant-numeric: tabular-nums; }
-.mm-system .mm-planet-zahl.gross { font-size: 14px; }
 .mm-system .mm-planet-name { font-size: 15px; font-weight: 700; fill: var(--farbe); }
-.mm-system .mm-nachbar-name { font-size: 15px; font-weight: 700; fill: var(--farbe); }
 .mm-ring-spur { fill: none; stroke: var(--linie); stroke-width: 4; }
 .mm-ring { fill: none; stroke: var(--farbe); stroke-width: 4; stroke-linecap: round; }
 .mm-mond { fill: var(--flaeche); stroke: var(--farbe); stroke-width: 1.5; }
 .mm-mond.teil { fill: color-mix(in srgb, var(--farbe) 45%, var(--flaeche)); }
 .mm-mond.voll { fill: var(--farbe); }
-.mm-system .mm-mond-name { font-size: 15px; font-weight: 700; fill: var(--farbe); }
-.mm-stern { fill: var(--tinte-leise); opacity: 0.45; }
-.mm-stern.bekannt { fill: var(--farbe); opacity: 1; }
-.mm-stern.gewaehlt { stroke: var(--tinte); stroke-width: 2; opacity: 1; }
-.mm-stern:hover, .mm-stern:focus-visible { stroke: var(--tinte); stroke-width: 1.5; opacity: 1; }
 .mm-spitze { fill: var(--farbe); }
 .mm-pfeil { fill: none; stroke: var(--farbe); stroke-linecap: round; opacity: 0.85; }
 .mm-pfeil.offen { opacity: 0.35; stroke-dasharray: 4 4; }
-.mm-pfeil.fein { stroke-width: 1.1; opacity: 0.6; }
-.mm-pfeil.fein.offen { opacity: 0.25; stroke-dasharray: 2 3; }
 .mm-pfeil.neu { stroke-dasharray: 1; stroke-dashoffset: 1; animation: mm-zeichnen 1.4s 0.3s ease-out forwards; }
 @keyframes mm-zeichnen { to { stroke-dashoffset: 0; } }
 @media (prefers-reduced-motion: reduce) { .mm-pfeil.neu { animation: none; stroke-dashoffset: 0; } }
@@ -513,8 +503,46 @@ textarea {
 }
 .mm-planet-knopf:hover { background: var(--flaeche-2); }
 .mm-punkt { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--farbe); }
+/* Planetenansicht: Monde, Begriffe, Bezugsbild */
+.mm-monde { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+.mm-mond-knopf {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 8px; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid var(--linie); background: var(--flaeche); color: var(--tinte); font: inherit; font-size: 0.9rem; font-weight: 600;
+}
+.mm-mond-knopf:hover { border-color: var(--farbe); }
+.mm-mond-knopf.aktiv { border-color: var(--farbe); background: color-mix(in srgb, var(--farbe) 14%, var(--flaeche)); }
+.mm-mond-ring { width: 22px; height: 22px; flex: none; }
+.mm-mond-ring .mm-ring-spur, .mm-mond-ring .mm-ring { stroke-width: 3.5; }
+.mm-begriffe { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: var(--flaeche-2); }
+.mm-begriffe .mm-knoten { cursor: pointer; font: inherit; font-size: 0.9rem; color: var(--tinte); gap: 4px; padding: 4px 11px; }
+.mm-begriffe .mm-knoten.unbekannt { color: var(--tinte-leise); }
+.mm-begriffe .mm-knoten:hover { border-color: var(--farbe); }
+.mm-knoten.aktiv { outline: 2.5px solid var(--farbe); outline-offset: 1px; }
+.mm-anzahl {
+  display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px;
+  background: var(--farbe); color: var(--flaeche); font-size: 0.72rem; font-weight: 800;
+}
+.mm-bezugsbild { margin-top: 12px; padding: 12px; border: 2px solid var(--linie); border-radius: 12px; background: var(--flaeche); }
+.mm-bezug-kopf { display: flex; align-items: center; gap: 10px; }
+.mm-stern-zeichen { font-size: 1.6rem; line-height: 1; color: var(--tinte-leise); }
+.mm-stern-zeichen.bekannt { color: var(--farbe); }
+.mm-bezug-name { font-size: 1.15rem; font-weight: 800; }
+.mm-bezug-titel { margin: 10px 0 2px; font-weight: 700; font-size: 0.9rem; }
+.mm-bezug-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.mm-bezug-knoten { fill: var(--flaeche); stroke: var(--farbe); stroke-width: 3; }
+.mm-bezug-knoten.bekannt { fill: var(--farbe); }
+.mm-bezug-zeile { cursor: pointer; outline: none; }
+.mm-bezug-zeile .mm-pfeil { pointer-events: none; }
+.mm-bezug-flaeche { fill: transparent; }
+.mm-bezug-zeile:hover .mm-bezug-flaeche, .mm-bezug-zeile:focus-visible .mm-bezug-flaeche { fill: var(--flaeche-2); }
+.mm-bezug-punkt { fill: var(--flaeche); stroke: var(--farbe); stroke-width: 2; }
+.mm-bezug-punkt.bekannt { fill: var(--farbe); }
+.mm-system text.mm-bezug-text, .mm-bezug-svg .mm-bezug-text { fill: var(--tinte); font-size: 19px; font-weight: 600; }
+.mm-bezug-svg .mm-bezug-text.offen { fill: var(--tinte-leise); font-weight: 500; }
+.mm-bezug-svg .mm-bezug-gebiet { fill: var(--farbe); font-size: 15px; font-weight: 700; }
+.mm-bezug-leer { margin: 6px 0 0; font-size: 0.85rem; color: var(--tinte-leise); }
+.mm-begriffe .mm-bezug-leer { margin: 0 0 8px; }
 .mm-gebiet-kopf { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 4px; font-weight: 800; font-size: 1.1rem; }
-.mm-stern-info { min-height: 1.4em; margin: 2px 0 0; text-align: center; font-size: 0.88rem; color: var(--tinte-leise); }
 
 .mm-ast { list-style: none; margin: 16px 14px 12px 20px; padding: 0 0 0 14px; border-left: 2px solid var(--farbe); }
 .mm-bereich { position: relative; padding: 6px 0; }
