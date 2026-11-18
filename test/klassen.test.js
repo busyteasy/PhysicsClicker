@@ -25,6 +25,7 @@ test('Klassen 5 bis 13 sind vollständig und eindeutig', () => {
       assert.ok(!qids.has(q.id), `doppelte Frage ${q.id}`);
       qids.add(q.id);
       assert.ok(Object.hasOwn(k.eintraege, q.antwort), `${q.id}: Antwort ${q.antwort} gehört nicht zur Klasse`);
+      for (const a of q.auch) assert.ok(Object.hasOwn(k.eintraege, a), `${q.id}: Alternative ${a} gehört nicht zur Klasse`);
       assert.ok([1, 2, 3, 4].includes(q.tier), `${q.id}: Stufe`);
       assert.match(q.frage, /[?.)]$/, `${q.id}: Satzzeichen`);
     }
@@ -65,6 +66,11 @@ test('Jede Frage ist mit dem Namen ihrer Antwort lösbar und hat einen Wikipedia
       const answer = q.wert ? `${entry.symbols[0]} = ${entry.values[0].v} ${entry.values[0].units[0]}` : entry.name;
       assert.equal(answerQuestion(s, q.id, answer, 0).status, 'richtig', `${q.id}: „${answer}“`);
       assert.ok(wikiUrl(entry), `${q.id}: kein Wikipedia-Link für ${entry.id}`);
+      for (const a of q.auch) {
+        const t = newState(w.id);
+        t.unlocked = s.unlocked;
+        assert.equal(answerQuestion(t, q.id, w.index.byId.get(a).name, 0).status, 'richtig', `${q.id}: Alternative ${a}`);
+      }
     }
   }
 });

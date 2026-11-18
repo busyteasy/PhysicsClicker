@@ -27,7 +27,7 @@ export default inArea('kern', [
   P('radioaktivitaet', 1, 'Radioaktivität', [], '1896 von Henri Becquerel entdeckt.'),
   P('alphazerfall', 2, 'Alphazerfall', ['α-Zerfall'], 'Der Kern stößt einen Heliumkern aus – Massenzahl −4, Ordnungszahl −2.'),
   P('betazerfall', 2, 'Betazerfall', ['β-Zerfall'], 'Ein Neutron wandelt sich in ein Proton, ein Elektron und ein Antineutrino um.'),
-  P('gammastrahlung', 2, 'Gammastrahlung', [], 'Hochenergetische Photonen aus angeregten Atomkernen.'),
+  P('gammastrahlung', 2, 'Gammastrahlung', ['γ-Strahlung', 'Gammastrahlen', 'Gamma-Strahlung'], 'Hochenergetische Photonen aus angeregten Atomkernen.'),
   P('kernspaltung', 2, 'Kernspaltung', [], '1938 von Otto Hahn und Fritz Straßmann entdeckt, von Lise Meitner gedeutet.'),
   P('kernfusion', 2, 'Kernfusion', ['Fusion'], 'Die Energiequelle der Sonne.'),
   P('halbwertszeit', 2, 'Halbwertszeit', [], 'Nach dieser Zeit ist die Hälfte der Kerne zerfallen.'),
@@ -39,7 +39,7 @@ export default inArea('kern', [
   P('antimaterie', 2, 'Antimaterie', [], 'Trifft sie auf Materie, zerstrahlen beide vollständig in Energie.'),
   P('confinement', 5, 'Confinement', ['Quarkeinschluss', 'Farbeinschluss'], 'Einzelne Quarks lassen sich nie isolieren.'),
 
-  F('zerfallsgesetz', 3, 'N(t) = N₀·e^(−λt)', ['N=N0e^(-λt)', 'N(t)=N0e^-λt', 'N=N0e^-λt', 'N(t)=N0(1/2)^(t/T)', 'N=N0(1/2)^(t/T)'], 'Radioaktiver Zerfall folgt einer Exponentialfunktion.'),
+  F('zerfallsgesetz', 3, 'N(t) = N₀·e^(−λt)', ['Zerfallsgesetz', 'radioaktives Zerfallsgesetz', 'N=N0e^(-λt)', 'N(t)=N0e^-λt', 'N=N0e^-λt', 'N(t)=N0(1/2)^(t/T)', 'N=N0(1/2)^(t/T)'], 'Radioaktiver Zerfall folgt einer Exponentialfunktion.'),
   F('halbwertszeit_f', 3, 'T½ = ln 2/λ', ['T=ln2/λ', 'T1/2=ln(2)/λ', 'λ=ln2/T'], 'Halbwertszeit und Zerfallskonstante hängen direkt zusammen.'),
 
   W('curie', 1, 'Marie Curie', ['Curie', 'Marie Skłodowska-Curie'], 'Bis heute der einzige Mensch mit Nobelpreisen in zwei verschiedenen Naturwissenschaften.'),
@@ -79,7 +79,7 @@ export default inArea('kern', [
   T('nukleon', 2, 'Nukleon', ['Nukleonen', 'Kernteilchen'], 'Oberbegriff für Proton und Neutron.'),
   T('ion', 1, 'Ion', ['Ionen'], 'Ein Atom oder Molekül mit zu vielen oder zu wenigen Elektronen.'),
   T('atom', 1, 'Atom', ['Atome'], 'Griechisch für „das Unteilbare“ – was sich als Irrtum herausstellte.'),
-  T('atomkern', 1, 'Atomkern', [], 'Enthält fast die gesamte Masse des Atoms, ist aber rund 100 000-mal kleiner.'),
+  T('atomkern', 1, 'Atomkern', ['Kern'], 'Enthält fast die gesamte Masse des Atoms, ist aber rund 100 000-mal kleiner.'),
   T('deuteron', 4, 'Deuteron', ['Deuteriumkern'], 'Der Kern des schweren Wasserstoffs: ein Proton und ein Neutron.'),
   U('u_barn', 5, 'Barn', [], 'Ein Witz als Einheit: Für Kernphysiker war ein Urankern „so groß wie ein Scheunentor“ (englisch barn).'),
   U('u_curie', 3, 'Curie (Einheit)', ['Curie'], 'Alte Einheit der Aktivität: 3,7·10¹⁰ Zerfälle pro Sekunde.'),
@@ -109,11 +109,11 @@ export default inArea('kern', [
   B('b_energiedosis', 3, 'Energiedosis', [], 'Absorbierte Strahlungsenergie pro Kilogramm, Einheit 1 Gy = 1 J/kg.'),
   B('b_aequivalentdosis', 3, 'Äquivalentdosis', [], 'Energiedosis mal Wichtungsfaktor der Strahlungsart, Einheit Sievert. In Deutschland im Mittel etwa 2 bis 3 mSv pro Jahr aus natürlichen Quellen.'),
   B('b_strahlenschutz', 1, 'Strahlenschutz', ['Abstand, Abschirmung, Aufenthaltsdauer'], 'Die drei großen A: Abstand halten, Abschirmen, Aufenthaltsdauer kurz halten.'),
-  B('b_nulleffekt', 2, 'Nulleffekt', ['Nullrate', 'natürliche Strahlung'], 'Auch ohne Präparat tickt ein Zählrohr – wegen kosmischer Strahlung und natürlicher Radioaktivität.'),
+  B('b_nulleffekt', 2, 'Nulleffekt', ['Nullrate'], 'Auch ohne Präparat tickt ein Zählrohr – wegen kosmischer Strahlung und natürlicher Radioaktivität.'),
   B('b_zaehlrate', 2, 'Zählrate', [], 'Anzahl der registrierten Impulse pro Zeit, etwa pro Minute.'),
   B('b_zerfallsreihe', 3, 'Zerfallsreihe', [], 'Uran-238 zerfällt über viele Zwischenstufen, bis stabiles Blei-206 übrig bleibt.'),
   B('b_nuklidkarte', 3, 'Nuklidkarte', [], 'Ordnet alle bekannten Kerne nach Protonen- und Neutronenzahl – mehr als 3000 Nuklide.'),
-  B('b_c14', 2, 'Radiokarbonmethode', ['C-14-Methode', 'Radiokohlenstoffdatierung', 'C14-Methode'], 'C-14 zerfällt mit einer Halbwertszeit von etwa 5730 Jahren – so datiert man organische Funde.'),
+  B('b_c14', 2, 'Radiokarbonmethode', ['C-14-Methode', 'Radiokohlenstoffdatierung', 'C14-Methode', 'C-14-Datierung', 'C14-Datierung'], 'C-14 zerfällt mit einer Halbwertszeit von etwa 5730 Jahren – so datiert man organische Funde.'),
   B('b_bindungsenergie', 3, 'Bindungsenergie', ['Kernbindungsenergie'], 'Die Energie, die frei wird, wenn sich Nukleonen zu einem Kern verbinden – sichtbar im Massendefekt.'),
   B('b_troepfchen', 4, 'Tröpfchenmodell', [], 'Beschreibt den Kern wie einen Flüssigkeitstropfen – damit lässt sich die Kernspaltung verstehen.'),
   B('b_bragg_kurve', 4, 'Bragg-Kurve', ['Bragg-Peak'], 'Protonen geben ihre Energie erst kurz vor dem Stillstand ab – ideal, um Tumore gezielt zu bestrahlen.'),
@@ -131,4 +131,7 @@ export default inArea('kern', [
   // Schulversuche (Issue #16)
   E('e_abschirmung', 2, 'Abschirmungsversuch', ['Absorptionsversuch'], 'Papier, Aluminium und Blei zwischen Präparat und Zählrohr zeigen das unterschiedliche Durchdringungsvermögen.'),
   E('e_wuerfel', 2, 'Würfelexperiment', ['Würfelmodell des Zerfalls'], 'Man würfelt viele Würfel und nimmt jede Sechs heraus – die Zahl der Würfel nimmt wie beim Zerfall exponentiell ab.'),
+
+  // Ergänzungen nach fachlicher Prüfung (Issue #16)
+  B('b_zerfallskurve', 2, 'Zerfallskurve', ['Abklingkurve'], 'Die Zahl der unzerfallenen Kerne halbiert sich in jeder Halbwertszeit – eine Exponentialkurve.'),
 ]);

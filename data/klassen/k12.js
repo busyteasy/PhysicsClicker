@@ -49,6 +49,8 @@ export default {
     ...S(1, 'e_leiterschaukel doppelspalt'),
     ...S(2, 'millikan e_spez_ladung e_thomson_ring e_gitter_laser e_ultraschall_stehend'),
     ...S(3, 'e_waltenhofen hertz_versuch'),
+    ...S(3, 'b_dielektrikum b_radialfeld b_einzelspalt'),
+    ...S(2, 'b_em_spektrum'),
   },
   fragen: [
     // Elektrisches Feld
@@ -59,6 +61,7 @@ export default {
     Q('k12_iqt', 1, 'Wie ist die Stromstärke über die Ladung definiert?', 'f_stromstaerke_def'),
     Q('k12_uwq', 2, 'Wie ist die Spannung als übertragbare Energie pro Ladung definiert?', 'f_spannung_def'),
     Q('k12_homogen', 2, 'Wie heißt ein Feld, das überall gleich stark und gleich gerichtet ist, etwa im Plattenkondensator?', 'b_homogen'),
+    Q('k12_radial', 3, 'Wie heißt das Feld einer Punktladung mit sternförmig auslaufenden Feldlinien?', 'b_radialfeld'),
     Q('k12_eud', 2, 'Wie hängen im Plattenkondensator Feldstärke, Spannung und Plattenabstand zusammen?', 'f_kond_feld'),
     Q('k12_faraday_kaefig', 2, 'Was schirmt das Innere eines Autos bei Gewitter gegen elektrische Felder ab?', 'faradaykaefig'),
     Q('k12_coulomb', 3, 'Welches Gesetz beschreibt die Kraft zwischen zwei Punktladungen?', 'coulomb'),
@@ -68,8 +71,9 @@ export default {
     Q('k12_farad', 2, 'In welcher Einheit misst man die Kapazität?', 'u_farad'),
     Q('k12_qcu', 1, 'Mit welcher Formel hängen Ladung, Kapazität und Spannung eines Kondensators zusammen?', 'kondensator_f'),
     Q('k12_platten', 2, 'Mit welcher Formel berechnet man die Kapazität eines Plattenkondensators aus seinen Abmessungen?', 'plattenkondensator_f'),
+    Q('k12_dielektrikum', 3, 'Wie heißt ein Isolator zwischen den Kondensatorplatten, der die Kapazität erhöht?', 'b_dielektrikum'),
     Q('k12_kond_energie', 2, 'Mit welcher Formel berechnet man die Energie im Feld eines Kondensators?', 'kondensator_energie'),
-    Q('k12_entladung', 3, 'Mit welcher Funktion beschreibt man den Entladestrom eines Kondensators?', 'f_entladung'),
+    Q('k12_entladung', 3, 'Mit welcher Gleichung beschreibt man den Entladestrom eines Kondensators?', 'f_entladung'),
     Q('k12_tau', 3, 'Wie heißt das Produkt R·C, das die Geschwindigkeit des Auf- und Entladens bestimmt?', 'b_zeitkonstante'),
     Q('k12_eps0', 3, 'Wie groß ist die elektrische Feldkonstante? (Zahl mit Einheit)', 'eps0', true),
     // Elektronen in Feldern, Magnetfeld
@@ -114,7 +118,7 @@ export default {
     Q('k12_thomson', 3, 'Mit welcher Gleichung berechnet man die Periodendauer eines Schwingkreises?', 'thomson_schwingung'),
     Q('k12_rfid', 3, 'Welcher kleine Chip bezieht seine Energie über einen Schwingkreis aus dem Feld des Lesegeräts?', 'd_rfid'),
     // Wellen
-    Q('k12_wellen', 1, 'Wie hängen Ausbreitungsgeschwindigkeit, Wellenlänge und Frequenz zusammen?', 'f_wellen'),
+    Q('k12_wellen', 1, 'Wie hängen Ausbreitungsgeschwindigkeit, Wellenlänge und Frequenz zusammen?', 'f_wellen', false, ['lichtwelle']),
     Q('k12_transversal', 2, 'Wie heißt eine Welle, bei der die Teilchen quer zur Ausbreitungsrichtung schwingen?', 'b_transversal'),
     Q('k12_longitudinal', 2, 'Welche Wellenart ist Schall in Luft?', 'b_longitudinal'),
     Q('k12_polarisation', 2, 'Welche Eigenschaft unterscheidet Transversalwellen von Longitudinalwellen?', 'polarisation'),
@@ -132,6 +136,8 @@ export default {
     Q('k12_michelson', 3, 'Welches Interferometer teilt Licht in zwei senkrechte Arme und überlagert es wieder?', 'd_michelson_interferometer'),
     Q('k12_bragg', 3, 'Welche Bedingung beschreibt die Reflexion von Röntgenstrahlung an Kristallebenen?', 'f_bragg'),
     Q('k12_dipol', 3, 'Welche Antenne ist ein offener Schwingkreis, der elektromagnetische Wellen abstrahlt?', 'd_dipol'),
+    Q('k12_spektrum', 2, 'Wie heißt die Gesamtheit aller elektromagnetischen Wellen von Radiowellen bis Gammastrahlung?', 'b_em_spektrum'),
+    Q('k12_einzelspalt', 3, 'Wie heißt die Beugungserscheinung mit breitem Hauptmaximum hinter nur einem schmalen Spalt?', 'b_einzelspalt'),
     Q('k12_hertz', 1, 'Wer wies 1886 bis 1888 als Erster elektromagnetische Wellen im Labor nach?', 'hertz_p'),
   ],
 };

@@ -5,10 +5,10 @@ import { Q, QUELLE_SI, S } from './helpers.js';
 export default {
   klasse: 6,
   themen: ['Licht und Sehen', 'Schatten, Spiegel und Linsen', 'Farben', 'Schall', 'Energie und Energieformen'],
-  quelle: `${QUELLE_SI}, Themenbereiche Phänomenorientierte Optik (Doppeljahrgang 5/6) und Energie (Ende Schuljahrgang 6); Schall nach Anhang A3 und Schulbuchreihen`,
+  quelle: `${QUELLE_SI}, Themenbereich Phänomenorientierte Optik (Doppeljahrgang 5/6); Schall (im KC Sek I nicht verbindlich) und ein erster Energiebegriff (im KC ab Jahrgang 7) nach gängigen Schulbuchreihen`,
   eintraege: {
     // Größen & Begriffe
-    ...S(1, 'b_lichtquelle b_beleuchtet b_lichtbuendel b_lichtstrahl b_sender_empfaenger b_schatten b_kernschatten b_spiegelbild b_einfallswinkel b_reflexionswinkel b_einfallslot b_spektrum b_schall b_ton b_tonhoehe b_lautstaerke b_frequenz b_amplitude b_energie b_energieform b_bewegungsenergie b_hoehenenergie b_netzhaut b_pupille b_augenlinse b_ultraschall b_hoerbereich b_laerm'),
+    ...S(1, 'b_lichtquelle b_beleuchtet b_lichtbuendel b_lichtstrahl b_sender_empfaenger b_schatten b_kernschatten b_spiegelbild b_einfallswinkel b_reflexionswinkel b_einfallslot b_spektrum b_schall b_ton b_tonhoehe b_lautstaerke b_netzhaut b_pupille b_augenlinse b_ultraschall b_hoerbereich b_laerm'),
     ...S(2, 'b_halbschatten b_strahlenmodell b_brennweite b_reelles_bild b_virtuelles_bild b_infrarot b_uv b_infraschall b_schallschutz b_energieumwandlung b_energieuebertragung b_energiekette b_chemische_energie b_innere_energie b_spannenergie b_geraeusch b_klang b_schwingungsbild'),
     ...S(3, 'b_brechungswinkel b_akkommodation b_kurzsichtig b_weitsichtig b_optische_achse b_mittelpunktstrahl b_parallelstrahl b_brennpunktstrahl b_knall b_schallpegel b_periodendauer b_additiv b_subtraktiv'),
     // Geräte & Bauteile
@@ -37,6 +37,13 @@ export default {
     ...S(1, 'e_muenze'),
     ...S(2, 'prisma e_farbscheibe'),
     ...S(3, 'roemer'),
+    ...S(2, 'b_energie'),
+    ...S(2, 'b_energieform'),
+    ...S(2, 'b_bewegungsenergie'),
+    ...S(2, 'b_hoehenenergie'),
+    ...S(2, 'b_frequenz'),
+    ...S(2, 'b_amplitude'),
+    ...S(2, 'b_lichtenergie b_elektrische_energie'),
   },
   fragen: [
     // Begriffe
@@ -67,7 +74,7 @@ export default {
     Q('k6_sammellinse', 1, 'Welche Linse ist in der Mitte dicker als am Rand?', 'd_sammellinse'),
     Q('k6_zerstreuung', 2, 'Welche Linse korrigiert Kurzsichtigkeit?', 'd_zerstreuungslinse'),
     Q('k6_woelb', 2, 'Welcher Spiegel hängt an unübersichtlichen Kreuzungen, weil er einen großen Bereich zeigt?', 'd_woelbspiegel'),
-    Q('k6_stimmgabel', 1, 'Mit welchem Gerät erzeugt man einen fast reinen Ton, etwa den Kammerton a mit 440 Hz?', 'd_stimmgabel'),
+    Q('k6_stimmgabel', 1, 'Mit welchem Gerät erzeugt man einen fast reinen Ton, etwa den Kammerton a¹ mit 440 Hz?', 'd_stimmgabel'),
     Q('k6_echolot', 2, 'Mit welchem Gerät messen Schiffe die Wassertiefe über die Laufzeit von Schall?', 'd_echolot'),
     // Phänomene, Gesetze
     Q('k6_brechung', 1, 'Wie heißt es, wenn ein Stab im Wasser geknickt aussieht, weil Licht seine Richtung ändert?', 'p_brechung'),
@@ -75,8 +82,8 @@ export default {
     Q('k6_mofi', 2, 'Wie heißt das Ereignis, bei dem der Mond durch den Schatten der Erde wandert?', 'p_mondfinsternis'),
     Q('k6_mondphasen', 1, 'Wie nennt man die wechselnden Lichtgestalten des Mondes, etwa Neumond und Vollmond?', 'p_mondphasen'),
     Q('k6_echo', 1, 'Wie heißt reflektierter Schall, den man getrennt vom Original hört?', 'p_echo'),
-    Q('k6_totalreflexion', 3, 'Wie heißt der Effekt, mit dem Glasfasern Licht ohne Verlust durch die Wand leiten?', 'totalreflexion'),
-    Q('k6_ausbreitung', 1, 'Welche Eigenschaft des Lichts erklärt, warum Schatten scharfe Ränder haben?', 'g_lichtausbreitung'),
+    Q('k6_totalreflexion', 3, 'Mit welchem Effekt leiten Glasfasern Licht fast verlustfrei über weite Strecken?', 'totalreflexion'),
+    Q('k6_ausbreitung', 1, 'Welche Eigenschaft des Lichts erklärt, dass hinter undurchsichtigen Körpern Schatten entstehen?', 'g_lichtausbreitung'),
     Q('k6_reflexion', 2, 'Welches Gesetz besagt, dass Einfallswinkel und Reflexionswinkel gleich groß sind?', 'reflexionsgesetz'),
     // Einheiten, Konstanten, Personen, Experimente
     Q('k6_hertz', 1, 'In welcher Einheit gibt man Frequenzen an?', 'u_hertz'),

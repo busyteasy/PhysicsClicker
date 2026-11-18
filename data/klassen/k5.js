@@ -5,7 +5,7 @@ import { Q, QUELLE_SI, S } from './helpers.js';
 export default {
   klasse: 5,
   themen: ['Magnetismus', 'Einfache Stromkreise', 'Temperatur und Wärme', 'Aggregatzustände und Teilchenmodell'],
-  quelle: `${QUELLE_SI}, Themenbereich Magnetismus und Elektrizität (Doppeljahrgang 5/6); Temperatur und Wärme nach Anhang A3`,
+  quelle: `${QUELLE_SI}, Themenbereich Magnetismus und Elektrizität (Doppeljahrgang 5/6); Temperatur, Wärme und Aggregatzustände nach den fächerverbindenden Inhalten im Anhang A3 (Biologie/Chemie 5/6) und gängigen Schulbüchern; Kelvin-Skala nur als Zusatzwissen (im KC erst Jahrgang 10)`,
   eintraege: {
     // Größen & Begriffe
     ...S(1, 'b_nordpol b_suedpol b_magnetfeld b_feldlinien b_magnetisch b_erdmagnetfeld b_stromkreis b_leiter b_isolator b_kurzschluss b_reihe b_parallel b_temperatur b_celsius_skala b_teilchenmodell b_schmelzen b_erstarren b_verdampfen b_kondensieren b_waermeleiter'),
@@ -18,11 +18,10 @@ export default {
     // Phänomene
     ...S(1, 'aggregatzustand waermeleitung konvektion waermestrahlung p_waermewirkung p_magnetwirkung p_lichtwirkung'),
     ...S(2, 'p_verdunstungskaelte p_treibhauseffekt brownsche'),
-    ...S(3, 'p_anomalie nullpunkt ferromagnetismus'),
+    ...S(3, 'p_anomalie ferromagnetismus'),
     // Einheiten
     ...S(1, 'u_grad_celsius u_meter u_sekunde u_kilogramm'),
     ...S(2, 'u_volt'),
-    ...S(3, 'u_kelvin'),
     // Personen
     ...S(2, 'celsius volta'),
     ...S(3, 'oersted w_gilbert fahrenheit'),
@@ -30,12 +29,14 @@ export default {
     ...S(1, 'e_eisenfeilspaene e_kugel_ring'),
     ...S(2, 'e_tinte e_zitrone'),
     ...S(3, 'oersted_versuch'),
+    ...S(4, 'u_kelvin'),
+    ...S(4, 'nullpunkt'),
   },
   fragen: [
     // Begriffe
     Q('k5_pole', 1, 'Wie heißt der Pol eines Magneten, der sich nach Norden ausrichtet?', 'b_nordpol'),
     Q('k5_feld', 1, 'Wie nennt man den Raum um einen Magneten, in dem magnetische Kräfte wirken?', 'b_magnetfeld'),
-    Q('k5_feldlinien', 1, 'Was macht man mit Eisenfeilspänen um einen Magneten sichtbar?', 'b_feldlinien'),
+    Q('k5_feldlinien', 1, 'Welche Linien macht man mit Eisenfeilspänen um einen Magneten sichtbar?', 'b_feldlinien'),
     Q('k5_elementar', 2, 'Mit welchem Modell erklärt man, warum ein Eisennagel durch Streichen magnetisch wird?', 'b_elementarmagnete'),
     Q('k5_kreis', 1, 'Was muss geschlossen sein, damit eine Lampe an einer Batterie leuchtet?', 'b_stromkreis'),
     Q('k5_isolator', 1, 'Wie heißt ein Stoff, der den elektrischen Strom nicht leitet, zum Beispiel Kunststoff?', 'b_isolator'),
@@ -63,12 +64,12 @@ export default {
     Q('k5_konvektion', 2, 'Wie heißt die Wärmeübertragung, bei der warme Luft über der Heizung nach oben steigt?', 'konvektion'),
     Q('k5_strahlung', 2, 'Auf welche Weise gelangt die Wärme der Sonne durch den leeren Weltraum zu uns?', 'waermestrahlung'),
     Q('k5_waermewirkung', 1, 'Welche Wirkung des elektrischen Stroms nutzt ein Wasserkocher?', 'p_waermewirkung'),
-    Q('k5_kaelte', 2, 'Warum kühlt Schwitzen den Körper? Gesucht ist der Fachbegriff.', 'p_verdunstungskaelte'),
+    Q('k5_kaelte', 2, 'Wie heißt die Abkühlung, die beim Verdunsten entsteht – etwa beim Schwitzen?', 'p_verdunstungskaelte'),
     Q('k5_anomalie', 3, 'Wie heißt die Besonderheit, dass Wasser bei 4 °C seine größte Dichte hat?', 'p_anomalie'),
     Q('k5_treibhaus', 2, 'Welcher Effekt hält die Erde durch Gase wie Kohlenstoffdioxid wärmer?', 'p_treibhauseffekt'),
     // Einheiten, Personen, Experimente
     Q('k5_volt', 2, 'In welcher Einheit gibt man die Spannung einer Batterie an?', 'u_volt'),
-    Q('k5_kelvin', 3, 'In welcher Einheit misst man Temperaturen, wenn die Skala am absoluten Nullpunkt beginnt?', 'u_kelvin'),
+    Q('k5_kelvin', 4, 'In welcher Einheit misst man Temperaturen, wenn die Skala am absoluten Nullpunkt beginnt?', 'u_kelvin'),
     Q('k5_celsius', 2, 'Nach welchem schwedischen Astronomen ist unsere Temperaturskala benannt?', 'celsius'),
     Q('k5_oersted', 3, 'Wer entdeckte 1820, dass ein stromdurchflossener Draht eine Kompassnadel ablenkt?', 'oersted'),
     Q('k5_kugel', 1, 'Bei welchem Versuch passt eine erhitzte Metallkugel nicht mehr durch einen Ring?', 'e_kugel_ring'),

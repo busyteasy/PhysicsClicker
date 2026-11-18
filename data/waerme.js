@@ -2,7 +2,7 @@ import { B, D, E, F, G, K, P, T, U, W, inArea } from './helpers.js';
 
 export default inArea('waerme', [
   F('gasgleichung', 2, 'p·V = n·R·T', ['pV=NkT', 'pV=NkBT'], 'Die ideale Gasgleichung verbindet Druck, Volumen und Temperatur.'),
-  F('waermemenge', 2, 'Q = c·m·ΔT', ['Q=cmdT', 'Q=cmΔϑ'], 'Wasser braucht 4,19 kJ, um ein Kilogramm um ein Grad zu erwärmen.'),
+  F('waermemenge', 2, 'Q = c·m·ΔT', ['Q=cmdT', 'Q=cmΔϑ', 'ΔE=cmΔϑ', 'ΔE=cmΔT', 'E=cmΔT', 'E=cmΔϑ'], 'Wasser braucht 4,19 kJ, um ein Kilogramm um ein Grad zu erwärmen.'),
   F('hauptsatz1_f', 2, 'ΔU = Q + W', ['ΔU=W+Q', 'dU=Q+W', 'dU=W+Q'], 'Die innere Energie ändert sich durch zugeführte Wärme und Arbeit.'),
   F('carnot_f', 3, 'η = 1 − T_k/T_w', ['η=1-T2/T1', 'η=1-Tc/Th', 'η=(Tw-Tk)/Tw'], 'Keine Wärmekraftmaschine kann diesen Wirkungsgrad übertreffen.'),
   F('boyle_f', 2, 'p·V = konstant', ['pV=const', 'pV=konst', 'p1V1=p2V2'], 'Bei konstanter Temperatur gilt: halbes Volumen, doppelter Druck.'),
@@ -16,7 +16,7 @@ export default inArea('waerme', [
   G('hs3', 3, 'Dritter Hauptsatz der Thermodynamik', ['dritter Hauptsatz', '3. Hauptsatz', 'Nernst-Theorem', 'nernstsches Wärmetheorem'], 'Der absolute Nullpunkt ist unerreichbar.'),
   G('boyle_mariotte', 2, 'Gesetz von Boyle-Mariotte', ['Boyle-Mariotte', 'Boyle-Mariotte-Gesetz'], 'Unabhängig voneinander entdeckt von Robert Boyle (1662) und Edme Mariotte (1676).'),
   G('gay_lussac', 2, 'Gesetz von Gay-Lussac', ['Gay-Lussac', 'Gay-Lussac-Gesetz'], 'Bei konstantem Druck wächst das Volumen eines Gases proportional zur Temperatur.'),
-  G('stefan_boltzmann', 3, 'Stefan-Boltzmann-Gesetz', ['Stefan-Boltzmann'], 'Die Strahlungsleistung wächst mit der vierten Potenz der Temperatur.'),
+  G('stefan_boltzmann', 3, 'Stefan-Boltzmann-Gesetz', ['Stefan-Boltzmann', 'boltzmannsches Strahlungsgesetz'], 'Die Strahlungsleistung wächst mit der vierten Potenz der Temperatur.'),
   G('wien', 3, 'Wiensches Verschiebungsgesetz', ['Verschiebungsgesetz', 'wiensches Gesetz'], 'Damit liest man die Oberflächentemperatur von Sternen an ihrer Farbe ab.'),
 
   P('entropie', 2, 'Entropie', [], 'Ein Maß für die Zahl der Mikrozustände – und dafür, warum Tassen zerbrechen, aber nie von selbst heil werden.'),
@@ -67,7 +67,7 @@ export default inArea('waerme', [
 
   // Erweiterung Klassenstufen (Issue #16): Temperatur, Aggregatzustände, Gase, Wärmekraftmaschinen, Klima
   B('b_temperatur', 1, 'Temperatur', [], 'Ein Maß für die mittlere Bewegungsenergie der Teilchen – Formelzeichen ϑ (in °C) oder T (in K).'),
-  B('b_waerme', 1, 'Wärme', ['Wärmeenergie'], 'Physikalisch die Energie, die wegen eines Temperaturunterschieds übertragen wird – immer vom wärmeren zum kälteren Körper.'),
+  B('b_waerme', 1, 'Wärme', [], 'Physikalisch die Energie, die wegen eines Temperaturunterschieds übertragen wird – immer vom wärmeren zum kälteren Körper.'),
   B('b_innere_energie', 2, 'Innere Energie', ['thermische Energie'], 'Die Energie der ungeordneten Teilchenbewegung. Ein Eisberg hat mehr davon als eine Tasse Tee.'),
   B('b_teilchenmodell', 1, 'Teilchenmodell', [], 'Alle Stoffe bestehen aus winzigen Teilchen, die sich ständig bewegen – umso schneller, je wärmer es ist.'),
   B('b_waermeausdehnung', 1, 'Wärmeausdehnung', ['thermische Ausdehnung', 'Längenausdehnung'], 'Darum haben Brücken Dehnungsfugen und Stromleitungen hängen im Sommer tiefer.'),
@@ -81,7 +81,7 @@ export default inArea('waerme', [
   B('b_schmelztemperatur', 1, 'Schmelztemperatur', ['Schmelzpunkt'], 'Eis schmilzt bei 0 °C, Eisen erst bei 1538 °C.'),
   B('b_siedetemperatur', 1, 'Siedetemperatur', ['Siedepunkt'], 'Auf der Zugspitze siedet Wasser schon bei etwa 90 °C, weil der Luftdruck geringer ist.'),
   B('b_spez_waermekapazitaet', 2, 'Spezifische Wärmekapazität', [], 'Energie, um 1 kg eines Stoffes um 1 K zu erwärmen. Wasser braucht dafür rund 4,2 kJ – mehr als fast jeder andere Stoff.'),
-  B('b_waermedaemmung', 1, 'Wärmedämmung', ['Isolierung', 'Wärmeisolierung'], 'Luft leitet Wärme schlecht – darum dämmen Daunenjacken und Styropor so gut.'),
+  B('b_waermedaemmung', 1, 'Wärmedämmung', ['Isolierung', 'Wärmeisolierung', 'Dämmung'], 'Luft leitet Wärme schlecht – darum dämmen Daunenjacken und Styropor so gut.'),
   B('b_waermeleiter', 1, 'Wärmeleiter', ['guter Wärmeleiter'], 'Metalle leiten Wärme gut, Holz, Luft und Kunststoffe schlecht.'),
   B('b_celsius_skala', 1, 'Celsius-Skala', [], 'Ihre Fixpunkte sind die Schmelz- und die Siedetemperatur von Wasser bei Normaldruck.'),
   B('b_kelvin_skala', 2, 'Kelvin-Skala', ['absolute Temperaturskala'], 'Beginnt am absoluten Nullpunkt; ein Kelvin ist genauso groß wie ein Grad Celsius.'),
@@ -105,7 +105,7 @@ export default inArea('waerme', [
   D('d_waermepumpe', 2, 'Wärmepumpe', [], 'Holt Wärme aus kalter Umgebung ins warme Haus – aus 1 kWh Strom werden etwa 3 bis 4 kWh Wärme.'),
   D('d_kuehlschrank', 1, 'Kühlschrank', [], 'Pumpt Wärme von innen nach außen – darum ist die Rückseite warm.'),
   D('d_verbrennungsmotor', 2, 'Verbrennungsmotor', ['Ottomotor', 'Dieselmotor'], 'Wandelt nur etwa ein Drittel der chemischen Energie des Kraftstoffs in Bewegung um.'),
-  D('d_dampfmaschine', 1, 'Dampfmaschine', [], 'Löste ab dem 18. Jahrhundert die Industrialisierung aus.'),
+  D('d_dampfmaschine', 1, 'Dampfmaschine', [], 'Trieb ab dem 18. Jahrhundert die Industrialisierung voran.'),
   D('d_kalorimeter', 3, 'Kalorimeter', [], 'Ein gut isoliertes Gefäß, in dem man Wärmemengen misst.'),
   P('p_anomalie', 2, 'Anomalie des Wassers', ['Dichteanomalie'], 'Wasser hat bei 4 °C die größte Dichte – darum frieren Seen von oben zu und Fische überleben am Grund.'),
   P('p_verdunstungskaelte', 1, 'Verdunstungskälte', [], 'Beim Verdunsten wird der Umgebung Energie entzogen – darum kühlt Schwitzen.'),
@@ -124,8 +124,13 @@ export default inArea('waerme', [
 
   // Schulversuche (Issue #16)
   E('e_kugel_ring', 1, 'Kugel-Ring-Versuch', [], 'Die erhitzte Metallkugel passt nicht mehr durch den Ring – erst wenn sie abkühlt.'),
-  E('e_tinte', 1, 'Tintenversuch', ['Diffusionsversuch'], 'Tinte verteilt sich in warmem Wasser viel schneller als in kaltem – die Teilchen bewegen sich schneller.'),
+  E('e_tinte', 1, 'Tintenversuch', ['Diffusionsversuch', 'Diffusion'], 'Tinte verteilt sich in warmem Wasser viel schneller als in kaltem – die Teilchen bewegen sich schneller.'),
 
   W('w_wien', 4, 'Wilhelm Wien', [], 'Erhielt 1911 den Nobelpreis für seine Gesetze der Wärmestrahlung.'),
   W('w_stefan', 4, 'Josef Stefan', [], 'Fand 1879 aus Messungen, dass die Strahlungsleistung mit der vierten Potenz der Temperatur wächst; Boltzmann begründete es theoretisch.'),
+
+  // Ergänzungen nach fachlicher Prüfung (Issue #16)
+  B('b_schmelzwaerme', 2, 'Schmelzwärme', ['spezifische Schmelzwärme', 'Schmelzenergie'], 'Um 1 kg Eis bei 0 °C zu schmelzen, braucht man rund 334 kJ – so viel wie für das Erwärmen von 1 kg Wasser um etwa 80 K.'),
+  B('b_verdampfungswaerme', 2, 'Verdampfungswärme', ['spezifische Verdampfungswärme', 'Verdampfungsenergie'], 'Um 1 kg Wasser bei 100 °C zu verdampfen, braucht man rund 2,26 MJ – mehr als fünfmal so viel wie zum Erwärmen von 0 auf 100 °C.'),
+  D('d_bhkw', 2, 'Blockheizkraftwerk', ['Kraft-Wärme-Kopplung', 'BHKW'], 'Erzeugt Strom und nutzt die Abwärme zum Heizen – so wird der größte Teil der Brennstoffenergie genutzt.'),
 ]);

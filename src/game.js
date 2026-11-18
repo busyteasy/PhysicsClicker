@@ -259,8 +259,10 @@ export function answerQuestion(state, id, raw, now = Date.now()) {
   if (q.wert) {
     correct = checkValue(entry, raw) === 'ok';
   } else {
+    // Neben der Antwort zählen auch ausdrücklich erlaubte Alternativen (`auch`)
+    const accepted = [q.antwort, ...(q.auch ?? [])];
     const result = match(INDEX, raw);
-    correct = result.kind === 'treffer' && result.ids.includes(q.antwort);
+    correct = result.kind === 'treffer' && result.ids.some((x) => accepted.includes(x));
   }
 
   if (!correct) {

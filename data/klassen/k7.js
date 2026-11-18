@@ -6,7 +6,7 @@ import { Q, QUELLE_SI, S } from './helpers.js';
 export default {
   klasse: 7,
   themen: ['Energieformen und Energieumwandlung', 'Bewegungen beschreiben', 'Optische Instrumente und Farben', 'Sterne und Weltall'],
-  quelle: `${QUELLE_SI}, Themenbereich Energie (Doppeljahrgang 7/8, Zuordnung zu Jahrgang 7 nach Anhang A3); Mechanik und Optik nach Doppeljahrgang 7/8`,
+  quelle: `${QUELLE_SI}, Themenbereiche Energie (Zuordnung zu Jahrgang 7 nach Anhang A3) und Mechanik (Doppeljahrgang 7/8); optische Instrumente sowie Sterne und Weltall (im KC Sek I nicht verbindlich) nach gängigen Schulbuchreihen`,
   eintraege: {
     // Größen & Begriffe
     ...S(1, 'b_energie b_energieform b_bewegungsenergie b_hoehenenergie b_spannenergie b_chemische_energie b_energieumwandlung b_energieuebertragung b_energiekette b_geschwindigkeit b_gleichfoermig b_ts_diagramm b_planet b_stern b_sonnensystem b_galaxie b_milchstrasse b_komet b_jahreszeiten b_brennweite b_spektrum'),
@@ -14,7 +14,7 @@ export default {
     ...S(3, 'b_energieentwertung b_beschleunigt b_tv_diagramm b_komplementaer b_brechzahl b_exoplanet b_brechungswinkel b_nebel'),
     // Geräte & Bauteile
     ...S(1, 'd_lupe d_fernrohr d_mikroskop d_sammellinse d_fotoapparat d_brille'),
-    ...S(2, 'd_kepler_fernrohr d_galilei_fernrohr d_beamer d_lichtleiter d_prisma d_stoppuhr d_rakete'),
+    ...S(2, 'd_beamer d_lichtleiter d_prisma d_stoppuhr d_rakete'),
     ...S(3, 'd_lichtschranke d_spektroskop d_hohlspiegel d_satellit'),
     // Phänomene
     ...S(1, 'p_mondphasen p_sonnenfinsternis p_mondfinsternis regenbogen'),
@@ -22,10 +22,8 @@ export default {
     ...S(3, 'supernova roter_riese weisser_zwerg schwarzes_loch rotverschiebung expansion rayleigh'),
     // Gesetze
     ...S(1, 'energieerhaltung g_lichtausbreitung reflexionsgesetz'),
-    ...S(2, 'snellius'),
     // Formeln
     ...S(1, 'geschwindigkeit'),
-    ...S(2, 'brechkraft_f'),
     ...S(3, 'massstab_f'),
     // Einheiten
     ...S(1, 'u_joule u_meter u_sekunde'),
@@ -38,12 +36,19 @@ export default {
     ...S(1, 'prisma'),
     ...S(2, 'jupitermonde'),
     ...S(3, 'eratosthenes roemer'),
+    ...S(3, 'snellius'),
+    ...S(3, 'brechkraft_f'),
+    ...S(3, 'd_kepler_fernrohr'),
+    ...S(3, 'd_galilei_fernrohr'),
+    ...S(1, 'b_lichtenergie b_elektrische_energie'),
   },
   fragen: [
     // Energie
-    Q('k7_energie', 1, 'In welcher Einheit misst man Energie?', 'u_joule'),
+    Q('k7_energie', 1, 'In welcher SI-Einheit misst man Energie?', 'u_joule'),
     Q('k7_spann', 1, 'Welche Energieform steckt in einem gespannten Bogen?', 'b_spannenergie'),
     Q('k7_chemisch', 1, 'Welche Energieform ist in Nahrung, Holz und Benzin gespeichert?', 'b_chemische_energie'),
+    Q('k7_licht', 1, 'Welche Energieform nutzt eine Solarzelle?', 'b_lichtenergie'),
+    Q('k7_elektrisch', 1, 'Welche Energieform liefert die Steckdose?', 'b_elektrische_energie'),
     Q('k7_innere', 2, 'Welche Energie steigt, wenn sich ein Körper erwärmt?', 'b_innere_energie'),
     Q('k7_umwandlung', 1, 'Wie heißt der Vorgang, wenn ein Fahrraddynamo Bewegungsenergie zu elektrischer Energie macht?', 'b_energieumwandlung'),
     Q('k7_fluss', 2, 'Wie heißt das Diagramm, in dem die Breite der Pfeile zeigt, wie viel Energie wohin fließt?', 'b_energieflussdiagramm'),
@@ -62,7 +67,7 @@ export default {
     Q('k7_mikroskop', 1, 'Welches Gerät vergrößert mit Objektiv und Okular winzige Dinge bis etwa 1000-fach?', 'd_mikroskop'),
     Q('k7_kepler_fr', 2, 'Welches Fernrohr aus zwei Sammellinsen zeigt das Bild auf dem Kopf?', 'd_kepler_fernrohr'),
     Q('k7_dioptrie', 2, 'In welcher Einheit gibt man die Brechkraft einer Brille an?', 'u_dioptrie'),
-    Q('k7_brechkraft', 2, 'Mit welcher Formel berechnet man die Brechkraft aus der Brennweite?', 'brechkraft_f'),
+    Q('k7_brechkraft', 3, 'Mit welcher Formel berechnet man die Brechkraft aus der Brennweite?', 'brechkraft_f'),
     Q('k7_akkommodation', 2, 'Wie nennt man die Anpassung des Auges an unterschiedliche Entfernungen?', 'b_akkommodation'),
     Q('k7_weitsichtig', 2, 'Welcher Sehfehler wird mit einer Sammellinse korrigiert?', 'b_weitsichtig'),
     Q('k7_dispersion', 2, 'Wie heißt es, dass blaues Licht im Prisma stärker gebrochen wird als rotes?', 'dispersion'),
@@ -83,7 +88,7 @@ export default {
     Q('k7_gezeiten', 2, 'Wie heißt das Steigen und Fallen des Meeresspiegels, das vor allem der Mond verursacht?', 'gezeiten'),
     Q('k7_urknall', 2, 'Wie heißt der Beginn des Universums vor etwa 13,8 Milliarden Jahren?', 'urknall'),
     Q('k7_komet', 1, 'Wie heißt ein Himmelskörper aus Eis und Staub, der nahe der Sonne einen Schweif bildet?', 'b_komet'),
-    Q('k7_sonnenende', 3, 'Was wird aus unserer Sonne am Ende ihres Lebens?', 'weisser_zwerg'),
+    Q('k7_sonnenende', 3, 'Welcher Sternrest bleibt am Ende von unserer Sonne übrig?', 'weisser_zwerg'),
     Q('k7_eratosthenes', 3, 'Wie heißt der antike Versuch, den Erdumfang mit Schattenwinkeln zu bestimmen?', 'eratosthenes'),
   ],
 };

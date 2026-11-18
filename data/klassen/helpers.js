@@ -14,7 +14,12 @@
 /** S(stufe, 'id id id') -> { id: stufe, … } */
 export const S = (tier, ids) => Object.fromEntries(ids.trim().split(/\s+/).map((id) => [id, tier]));
 
-export const Q = (id, tier, frage, antwort, wert = false) => ({ id, tier, frage, antwort, wert });
+/**
+ * Q(id, stufe, frage, antwort, wert?, auch?) – `auch` sind IDs weiterer Einträge,
+ * die ebenfalls als richtig gelten (wenn eine Frage mehrere korrekte Antworten
+ * zulässt, die in der Klasse eigene Einträge sind).
+ */
+export const Q = (id, tier, frage, antwort, wert = false, auch = []) => ({ id, tier, frage, antwort, wert, auch });
 
 export const QUELLE_SI = 'Kerncurriculum Naturwissenschaften Gymnasium 5–10, Niedersachsen (2015), Fach Physik';
 export const QUELLE_SII = 'Kerncurriculum Physik Sekundarbereich II, Niedersachsen (2022)';

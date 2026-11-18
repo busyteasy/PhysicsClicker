@@ -31,7 +31,7 @@ export default {
     // Formeln
     ...S(1, 'druck dichte kelvin_celsius beschleunigung'),
     ...S(2, 'f_schweredruck auftrieb_f boyle_f f_gay_lussac f_v_at'),
-    ...S(3, 'f_amontons f_gas_allg carnot_f weg_zeit'),
+    ...S(3, 'f_amontons f_gas_allg weg_zeit'),
     // Einheiten
     ...S(1, 'u_pascal u_bar u_kelvin'),
     ...S(2, 'u_becquerel u_sievert'),
@@ -47,6 +47,9 @@ export default {
     ...S(1, 'magdeburg e_abschirmung'),
     ...S(2, 'torricelli e_taucher e_wuerfel'),
     ...S(3, 'rutherford_streu nebelkammer chicago_pile'),
+    ...S(2, 'carnot_f'),
+    ...S(3, 'starke_ww perpetuum'),
+    ...S(2, 'd_ldr d_ntc b_zerfallskurve'),
   },
   fragen: [
     // Druck und Auftrieb
@@ -75,11 +78,12 @@ export default {
     Q('k10_isotherm', 3, 'Wie heißt eine Zustandsänderung, bei der die Temperatur gleich bleibt?', 'b_isotherm'),
     Q('k10_stirling', 2, 'Welcher Motor läuft mit einer äußeren Wärmequelle und wird mit einem Kreisprozess im p-V-Diagramm beschrieben?', 'd_stirlingmotor'),
     Q('k10_pv', 3, 'In welchem Diagramm ist die eingeschlossene Fläche eines Kreisprozesses die abgegebene Arbeit?', 'b_pv_diagramm'),
-    Q('k10_carnot', 3, 'Mit welcher Formel berechnet man den maximal möglichen Wirkungsgrad einer Wärmekraftmaschine?', 'carnot_f'),
+    Q('k10_carnot', 2, 'Mit welcher Formel berechnet man den maximal möglichen Wirkungsgrad einer Wärmekraftmaschine?', 'carnot_f'),
+    Q('k10_perpetuum', 3, 'Wie heißt eine Maschine, die ohne Energiezufuhr ewig Arbeit verrichten soll – und unmöglich ist?', 'perpetuum'),
     // Atom- und Kernphysik
     Q('k10_kernhuelle', 1, 'Wie heißt das Atommodell mit einem winzigen, schweren Kern und einer leichten Elektronenhülle?', 'b_kern_huelle'),
     Q('k10_isotop', 1, 'Wie nennt man Atome eines Elements mit unterschiedlicher Neutronenzahl?', 'b_isotop'),
-    Q('k10_kernkraft', 2, 'Welche Kraft hält Protonen und Neutronen trotz elektrischer Abstoßung im Kern zusammen?', 'b_kernkraft'),
+    Q('k10_kernkraft', 2, 'Welche Kraft hält Protonen und Neutronen trotz elektrischer Abstoßung im Kern zusammen?', 'b_kernkraft', false, ['starke_ww']),
     Q('k10_neutron', 1, 'Welches ungeladene Kernteilchen löst die Spaltung von Uran-235 aus?', 'neutron'),
     Q('k10_alphateilchen', 2, 'Welches Teilchen aus zwei Protonen und zwei Neutronen bildet die Alphastrahlung?', 'alphateilchen'),
     Q('k10_alpha', 1, 'Welche Strahlung wird schon von einem Blatt Papier abgeschirmt?', 'b_alphastrahlung'),
@@ -87,6 +91,7 @@ export default {
     Q('k10_geiger', 1, 'Mit welchem Gerät weist man ionisierende Strahlung als Knacken nach?', 'd_geiger'),
     Q('k10_nulleffekt', 2, 'Wie heißt die Zählrate, die ein Zählrohr auch ganz ohne Präparat misst?', 'b_nulleffekt'),
     Q('k10_hwz', 1, 'Wie heißt die Zeit, nach der die Hälfte der radioaktiven Kerne zerfallen ist?', 'halbwertszeit'),
+    Q('k10_zerfallskurve', 2, 'Wie heißt das Diagramm, in dem die Zahl der unzerfallenen Kerne exponentiell abnimmt?', 'b_zerfallskurve'),
     Q('k10_aequivalent', 3, 'Welche Dosis berücksichtigt die biologische Wirkung der Strahlungsart und wird in Sievert angegeben?', 'b_aequivalentdosis'),
     Q('k10_sievert', 2, 'In welcher Einheit gibt man die Äquivalentdosis an?', 'u_sievert'),
     Q('k10_becquerel', 2, 'In welcher Einheit misst man die Aktivität, also Zerfälle pro Sekunde?', 'u_becquerel'),
@@ -103,8 +108,10 @@ export default {
     Q('k10_halbleiter', 1, 'Zu welcher Stoffgruppe gehört Silicium, das bei Erwärmung besser leitet?', 'b_halbleiter'),
     Q('k10_dotierung', 2, 'Wie nennt man das gezielte Einbauen von Fremdatomen in einen Halbleiter?', 'b_dotierung'),
     Q('k10_pn', 2, 'Wie heißt die Grenze zwischen p- und n-dotiertem Halbleiter?', 'b_pn'),
-    Q('k10_diode', 1, 'Welches Bauteil lässt Strom nur in eine Richtung durch?', 'd_diode'),
+    Q('k10_diode', 1, 'Welches Halbleiterbauteil lässt Strom nur in eine Richtung durch und dient zum Gleichrichten?', 'd_diode', false, ['d_led']),
     Q('k10_solarzelle', 1, 'Welches Halbleiterbauteil wandelt Licht direkt in elektrische Energie um?', 'd_solarzelle'),
+    Q('k10_ldr', 2, 'Welches Halbleiterbauteil verringert seinen Widerstand, wenn Licht darauf fällt?', 'd_ldr'),
+    Q('k10_ntc', 2, 'Welcher Widerstand leitet bei höherer Temperatur besser und dient als Temperatursensor?', 'd_ntc'),
     // Beschleunigung
     Q('k10_a', 1, 'Mit welcher Formel berechnet man die Beschleunigung?', 'beschleunigung'),
     Q('k10_vat', 2, 'Wie schnell ist ein Körper, der aus der Ruhe gleichmäßig beschleunigt? Gesucht ist die Formel.', 'f_v_at'),

@@ -43,7 +43,7 @@ export default inArea('quanten', [
 
   U('u_ev', 2, 'Elektronenvolt', ['Elektronvolt'], 'So viel Energie gewinnt ein Elektron beim Durchlaufen einer Spannung von einem Volt.'),
 
-  K('planck_h', 3, 'Plancksches Wirkungsquantum', ['Planck-Konstante', 'plancksche Konstante', 'Wirkungsquantum'], ['h'], [[6.62607015e-34, ['Js', 'J/Hz']]], 'Seit 2019 exakt festgelegt – damit ist das Kilogramm definiert.'),
+  K('planck_h', 3, 'Plancksches Wirkungsquantum', ['Planck-Konstante', 'plancksche Konstante', 'Wirkungsquantum'], ['h'], [[6.62607015e-34, ['Js', 'J/Hz']], [4.135667696e-15, ['eVs', 'eV/Hz']]], 'Seit 2019 exakt festgelegt – damit ist das Kilogramm definiert.'),
   K('hbar', 4, 'Reduziertes Plancksches Wirkungsquantum', ['reduzierte Planck-Konstante', 'h quer'], ['ħ', 'hbar'], [[1.054571817e-34, ['Js']]], 'h geteilt durch 2π – gesprochen „h quer“.'),
   K('elektronenmasse', 3, 'Elektronenmasse', ['Ruhemasse des Elektrons', 'Masse des Elektrons'], ['me', 'm_e'], [[9.1093837e-31, ['kg']], [0.511, ['MeV/c^2'], 0.01]], 'Rund 1836-mal leichter als ein Proton.'),
   K('rydberg', 5, 'Rydberg-Konstante', [], ['R∞', 'Rinf', 'R_∞'], [[1.0973731568e7, ['1/m', 'm^-1']]], 'Eine der am genauesten gemessenen Naturkonstanten.'),
@@ -79,12 +79,12 @@ export default inArea('quanten', [
   B('b_linienspektrum', 2, 'Linienspektrum', [], 'Jedes Element hat sein eigenes Muster an Spektrallinien – wie ein Fingerabdruck.'),
   B('b_kontinuierlich', 2, 'Kontinuierliches Spektrum', [], 'Glühende feste Körper senden alle Farben aus – ein lückenloses Spektrum.'),
   B('b_absorptionsspektrum', 3, 'Absorptionsspektrum', ['Fraunhoferlinien', 'Fraunhofersche Linien'], 'Dunkle Linien im Sonnenspektrum verraten, welche Elemente in der Sonnenatmosphäre sind.'),
-  B('b_balmer', 3, 'Balmer-Serie', ['Balmerserie'], 'Die sichtbaren Linien des Wasserstoffs – Übergänge auf das zweite Energieniveau.'),
+  B('b_balmer', 3, 'Balmer-Serie', ['Balmerserie', 'Balmerlinien', 'Balmer-Linien'], 'Die sichtbaren Linien des Wasserstoffs – Übergänge auf das zweite Energieniveau.'),
   B('b_potenzialtopf', 3, 'Potenzialtopfmodell', ['Potenzialtopf', 'Potentialtopf', 'linearer Potenzialtopf'], 'Ein Elektron, eingesperrt in einem Kasten, kann nur stehende Wellen bilden – daher die festen Energien.'),
   B('b_orbital', 3, 'Orbital', ['Orbitale'], 'Ein Bereich, in dem ein Elektron mit großer Wahrscheinlichkeit nachgewiesen wird – keine Bahn.'),
   B('b_wahrscheinlichkeit', 3, 'Nachweiswahrscheinlichkeit', ['Antreffwahrscheinlichkeit'], 'Wo ein Quantenobjekt nachgewiesen wird, lässt sich nur mit einer Wahrscheinlichkeit vorhersagen.'),
   B('b_quantenobjekt', 2, 'Quantenobjekt', ['Quantenobjekte'], 'Photonen, Elektronen, Neutronen – sie verhalten sich weder ganz wie Teilchen noch ganz wie Wellen.'),
-  B('b_welcher_weg', 4, 'Welcher-Weg-Information', [], 'Lässt sich der Weg eines Quantenobjekts prinzipiell herausfinden, verschwindet das Interferenzmuster.'),
+  B('b_welcher_weg', 4, 'Welcher-Weg-Information', ['Weginformation'], 'Lässt sich der Weg eines Quantenobjekts prinzipiell herausfinden, verschwindet das Interferenzmuster.'),
   B('b_nichtlokalitaet', 4, 'Nichtlokalität', ['Nichtlokalisierbarkeit'], 'Einem Quantenobjekt lässt sich vor der Messung kein bestimmter Ort zuschreiben.'),
   B('b_praeparation', 4, 'Präparation', ['Zustandspräparation'], 'Das gezielte Herstellen eines Quantenzustands, etwa durch einen Polarisationsfilter.'),
   B('b_stochastisch', 3, 'Stochastische Deutung', ['stochastische Interpretation', 'Wahrscheinlichkeitsdeutung'], 'Das Interferenzmuster baut sich aus vielen einzelnen, zufälligen Treffern auf.'),
@@ -115,4 +115,9 @@ export default inArea('quanten', [
   W('w_balmer', 4, 'Johann Jakob Balmer', ['Balmer'], 'Der Basler Mathematiklehrer fand 1885 die Formel für die sichtbaren Wasserstofflinien.'),
   W('w_bragg', 4, 'William Lawrence Bragg', ['Bragg'], 'Erhielt 1915 mit 25 Jahren zusammen mit seinem Vater den Nobelpreis – bis heute einer der jüngsten Preisträger.'),
   W('w_zeilinger', 4, 'Anton Zeilinger', ['Zeilinger'], 'Österreichischer Quantenphysiker; Nobelpreis 2022 für Experimente mit verschränkten Photonen.'),
+
+  // Ergänzungen nach fachlicher Prüfung (Issue #16)
+  B('b_koinzidenz', 4, 'Koinzidenzmethode', ['Koinzidenzmessung'], 'Zwei Detektoren zählen nur gleichzeitige Ereignisse – so zeigt man, dass ein einzelnes Photon am Strahlteiler nicht geteilt wird.'),
+  E('e_neutronen', 4, 'Doppelspalt mit kalten Neutronen', ['Neutroneninterferenz', 'Neutronen am Doppelspalt'], 'Auch Neutronen, rund 1800-mal schwerer als Elektronen, interferieren am Doppelspalt – gezeigt 1988 von Anton Zeilinger und Kollegen.'),
+  D('d_weisse_led', 3, 'Weiße LED', ['weiße Leuchtdiode'], 'Eine blaue LED regt einen gelben Leuchtstoff zur Fluoreszenz an – zusammen wirkt das Licht weiß.'),
 ]);

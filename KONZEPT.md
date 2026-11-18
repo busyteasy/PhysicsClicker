@@ -13,12 +13,12 @@ Spiel erzeugt Erkenntnis von selbst (siehe Issue #1).
 
 Beim Laden der Seite wählt man, wie man spielen möchte:
 
-- **Freies Spiel** – das Spiel mit der ganzen Wissensdatenbank (rund 980
+- **Freies Spiel** – das Spiel mit der ganzen Wissensdatenbank (rund 1000
   Einträge, 110 Fragen). Bestehende Spielstände laufen hier unverändert weiter.
 - **Nach Klassenstufe** (5 bis 13, Gymnasium) – eine eigene, kleinere Spielwelt
   nur mit dem Stoff dieser Klasse: Größen und Begriffe, Geräte, Versuche,
   Formeln, Gesetze, Einheiten, Konstanten, Personen, Phänomene und ein eigener
-  Fragekatalog (37 bis 76 Fragen je Klasse). Die Schwierigkeitsstufen gelten
+  Fragekatalog (37 bis 80 Fragen je Klasse). Die Schwierigkeitsstufen gelten
   *innerhalb* der Klasse: 1 = Grundwissen, 2 = Standard, 3 = anspruchsvoll,
   4 = Zusatzwissen. Was nicht zum Stoff gehört, wird nicht gewertet – das Spiel
   sagt dann „Das gehört nicht zum Stoff von Klasse 7“.

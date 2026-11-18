@@ -6,7 +6,7 @@ import { Q, QUELLE_SII, S } from './helpers.js';
 export default {
   klasse: 11,
   themen: ['Dynamik: Fall, Wurf, Newtonsche Axiome', 'Kreisbewegung', 'Energie und Impuls', 'Gravitation und Planetenbahnen', 'Wahlmodule: Akustik, Optische Abbildungen, Strahlungsphysik'],
-  quelle: `${QUELLE_SII}, Einführungsphase: Dynamik und Wahlmodule; Impuls, Reibung und Gravitation als Ergänzung`,
+  quelle: `${QUELLE_SII}, Einführungsphase: Dynamik und Wahlmodule (Akustik, Optische Abbildungen, Strahlungsphysik); Impuls, Reibung und Gravitation (im KC Sek II nicht verbindlich) als Ergänzung nach gängigen Schulbüchern`,
   eintraege: {
     // Größen & Begriffe
     ...S(1, 'b_geschwindigkeit b_beschleunigung b_masse b_kraft b_bezugssystem b_gleichfoermig b_beschleunigt b_ts_diagramm b_tv_diagramm b_impuls b_bewegungsenergie b_hoehenenergie b_spannenergie b_frequenz b_amplitude b_schall b_brennweite'),
@@ -22,11 +22,10 @@ export default {
     ...S(3, 'p_schwebung p_selektive_absorption schwarzer_koerper'),
     // Gesetze
     ...S(1, 'traegheit aktionsprinzip wechselwirkung energieerhaltung'),
-    ...S(2, 'impulserhaltung gravitationsgesetz kepler1'),
     ...S(3, 'kepler2 kepler3 stefan_boltzmann wien g_superposition'),
     // Formeln
     ...S(1, 'newton2 geschwindigkeit beschleunigung f_v_at f_fall_v ekin epot gewichtskraft frequenz_f'),
-    ...S(2, 'weg_zeit f_fall_s zentripetal_f f_bahngeschw impuls reibung_f leistung f_wirkungsgrad linsen_f'),
+    ...S(2, 'weg_zeit f_fall_s zentripetal_f f_bahngeschw reibung_f leistung f_wirkungsgrad linsen_f'),
     ...S(3, 'f_zentripetalbeschl f_kraftstoss massstab_f gravitation_f kepler3_f stefan_f wien_f federenergie'),
     // Einheiten
     ...S(1, 'u_newton u_joule u_watt u_hertz'),
@@ -36,13 +35,19 @@ export default {
     ...S(2, 'erdradius'),
     ...S(3, 'gravitationskonstante solarkonstante stefan_k erdmasse'),
     // Personen
-    ...S(1, 'newton galilei kepler_p'),
+    ...S(1, 'newton galilei'),
     ...S(2, 'brahe boltzmann_p'),
     ...S(3, 'w_wien w_stefan abbe'),
     // Experimente
     ...S(1, 'pisa hammer_feder'),
     ...S(2, 'e_fallschnur e_wasserrakete'),
     ...S(3, 'cavendish'),
+    ...S(2, 'kepler_p'),
+    ...S(3, 'gravitationsgesetz'),
+    ...S(3, 'kepler1'),
+    ...S(3, 'impulserhaltung'),
+    ...S(3, 'impuls'),
+    ...S(2, 'b_grundton'),
   },
   fragen: [
     // Fall und Wurf
@@ -57,9 +62,9 @@ export default {
     Q('k11_galilei', 1, 'Wer untersuchte als Erster systematisch den freien Fall und die Bewegung auf der schiefen Ebene?', 'galilei'),
     // Newtonsche Axiome
     Q('k11_grundgleichung', 1, 'Wie lautet die Grundgleichung der Mechanik?', 'newton2'),
-    Q('k11_axiom1', 1, 'Wie heißt das erste Newtonsche Axiom?', 'traegheit'),
-    Q('k11_axiom2', 1, 'Wie heißt das zweite Newtonsche Axiom, nach dem eine Kraft die Bewegung ändert?', 'aktionsprinzip'),
-    Q('k11_axiom3', 1, 'Wie heißt das dritte Newtonsche Axiom?', 'wechselwirkung'),
+    Q('k11_axiom1', 1, 'Welches Axiom besagt, dass ein Körper ohne resultierende Kraft in Ruhe oder gleichförmiger Bewegung bleibt?', 'traegheit'),
+    Q('k11_axiom2', 1, 'Welches Axiom besagt, dass die Beschleunigung eines Körpers proportional zur resultierenden Kraft ist?', 'aktionsprinzip'),
+    Q('k11_axiom3', 1, 'Welches Axiom besagt, dass Kraft und Gegenkraft gleich groß und entgegengesetzt gerichtet sind?', 'wechselwirkung'),
     Q('k11_newton_einheit', 1, 'Welche Einheit ist als 1 kg·m/s² definiert?', 'u_newton'),
     Q('k11_joule', 1, 'Welche Einheit entspricht 1 N·m und wird für Energie und Arbeit benutzt?', 'u_joule'),
     Q('k11_dioptrie', 2, 'In welcher Einheit gibt man die Brechkraft einer Linse an?', 'u_dioptrie'),
@@ -77,25 +82,26 @@ export default {
     Q('k11_ekin', 1, 'Mit welcher Formel berechnet man die kinetische Energie?', 'ekin'),
     Q('k11_ees', 1, 'Welcher Satz besagt, dass in einem abgeschlossenen System die Gesamtenergie konstant bleibt?', 'energieerhaltung'),
     Q('k11_feder', 3, 'Mit welcher Formel berechnet man die Spannenergie einer Feder?', 'federenergie'),
-    Q('k11_impuls', 2, 'Mit welcher Formel berechnet man den Impuls?', 'impuls'),
-    Q('k11_impulserhaltung', 2, 'Welcher Erhaltungssatz erklärt den Rückstoß einer Rakete?', 'impulserhaltung'),
+    Q('k11_impuls', 3, 'Mit welcher Formel berechnet man den Impuls?', 'impuls'),
+    Q('k11_impulserhaltung', 3, 'Welcher Erhaltungssatz erklärt den Rückstoß einer Rakete?', 'impulserhaltung'),
     Q('k11_unelastisch', 3, 'Wie heißt ein Stoß, nach dem sich beide Körper gemeinsam weiterbewegen?', 'b_unelastischer_stoss'),
     Q('k11_kraftstoss', 3, 'Wie heißt das Produkt aus Kraft und Einwirkdauer, das den Impuls ändert?', 'b_kraftstoss'),
     Q('k11_wirkungsgrad', 2, 'Wie heißt das Verhältnis von nutzbarer zu zugeführter Energie?', 'b_wirkungsgrad'),
     // Gravitation
     Q('k11_newton', 1, 'Wer erkannte, dass dieselbe Kraft Äpfel fallen und den Mond um die Erde kreisen lässt?', 'newton'),
-    Q('k11_kepler', 1, 'Wer leitete aus Tycho Brahes Beobachtungen die Gesetze der Planetenbewegung ab?', 'kepler_p'),
+    Q('k11_kepler', 2, 'Wer leitete aus Tycho Brahes Beobachtungen die Gesetze der Planetenbewegung ab?', 'kepler_p'),
     Q('k11_brahe', 2, 'Welcher Astronom vermaß ohne Fernrohr den Himmel so genau, dass Kepler seine Gesetze finden konnte?', 'brahe'),
-    Q('k11_gravitation', 2, 'Welches Gesetz beschreibt die Anziehung zweier Massen?', 'gravitationsgesetz'),
+    Q('k11_gravitation', 3, 'Welches Gesetz beschreibt die Anziehung zweier Massen?', 'gravitationsgesetz'),
     Q('k11_g_wert', 3, 'Wie groß ist die Gravitationskonstante? (Zahl mit Einheit)', 'gravitationskonstante', true),
-    Q('k11_cavendish', 3, 'Mit welchem Experiment wurde die Gravitationskonstante erstmals im Labor gemessen?', 'cavendish'),
-    Q('k11_kepler1', 2, 'Welches Gesetz besagt, dass Planeten auf Ellipsen um die Sonne laufen?', 'kepler1'),
+    Q('k11_cavendish', 3, 'Mit welchem Drehwaagen-Experiment wurde die Anziehung zwischen Körpern im Labor erstmals gemessen?', 'cavendish'),
+    Q('k11_kepler1', 3, 'Welches Gesetz besagt, dass Planeten auf Ellipsen um die Sonne laufen?', 'kepler1'),
     Q('k11_kepler2', 3, 'Wie heißt das Keplersche Gesetz, nach dem der Fahrstrahl in gleichen Zeiten gleiche Flächen überstreicht?', 'kepler2'),
     Q('k11_kepler3f', 3, 'Wie lautet das dritte Keplersche Gesetz als Formel?', 'kepler3_f'),
     Q('k11_geostationaer', 3, 'Wie heißt die Bahn, auf der ein Satellit über einem festen Punkt des Äquators zu stehen scheint?', 'b_geostationaer'),
     Q('k11_flucht', 3, 'Wie heißt die Geschwindigkeit von rund 11,2 km/s, mit der man das Schwerefeld der Erde verlassen kann?', 'b_fluchtgeschwindigkeit'),
     // Akustik
     Q('k11_ton', 2, 'Wie heißt ein Schallereignis mit genau einer Frequenz, dessen Schwingungsbild eine Sinuskurve ist?', 'b_ton'),
+    Q('k11_grundton', 2, 'Wie heißt der tiefste Ton eines Klangs, der die gehörte Tonhöhe bestimmt?', 'b_grundton'),
     Q('k11_klangfarbe', 3, 'Was unterscheidet denselben Ton auf Geige und Flöte? Gesucht ist der Fachbegriff.', 'b_klangfarbe'),
     Q('k11_oktave', 3, 'Wie heißt das Intervall zweier Töne mit dem Frequenzverhältnis 2 : 1?', 'b_oktave'),
     Q('k11_pegel', 2, 'Wie heißt die in Dezibel angegebene Größe für die Lautstärke eines Signals?', 'b_schallpegel'),
