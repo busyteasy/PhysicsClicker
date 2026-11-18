@@ -11,6 +11,9 @@ Man tippt Physikwissen (Personen, Einheiten, Formeln, Konstanten mit Wert …) i
 ein Eingabefeld und bekommt dafür „Erkenntnis“. Am Anfang ist nur der Bereich
 „Personen“ offen, weitere Bereiche kauft man mit Erkenntnis frei. Es gibt
 **kein passives Einkommen** – Erkenntnis entsteht nur durch Eingaben und Fragen.
+Beim Laden wählt man das **freie Spiel** oder eine **Klassenstufe** (5–13); jede
+Klasse ist eine eigene Spielwelt mit dem Stoff der niedersächsischen
+Kerncurricula.
 
 Live: <https://busyteasy.github.io/PhysicsClicker/> (GitHub Pages aus `main`, Ordner `/`)
 
@@ -46,11 +49,12 @@ Repo liegt, von GitHub Pages ausgeliefert werden können.
 ## Aufbau
 
 ```
-index.html        Seite: Eingabe-Spalte, Reiter (Bereiche, Fragen, Upgrades, Codex, Optionen), Overlays (Frage, Hilfe, Mindmap)
+index.html        Seite: Eingabe-Spalte, Reiter (Bereiche, Fragen, Upgrades, Codex, Optionen), Overlays (Start, Frage, Hilfe, Mindmap, Countdown)
 style.css         „Laborheft“-Look; Farben als CSS-Variablen in :root, Dunkelmodus per prefers-color-scheme
 src/
   content.js      Balance + Stammdaten: AREAS, BEREICHE, Preise, TIER_POINTS, BOOSTS …
-  game.js         Zustand und Regeln: newState, submit, buyBereich, answerQuestion, buyBoost, restore,
+  welt.js         Spielwelten: FREI und KLASSEN_WELTEN (Einträge, Index, Fragen, Bereiche, Preise); welt(id), weltOf(state)
+  game.js         Zustand und Regeln: newState(weltId), submit, buyBereich, answerQuestion, buyBoost, restore,
                   Countdown-Modus (newCountdownRun, countdownLeft, countdownOver) …
   matcher.js      buildIndex(ENTRIES) und match(index, eingabe) – Eingabe → Einträge
   normalize.js    Vereinheitlicht Wörter, Formeln, Einheiten; parseQuantity liest Zahlen
@@ -66,7 +70,8 @@ data/
   fragen.js       Fragekatalog
   bezuege.js      Person → zugehörige Einträge (für die Mindmap)
   wiki.js         Wikipedia-Artikeltitel je Eintrag-ID (Pflicht für jede Fragen-Antwort, Test)
-test/             data, matcher, game, fragen, upgrades, wiki, mindmap, countdown
+  klassen/        k5.js … k13.js: Auswahl der Einträge je Klasse mit Stufe 1–4 und eigenem Fragekatalog
+test/             data, matcher, game, fragen, upgrades, wiki, mindmap, countdown, klassen
 ```
 
 ### Begriffe
@@ -78,6 +83,7 @@ test/             data, matcher, game, fragen, upgrades, wiki, mindmap, countdow
 | **Stufe** (`tier`) | 1 (Schulwissen) bis 5 (Spezialwissen), bestimmt die Punkte. |
 | **Erkenntnis** (`insight`) | Die Spielwährung. |
 | **Boost / Upgrade** | Einmal-Effekt aus `BOOSTS` (Geistesblitz, Spickzettel …). |
+| **Spielwelt** (`welt`) | `frei` oder `k5` … `k13`. Bestimmt Einträge, Fragen, Bereiche und Preise; steht im Spielstand. |
 
 ### Datenfluss einer Eingabe
 
@@ -127,6 +133,25 @@ werden. Der Bereich der Frage ergibt sich aus der Kategorie der Antwort. Jeder
 Bereich braucht mindestens 4 Fragen (Test).
 Die Antwort braucht außerdem einen Wikipedia-Titel in `data/wiki.js` (Test).
 
+### Klassenstufe pflegen
+
+Jede Klasse steht in `data/klassen/kN.js` (Format in `data/klassen/helpers.js`):
+`eintraege` ordnet IDs aus der Wissensdatenbank eine Stufe **innerhalb der
+Klasse** zu (`S(stufe, 'id id id')`), `fragen` ist ein eigener Katalog mit IDs
+`kN_…`. Neue Begriffe zuerst ganz normal in einer Gebietsdatei anlegen, dann in
+der Klasse auswählen. `test/klassen.test.js` prüft unter anderem:
+
+- alle IDs existieren, Stufen 1–4, Fragen-Antworten gehören zur Klasse;
+- mindestens 60 Einträge und 30 Fragen je Klasse;
+- jeder Bereich einer Klasse hat mindestens 3 Einträge und 2 Fragen;
+- jede Frage ist mit dem Namen ihrer Antwort lösbar und hat einen
+  Wikipedia-Link (Formeln brauchen dafür einen Titel in `data/wiki.js`);
+- das Freikaufen aller Bereiche bleibt erreichbar.
+
+Inhalte richten sich nach den niedersächsischen Kerncurricula (Gymnasium,
+Naturwissenschaften 5–10 und Physik Sek II). Die Zuordnung der Doppeljahrgänge
+zu einzelnen Klassen folgt Anhang A3 des KC 5–10.
+
 ### Neuer Bereich, neues Upgrade, Balance ändern
 
 - Bereich: Eintrag in `BEREICHE` (`content.js`) + `CATEGORIES` (`data/index.js`)
@@ -137,7 +162,10 @@ Die Antwort braucht außerdem einen Wikipedia-Titel in `data/wiki.js` (Test).
 
 ### Spielstand-Format ändern
 
-Der Zustand liegt in `localStorage` unter `physicsclicker-spielstand-v1`.
+Der Zustand des freien Spiels liegt in `localStorage` unter
+`physicsclicker-spielstand-v1`, Klassenwelten unter `physicsclicker-k7-v1` usw.
+(`storageKey` in `save.js`); der zuletzt gewählte Modus unter `physicsclicker-modus`.
+Ein Spielstand ohne Feld `welt` gehört zum freien Spiel.
 Countdown-Runden (`state.countdown` gesetzt) werden von `saveLocal` nie gespeichert;
 ihr Rekord liegt separat unter `physicsclicker-countdown-rekord`.
 Spielende haben echte Spielstände – **niemals einfach brechen**:
@@ -154,7 +182,9 @@ Spielende haben echte Spielstände – **niemals einfach brechen**:
   mit möglichen `null`-Werten aufrufen (sonst steht „null“ auf der Seite).
 - Keine Modul-Variable `history` nennen – sie verdeckt `window.history`
   (Overlays nutzen `window.history.pushState`). Die Verlaufsliste heißt `recent`.
-- Overlays (`frage`, `hilfe`, `mindmap`, `countdown`) über `openOverlay(name)` / `closeOverlay()` öffnen
+- Inhalte immer über die aktuelle Welt holen (`W()` in `main.js`, `weltOf(state)`
+  in der Logik) – nie direkt `ENTRIES`, `QUESTIONS` oder `BEREICHE` benutzen.
+- Overlays (`start`, `frage`, `hilfe`, `mindmap`, `countdown`) über `openOverlay(name)` / `closeOverlay()` öffnen
   und schließen; sie legen einen History-Eintrag an, damit Escape, der
   „Zurück“-Knopf und die Browser-/Handy-Zurück-Taste funktionieren.
 - Teure Listen (Bereiche, Upgrades) rendern nur neu, wenn sich ihre „Signatur“

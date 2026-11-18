@@ -32,13 +32,26 @@ export const BEREICHE = [
     desc: 'Naturkonstanten – mit korrektem Wert gibt es doppelt.' },
   { id: 'experiment', name: 'Experimente', beispiel: 'Foucaultsches Pendel, Millikan-Versuch, Schrödingers Katze',
     desc: 'Berühmte Versuche und Gedankenexperimente.' },
+  // Neu für die Klassenstufen (Issue #16), auch im freien Spiel
+  { id: 'begriff', name: 'Größen & Begriffe', beispiel: 'Stromstärke, Dichte, Teilchenmodell',
+    desc: 'Physikalische Größen, Fachbegriffe und Modelle.' },
+  { id: 'geraet', name: 'Geräte & Bauteile', beispiel: 'Kompass, Sammellinse, Transformator',
+    desc: 'Messgeräte, Bauteile und technische Geräte.' },
 ];
 
 export const BEREICH_NAMES = Object.fromEntries(BEREICHE.map((b) => [b.id, b.name]));
 export const START_BEREICHE = ['person'];
 
 // Preis des n-ten freigekauften Bereichs (unabhängig davon, welcher es ist)
-export const UNLOCK_PRICES = [100, 500, 1_200, 2_500, 4_500, 7_000, 10_000];
+export const UNLOCK_PRICES = [100, 500, 1_200, 2_500, 4_500, 7_000, 10_000, 14_000, 19_000];
+
+// Klassenstufen (Issue #16): Jede Klasse ist eine eigene, kleinere Spielwelt.
+// Man startet mit „Größen & Begriffe“. Die Preise richten sich nach der
+// Datenmenge der Klasse: Alle Bereiche zusammen kosten diesen Anteil der
+// Erkenntnis, die man in der Klasse insgesamt verdienen kann (ohne Combo).
+// Der n-te Kauf kostet n-mal so viel wie der erste.
+export const KLASSEN_START = ['begriff'];
+export const KLASSEN_PREIS_ANTEIL = 0.4;
 
 // Grundwert einer Erstentdeckung je Stufe (Index = Stufe)
 export const TIER_POINTS = [0, 10, 30, 80, 200, 500];

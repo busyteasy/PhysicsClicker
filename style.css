@@ -90,8 +90,14 @@ code { font-family: var(--mono); font-size: 0.92em; }
 .logo { margin: 0; font-size: 1.6rem; letter-spacing: -0.02em; }
 .logo span { color: var(--akzent); }
 .claim { margin: 0; color: var(--tinte-leise); }
+.modus-knopf {
+  margin-left: auto; align-self: center; height: 40px; padding: 0 14px; border-radius: 20px;
+  border: 2px solid var(--linie); background: var(--flaeche); color: var(--tinte); font-weight: 700; cursor: pointer;
+}
+.modus-knopf::after { content: " ▾"; color: var(--akzent); }
+.modus-knopf:hover { border-color: var(--akzent); }
 .mindmap-knopf {
-  margin-left: auto; align-self: center; height: 40px; padding: 0 16px; border-radius: 20px;
+  align-self: center; height: 40px; padding: 0 16px; border-radius: 20px;
   border: 2px solid var(--akzent); background: var(--flaeche); color: var(--akzent); font-weight: 700; cursor: pointer;
 }
 .mindmap-knopf:hover { background: var(--akzent); color: var(--akzent-text); }
@@ -561,3 +567,46 @@ textarea {
 .countdown-karte { max-width: 480px; }
 .countdown-titel { margin: 0 0 10px; font-size: 1.6rem; }
 .countdown-karte .statistik { margin: 12px 0; font-size: 1.05rem; }
+
+/* ---------- Startbildschirm und Moduswahl (#16) ---------- */
+
+.start-karte-box { max-width: 760px; }
+.start-karte-box h2 { margin: 0 0 6px; font-size: 1.6rem; }
+.start-intro { margin: 0 0 16px; color: var(--tinte-leise); }
+.start-weiter {
+  margin-bottom: 18px; padding: 10px 18px; border: none; border-radius: var(--radius);
+  background: var(--akzent); color: var(--akzent-text); font-weight: 700; cursor: pointer;
+}
+.start-weiter:hover { filter: brightness(1.1); }
+.start-wahl { display: grid; gap: 14px; }
+.start-karte {
+  display: flex; flex-direction: column; gap: 6px; text-align: left; width: 100%;
+  padding: 16px 18px; border: 2px solid var(--linie); border-radius: 14px; background: var(--flaeche);
+}
+button.start-karte { cursor: pointer; }
+button.start-karte:hover, .start-karte.aktiv { border-color: var(--akzent); }
+.start-name { font-size: 1.2rem; font-weight: 800; }
+.start-beschr { color: var(--tinte-leise); font-size: 0.95rem; }
+.start-stand { font-size: 0.85rem; font-weight: 600; color: var(--akzent); }
+.klassen-raster { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+@media (min-width: 700px) { .klassen-raster { grid-template-columns: repeat(9, 1fr); } }
+.klasse-knopf {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 4px;
+  border: 2px solid var(--linie); border-radius: 12px; background: var(--flaeche-2); cursor: pointer;
+}
+.klasse-knopf:hover, .klasse-knopf.aktiv { border-color: var(--akzent); }
+.klasse-knopf.aktiv { background: var(--flaeche); }
+.klasse-zahl { font-size: 1.4rem; font-weight: 800; line-height: 1; }
+.klasse-zahl small { display: block; font-size: 0.65rem; font-weight: 600; color: var(--tinte-leise); text-transform: uppercase; letter-spacing: 0.04em; }
+.klasse-stand { font-size: 0.7rem; text-align: center; color: var(--tinte-leise); font-variant-numeric: tabular-nums; }
+.klassen-themen { margin-top: 10px; font-size: 0.9rem; }
+.klassen-themen summary { cursor: pointer; font-weight: 600; color: var(--akzent); }
+.klassen-themen dl { margin: 8px 0 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; }
+.klassen-themen dt { font-weight: 700; }
+.klassen-themen dd { margin: 0; color: var(--tinte-leise); }
+.start-quelle { font-size: 0.78rem; color: var(--tinte-leise); margin: 12px 0 0; }
+@media (max-width: 480px) {
+  .modus-knopf { padding: 0 10px; font-size: 0.9rem; }
+  .klassen-themen dl { grid-template-columns: 1fr; }
+  .klassen-themen dd { margin-bottom: 6px; }
+}

@@ -12,6 +12,7 @@
   <header class="kopf">
     <h1 class="logo">Physics<span>Clicker</span></h1>
     <p class="claim">Tippe Physik. Sammle Erkenntnis.</p>
+    <button type="button" class="modus-knopf" id="modus-knopf" title="Spielmodus wechseln: freies Spiel oder Klassenstufe">Freies Spiel</button>
     <button type="button" class="mindmap-knopf" id="mindmap-knopf" title="Mindmap: Was fehlt noch?">Mindmap</button>
     <button type="button" class="hilfe-knopf" id="hilfe-knopf" aria-label="Spielanleitung und Punkte" title="Spielanleitung und Punkte">?</button>
   </header>
@@ -131,6 +132,10 @@
 
   <div class="overlay" id="frage-overlay" role="dialog" aria-modal="true" aria-labelledby="frage-titel" hidden>
     <div class="overlay-karte frage-gross" id="frage-gross"></div>
+  </div>
+
+  <div class="overlay" id="start-overlay" role="dialog" aria-modal="true" aria-labelledby="start-titel" hidden>
+    <div class="overlay-karte start-karte-box" id="start-inhalt"></div>
   </div>
 
   <div class="overlay" id="countdown-overlay" role="dialog" aria-modal="true" aria-labelledby="countdown-titel" hidden>

@@ -6,10 +6,9 @@
 // Personen bekommen ihre Bezüge aus data/bezuege.js mit, soweit deren Bereich
 // offen ist – so sieht man, was zu ihnen noch fehlt.
 
-import { ENTRIES } from '../data/index.js';
 import BEZUEGE from '../data/bezuege.js';
-import { AREAS, BEREICHE } from './content.js';
-import { INDEX, isOpen } from './game.js';
+import { AREAS } from './content.js';
+import { isOpen, weltOf } from './game.js';
 
 const known = (state, id) => Object.hasOwn(state.discovered, id);
 
@@ -23,12 +22,13 @@ function node(state, entry) {
 export function personLinks(state, id) {
   if (!known(state, id)) return [];
   return (BEZUEGE[id] || [])
-    .map((x) => INDEX.byId.get(x))
+    .map((x) => weltOf(state).index.byId.get(x))
     .filter((e) => e && isOpen(state, e.cat))
     .map((e) => node(state, e));
 }
 
 export function mindmap(state) {
+  const { entries: ENTRIES, bereiche: BEREICHE } = weltOf(state);
   const openBereiche = BEREICHE.filter((b) => isOpen(state, b.id));
   const areas = AREAS.map((area) => {
     const bereiche = openBereiche.map((b) => {

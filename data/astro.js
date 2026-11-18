@@ -1,4 +1,4 @@
-import { E, F, G, K, P, T, U, W, inArea } from './helpers.js';
+import { B, E, F, G, K, P, T, U, W, inArea } from './helpers.js';
 
 export default inArea('astro', [
   G('kepler1', 2, 'Erstes Keplersches Gesetz', ['1. keplersches Gesetz', 'erstes Kepler-Gesetz', 'Ellipsensatz'], 'Planeten laufen auf Ellipsen, in deren einem Brennpunkt die Sonne steht.'),
@@ -52,7 +52,7 @@ export default inArea('astro', [
   // Erweiterung (Issue #8)
   T('wimp', 5, 'WIMP', ['WIMPs'], 'Hypothetischer Kandidat für Dunkle Materie: ein schwach wechselwirkendes, massereiches Teilchen.'),
   T('axion', 5, 'Axion', ['Axionen'], 'Hypothetisches Teilchen und Kandidat für Dunkle Materie – Frank Wilczek benannte es nach einem Waschmittel.'),
-  K('solarkonstante', 3, 'Solarkonstante', [], ['S0', 'S_0'], [[1361, ['W/m^2'], 0.02]], 'So viel Sonnenleistung trifft oberhalb der Atmosphäre auf jeden Quadratmeter.'),
+  K('solarkonstante', 3, 'Solarkonstante', [], ['S0', 'S_0'], [[1361, ['W/m^2'], 0.02], [1.361, ['kW/m^2'], 0.02]], 'So viel Sonnenleistung trifft oberhalb der Atmosphäre auf jeden Quadratmeter.'),
   K('erdradius', 2, 'Erdradius', [], ['RE', 'R_E'], [[6371, ['km'], 0.01], [6.371e6, ['m'], 0.01]], 'Im Mittel rund 6371 Kilometer.'),
   K('erdmasse', 3, 'Erdmasse', [], ['ME', 'M_E'], [[5.972e24, ['kg']]], 'Rund 6·10²⁴ Kilogramm.'),
   K('sonnenmasse', 3, 'Sonnenmasse', [], ['M☉', 'Msun', 'M_sun'], [[1.989e30, ['kg']]], 'Rund 2·10³⁰ Kilogramm – die Maßeinheit für Sterne und Schwarze Löcher.'),
@@ -66,4 +66,28 @@ export default inArea('astro', [
   P('olbers', 3, 'Olberssches Paradoxon', ['Olbers-Paradoxon'], 'Warum ist der Nachthimmel dunkel, wenn es unzählige Sterne gibt?'),
   P('polarlicht', 1, 'Polarlicht', ['Nordlicht', 'Aurora'], 'Teilchen des Sonnenwinds bringen die Luft in großer Höhe zum Leuchten.'),
   E('eratosthenes', 3, 'Eratosthenes’ Erdmessung', ['Eratosthenes', 'Erdumfang des Eratosthenes'], 'Mit Schattenwinkeln in zwei Städten bestimmte Eratosthenes um 240 v. Chr. den Erdumfang.'),
+
+  // Erweiterung Klassenstufen (Issue #16): Sterne und Weltall, Raumfahrt
+  B('b_planet', 1, 'Planet', ['Planeten'], 'Unser Sonnensystem hat acht Planeten – Pluto gilt seit 2006 als Zwergplanet.'),
+  B('b_stern', 1, 'Stern', ['Sterne'], 'Eine leuchtende Gaskugel, die ihre Energie durch Kernfusion gewinnt – auch die Sonne ist einer.'),
+  B('b_galaxie', 1, 'Galaxie', ['Galaxien'], 'Eine Ansammlung von Milliarden Sternen. Die Andromedagalaxie ist rund 2,5 Millionen Lichtjahre entfernt.'),
+  B('b_milchstrasse', 1, 'Milchstraße', [], 'Unsere Heimatgalaxie: eine Balkenspirale mit über 100 Milliarden Sternen.'),
+  B('b_sonnensystem', 1, 'Sonnensystem', [], 'Sonne, acht Planeten, ihre Monde, Zwergplaneten, Asteroiden und Kometen.'),
+  B('b_heliozentrisch', 2, 'Heliozentrisches Weltbild', ['heliozentrisch', 'kopernikanisches Weltbild'], 'Die Sonne steht im Mittelpunkt, die Erde kreist um sie – Kopernikus 1543.'),
+  B('b_geozentrisch', 2, 'Geozentrisches Weltbild', ['geozentrisch', 'ptolemäisches Weltbild'], 'Die Erde steht im Mittelpunkt – rund 1400 Jahre lang die gültige Lehre.'),
+  B('b_komet', 1, 'Komet', ['Kometen', 'Schweifstern'], 'Ein „schmutziger Schneeball“: Nahe der Sonne verdampft Eis und bildet den Schweif.'),
+  B('b_asteroid', 2, 'Asteroid', ['Asteroiden', 'Kleinplanet'], 'Die meisten kreisen im Asteroidengürtel zwischen Mars und Jupiter.'),
+  B('b_sternschnuppe', 1, 'Sternschnuppe', ['Meteor'], 'Ein winziges Staubkorn verglüht in der Atmosphäre und bringt die Luft zum Leuchten.'),
+  B('b_exoplanet', 2, 'Exoplanet', ['Exoplaneten', 'extrasolarer Planet'], 'Ein Planet um einen anderen Stern – inzwischen sind über 6000 bestätigt.'),
+  B('b_jahreszeiten', 1, 'Jahreszeiten', [], 'Entstehen durch die schräge Erdachse, nicht durch den Abstand zur Sonne – im Januar ist die Erde ihr am nächsten.'),
+  B('b_fluchtgeschwindigkeit', 3, 'Fluchtgeschwindigkeit', ['zweite kosmische Geschwindigkeit'], 'Etwa 11,2 km/s braucht ein Körper, um das Schwerefeld der Erde ohne weiteren Antrieb zu verlassen.'),
+  B('b_kreisbahngeschw', 3, 'Erste kosmische Geschwindigkeit', ['Kreisbahngeschwindigkeit'], 'Rund 7,9 km/s – so schnell muss ein Satellit dicht über der Erde fliegen.'),
+  B('b_geostationaer', 3, 'Geostationäre Umlaufbahn', ['geostationär'], 'In rund 36 000 km Höhe umkreist ein Satellit die Erde in einem Sterntag (rund 23 h 56 min) – er steht scheinbar still.'),
+  B('b_hauptreihe', 3, 'Hauptreihe', [], 'Hier verbringen Sterne den größten Teil ihres Lebens und fusionieren Wasserstoff zu Helium.'),
+  B('b_hrd', 3, 'Hertzsprung-Russell-Diagramm', ['HRD', 'HR-Diagramm'], 'Trägt die Leuchtkraft von Sternen über ihrer Temperatur auf – der wichtigste Überblick der Sternphysik.'),
+  B('b_raumstation', 2, 'Internationale Raumstation', ['ISS', 'Raumstation'], 'Umkreist die Erde in etwa 400 km Höhe rund alle 90 Minuten.'),
+  B('b_nebel', 2, 'Sternentstehungsgebiet', ['Gasnebel', 'Molekülwolke'], 'Aus kollabierenden Gas- und Staubwolken entstehen neue Sterne.'),
+  W('w_russell', 4, 'Henry Norris Russell', ['Russell'], 'Entwickelte um 1913 mit Ejnar Hertzsprung das nach beiden benannte Diagramm.'),
+
+  K('k_ortsfaktor_mond', 2, 'Ortsfaktor auf dem Mond', ['Fallbeschleunigung auf dem Mond', 'Mondbeschleunigung'], ['g_Mond', 'gMond'], [[1.62, ['N/kg', 'm/s^2'], 0.02]], 'Rund 1,6 N/kg – ein Sechstel des Erdwerts. Die Masse eines Astronauten bleibt dabei gleich.'),
 ]);

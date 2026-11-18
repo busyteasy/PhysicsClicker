@@ -9,6 +9,49 @@ eingeben; mit Erkenntnis schaltet man nach und nach weitere **Bereiche** frei
 **Grundregel:** Erkenntnis entsteht ausschließlich durch Eingaben. Nichts im
 Spiel erzeugt Erkenntnis von selbst (siehe Issue #1).
 
+## Spielmodi: freies Spiel und Klassenstufen (Issue #16)
+
+Beim Laden der Seite wählt man, wie man spielen möchte:
+
+- **Freies Spiel** – das Spiel mit der ganzen Wissensdatenbank (rund 1000
+  Einträge, 110 Fragen). Bestehende Spielstände laufen hier unverändert weiter.
+- **Nach Klassenstufe** (5 bis 13, Gymnasium) – eine eigene, kleinere Spielwelt
+  nur mit dem Stoff dieser Klasse: Größen und Begriffe, Geräte, Versuche,
+  Formeln, Gesetze, Einheiten, Konstanten, Personen, Phänomene und ein eigener
+  Fragekatalog (37 bis 80 Fragen je Klasse). Die Schwierigkeitsstufen gelten
+  *innerhalb* der Klasse: 1 = Grundwissen, 2 = Standard, 3 = anspruchsvoll,
+  4 = Zusatzwissen. Was nicht zum Stoff gehört, wird nicht gewertet – das Spiel
+  sagt dann „Das gehört nicht zum Stoff von Klasse 7“.
+
+Jede Spielwelt hat ihren **eigenen Spielstand**; gewechselt wird jederzeit über
+den Modus-Knopf oben. Eingabefeld, Fragen, Upgrades, Codex, Mindmap und
+Countdown funktionieren in allen Welten gleich.
+
+| Klasse | Themen |
+|---|---|
+| 5 | Magnetismus, einfache Stromkreise, Temperatur und Wärme, Aggregatzustände und Teilchenmodell |
+| 6 | Licht und Sehen, Schatten, Spiegel und Linsen, Farben, Schall, Energie und Energieformen |
+| 7 | Energieformen und -umwandlung, Bewegungen beschreiben, optische Instrumente und Farben, Sterne und Weltall |
+| 8 | Kraft und Masse, Hebel und Flaschenzug, Leistung, elektrische Ladung und Stromkreis, Widerstand und Ohmsches Gesetz |
+| 9 | Energie berechnen (Arbeit, Wärme, Wirkungsgrad), Elektromagnetismus und Induktion, Generator, Motor, Transformator, Energieversorgung und Klima |
+| 10 | Druck und Auftrieb, Gase und Wärmekraftmaschinen, Radioaktivität und Kernenergie, Halbleiter, beschleunigte Bewegungen |
+| 11 | Einführungsphase: Dynamik, Kreisbewegung, Energie und Impuls, Gravitation; Wahlmodule Akustik, optische Abbildungen, Strahlungsphysik |
+| 12 | Elektrisches Feld und Kondensator, Magnetfeld und Lorentzkraft, Elektronen in Feldern, Induktion, Schwingungen, Wellen und Interferenz |
+| 13 | Photonen und Fotoeffekt, Elektronen als Quantenobjekte, Deutung der Quantenphysik, Atomhülle und Spektren, Atomkern |
+
+**Grundlage** sind die niedersächsischen Kerncurricula für das Gymnasium
+(Naturwissenschaften 5–10 von 2015, Physik Sekundarbereich II von 2022). Die
+Kerncurricula legen Doppeljahrgänge fest; die Aufteilung auf einzelne Klassen
+folgt der Zuordnungstabelle im Anhang A3 des KC 5–10 und kann an einzelnen
+Schulen abweichen. Die Oberstufe ist so aufgeteilt: 11 = Einführungsphase,
+12 = Elektrizität sowie Schwingungen und Wellen, 13 = Quantenobjekte, Atomhülle
+und Atomkern.
+
+In einer Klasse startet man mit dem Bereich **Größen & Begriffe**. Die Preise
+für weitere Bereiche richten sich nach der Klasse: Alle Bereiche zusammen kosten
+40 % der Erkenntnis, die man in der Klasse ohne Combo verdienen kann; der n-te
+Kauf kostet n-mal so viel wie der erste.
+
 Phase 1 ist ein **rein deutsches Spiel**: Oberfläche, Rückmeldungen, Fun Facts
 und die Namen in der Wissensdatenbank sind deutsch. Formeln und Einheiten sind
 ohnehin sprachneutral.
@@ -66,14 +109,21 @@ Leiste offen ist, merkt sich der Browser.
 
 ## Bereiche freischalten
 
-Die Bereiche sind die Kategorien der Wissensdatenbank. Offen ist am Anfang nur
-**Personen**. Die übrigen sieben kauft man mit Erkenntnis frei – in beliebiger
-Reihenfolge, so dass jede und jeder mit dem eigenen Lieblingsthema weitermachen
-kann. Der Preis hängt nur davon ab, der wievielte Bereich es ist:
+Die Bereiche sind die Kategorien der Wissensdatenbank. Offen ist im freien
+Spiel am Anfang nur **Personen**. Die übrigen neun kauft man mit Erkenntnis frei
+– in beliebiger Reihenfolge, so dass jede und jeder mit dem eigenen
+Lieblingsthema weitermachen kann. Der Preis hängt nur davon ab, der wievielte
+Bereich es ist:
 
-| Freischaltung | 1.  | 2.  | 3.    | 4.    | 5.    | 6.    | 7.     |
-|---------------|-----|-----|-------|-------|-------|-------|--------|
-| Preis         | 100 | 500 | 1.200 | 2.500 | 4.500 | 7.000 | 10.000 |
+| Freischaltung | 1.  | 2.  | 3.    | 4.    | 5.    | 6.    | 7.     | 8.     | 9.     |
+|---------------|-----|-----|-------|-------|-------|-------|--------|--------|--------|
+| Preis         | 100 | 500 | 1.200 | 2.500 | 4.500 | 7.000 | 10.000 | 14.000 | 19.000 |
+
+Seit den Klassenstufen gibt es zwei neue Bereiche: **Größen & Begriffe**
+(physikalische Größen, Fachbegriffe, Modelle – etwa Stromstärke, Dichte,
+Teilchenmodell) und **Geräte & Bauteile** (Messgeräte, Bauteile, technische
+Geräte – etwa Kompass, Sammellinse, Transformator). In den Klassenstufen gelten
+eigene Preise (siehe oben).
 
 Eingaben aus einem gesperrten Bereich werden erkannt, aber nicht gewertet und
 nicht gemerkt; das Spiel sagt, welcher Bereich dafür nötig ist. Mehrdeutige
@@ -172,6 +222,11 @@ Spiel. Alle Werte stehen in `COUNTDOWN` in `src/content.js`.
 ## Speichern
 
 Automatisch im Browser (localStorage), dazu Export/Import als Text und Reset.
+Jede Spielwelt speichert getrennt: das freie Spiel wie bisher unter
+`physicsclicker-spielstand-v1`, die Klassen unter `physicsclicker-k7-v1` usw.
+Der zuletzt gewählte Modus steht unter `physicsclicker-modus`. Ein exportierter
+Spielstand weiß, zu welcher Welt er gehört; „Spielstand löschen“ betrifft nur
+die aktuelle Welt.
 
 ## Technik
 

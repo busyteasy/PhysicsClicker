@@ -6,6 +6,11 @@ Teilchen, Personen, Einheiten und Experimente. Jede erkannte Eingabe bringt
 Erkenntnis. Am Anfang sind nur Personen offen; mit Erkenntnis schaltest du weitere
 Bereiche frei.
 
+Beim Start wählst du zwischen dem **freien Spiel** mit der ganzen
+Wissensdatenbank und einer **Klassenstufe** (5–13, Gymnasium): Dann kommt nur
+der Stoff dieser Klasse nach den niedersächsischen Kerncurricula vor – mit
+eigenen Fragen und Schwierigkeitsstufen. So lässt sich gezielt lernen.
+
 Das Konzept steht in [KONZEPT.md](KONZEPT.md). Wer am Code mitarbeitet (auch
 Coding-Agents), findet Aufbau, Regeln und Arbeitsablauf in [AGENTS.md](AGENTS.md).
 
@@ -35,6 +40,8 @@ Läuft mit dem eingebauten Test-Runner von Node (ab Version 18), ohne Abhängigk
 | `index.html`, `style.css` | Seite und Gestaltung                             |
 | `src/main.js`       | Oberfläche, Hauptschleife                              |
 | `src/game.js`       | Spiellogik ohne DOM (Punkte, Bereiche, Speichern)      |
+| `src/welt.js`       | Spielwelten: freies Spiel und Klassenstufen            |
+| `data/klassen/`     | Klassenstufen 5–13: Auswahl, Stufen und Fragen         |
 | `src/content.js`    | Balance: Bereiche, Preise, Punktwerte                  |
 | `src/matcher.js`    | Ordnet Eingaben den Datenbank-Einträgen zu             |
 | `src/normalize.js`  | Vereinheitlicht Schreibweisen von Wörtern und Formeln  |

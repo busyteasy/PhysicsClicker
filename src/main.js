@@ -1,22 +1,26 @@
 // Oberfläche: verbindet Spiellogik und DOM.
 
-import { CATEGORIES, ENTRIES } from '../data/index.js';
+import { CATEGORIES } from '../data/index.js';
 import * as C from './content.js';
-import { AREA_NAMES, BEREICHE, BEREICH_NAMES, BOOSTS, COUNTDOWN } from './content.js';
+import { AREA_NAMES, BEREICH_NAMES, BOOSTS, COUNTDOWN } from './content.js';
 import { formatNumber as fmt } from './format.js';
 import {
-  INDEX, QUESTIONS, answerQuestion, bereichCount, boostBlocked, boostPrice, buyBereich,
+  FREI, KLASSEN_WELTEN, answerQuestion, bereichCount, boostBlocked, boostPrice, buyBereich,
   buyBoost, canReveal, comboMultiplier, comboWindow, countdownLeft, countdownOver, discoveryCount, isOpen,
   newCountdownRun, newState, nextOpenQuestion, questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
+  weltOf,
 } from './game.js';
 import {
-  clearLocal, exportState, importState, loadLocal, loadRecord, saveLocal, saveRecord,
+  clearLocal, exportState, hasSave, importState, loadLocal, loadMode, loadRecord, saveLocal, saveMode, saveRecord,
 } from './save.js';
-import { isRelation } from './normalize.js';
+import { isRelation, normWord } from './normalize.js';
 import { mindmap } from './mindmap.js';
 import { wikiUrl } from './wiki.js';
 
-let state = loadLocal() ?? newState();
+// Spielwelt (Issue #16): freies Spiel oder eine Klassenstufe. Jede Welt hat
+// ihren eigenen Spielstand; zuletzt gespielt wird die zuletzt gewählte.
+const startWelt = loadMode() ?? 'frei';
+let state = loadLocal(startWelt) ?? newState(startWelt);
 
 const $ = (id) => document.getElementById(id);
 
@@ -45,8 +49,17 @@ function wikiLink(entry, text = 'Auf Wikipedia nachlesen') {
   return href ? h('a', { class: 'wiki-link', href, target: '_blank', rel: 'noopener' }, `${text} ↗`) : null;
 }
 
-const ENTRIES_BY_BEREICH = Object.fromEntries(BEREICHE.map((b) => [b.id, ENTRIES.filter((e) => e.cat === b.id)]));
-const openBereiche = () => BEREICHE.filter((b) => isOpen(state, b.id));
+// Alles, was vom Inhalt abhängt, kommt aus der aktuellen Spielwelt.
+const W = () => weltOf(state);
+const byBereichCache = new Map();
+function entriesOf(bereich) {
+  const w = W();
+  if (!byBereichCache.has(w.id)) {
+    byBereichCache.set(w.id, Object.fromEntries(w.bereiche.map((b) => [b.id, w.entries.filter((e) => e.cat === b.id)])));
+  }
+  return byBereichCache.get(w.id)[bereich] ?? [];
+}
+const openBereiche = () => W().bereiche.filter((b) => isOpen(state, b.id));
 
 // ---------- Eingabe ----------
 
@@ -115,11 +128,15 @@ function showFeedback(result, text) {
   }
   if (result.status === 'unbekannt') {
     const open = openBereiche().map((b) => b.name).join(', ');
+    const w = W();
     box.append(
-      h('p', { class: 'titel schlecht' }, 'Das kenne ich (noch) nicht.'),
+      h('p', { class: 'titel schlecht' }, w.klasse ? `Das gehört nicht zum Stoff von ${w.name}.` : 'Das kenne ich (noch) nicht.'),
       h('p', { class: 'hinweis' }, isRelation(text)
         ? 'Formeln vergleiche ich ohne Leerzeichen und Malpunkte, Seiten und Faktoren dürfen vertauscht sein. Vielleicht fehlt diese Form noch in der Datenbank.'
         : `Vielleicht ein Tippfehler – oder der Begriff fehlt noch in der Datenbank. Offen sind gerade: ${open}.`),
+      w.klasse && FREI.index.byKey.has(`w:${normWord(text)}`)
+        ? h('p', { class: 'hinweis' }, 'Im freien Spiel gibt es diesen Begriff – oben über die Moduswahl erreichbar.')
+        : null,
     );
     return;
   }
@@ -192,7 +209,7 @@ function renderInputHints() {
   const examples = open.map((b) => b.beispiel.split(', ')[0]);
   input.placeholder = `z. B. ${examples.slice(0, 3).join(', ')} …`;
   $('hilfe').textContent = `Offen: ${open.map((b) => b.name).join(', ')}.`
-    + (open.length < BEREICHE.length ? ' Weitere Bereiche schaltest du im Reiter „Bereiche“ frei.' : '');
+    + (open.length < W().bereiche.length ? ' Weitere Bereiche schaltest du im Reiter „Bereiche“ frei.' : '');
 }
 
 // ---------- Sonderzeichen-Tastatur (#13) ----------
@@ -269,7 +286,7 @@ let bereicheSignature = '';
 
 function renderBereiche(force = false) {
   const price = unlockPrice(state);
-  const signature = state.unlocked.join(',') + '|' + discoveryCount(state);
+  const signature = state.welt + '|' + state.unlocked.join(',') + '|' + discoveryCount(state);
   const list = $('bereiche');
 
   if (force || signature !== bereicheSignature) {
@@ -278,8 +295,8 @@ function renderBereiche(force = false) {
       ? 'Alle Bereiche sind offen.'
       : `Der nächste Bereich kostet ${fmt(price)} Erkenntnis – welcher, entscheidest du.`;
 
-    list.replaceChildren(...BEREICHE.map((b) => {
-      const total = ENTRIES_BY_BEREICH[b.id].length;
+    list.replaceChildren(...W().bereiche.map((b) => {
+      const total = entriesOf(b.id).length;
       if (isOpen(state, b.id)) {
         const found = bereichCount(state, b.id);
         return h('li', { class: 'bereich offen' },
@@ -323,6 +340,7 @@ function renderBereiche(force = false) {
 // Zurück-Taste von Browser oder Handy das Overlay statt die Seite zu verlassen.
 const overlays = {
   frage: $('frage-overlay'), hilfe: $('hilfe-overlay'), mindmap: $('mindmap-overlay'), countdown: $('countdown-overlay'),
+  start: $('start-overlay'),
 };
 let activeOverlay = null;
 let overlayReturnFocus = null;
@@ -385,14 +403,15 @@ function renderHelp() {
     h('p', {}, 'Tippe Physikwissen in das Eingabefeld – Namen, Begriffe, Formeln oder Konstanten. '
       + 'Jede richtige Eingabe bringt Erkenntnis, die Spielwährung. Erkenntnis gibt es ausschließlich '
       + 'für deine Eingaben und Antworten: Nichts läuft von selbst.'),
-    h('p', {}, 'Zu Beginn kannst du nur Physikerinnen und Physiker eingeben. Mit Erkenntnis schaltest du '
-      + 'im Reiter „Bereiche“ weitere Bereiche frei – in der Reihenfolge, die du willst. Alles, was du '
-      + 'entdeckst, sammelt sich mit einem Fun Fact im Codex.'),
+    h('p', {}, (W().klasse ? 'Zu Beginn sind nur „Größen & Begriffe“ offen.' : 'Zu Beginn kannst du nur Physikerinnen und Physiker eingeben.')
+      + ' Mit Erkenntnis schaltest du im Reiter „Bereiche“ weitere Bereiche frei – in der Reihenfolge, die du willst. '
+      + 'Alles, was du entdeckst, sammelt sich mit einem Fun Fact im Codex.'),
 
     h('h3', {}, 'Punkte für Eingaben'),
     table(['Stufe', 'Erstentdeckung'], [1, 2, 3, 4, 5].map((t) => [`Stufe ${t}`, `${fmt(C.TIER_POINTS[t])} Erkenntnis`])),
     h('ul', {},
-      h('li', {}, `Stufe 1 ist Schulwissen, Stufe 5 Spezialwissen. Jeder Eintrag zählt beim ersten Mal voll.`),
+      h('li', {}, (W().klasse ? 'In den Klassenstufen ist Stufe 1 Grundwissen und Stufe 4 Zusatzwissen.' : 'Stufe 1 ist Schulwissen, Stufe 5 Spezialwissen.')
+        + ' Jeder Eintrag zählt beim ersten Mal voll.'),
       h('li', {}, `Konstante mit richtigem Wert (z. B. c = 3·10^8 m/s): zusätzlich das ${fmt(C.VALUE_FACTOR)}-Fache.`),
       h('li', {}, `Wiederholung: ${pct(C.REPEAT_SHARE)} des Werts als Trinkgeld – höchstens alle ${secs(C.REPEAT_COOLDOWN_MS)} pro Eintrag.`),
       h('li', {}, `Combo: Jeder Treffer innerhalb von ${secs(C.COMBO_WINDOW_MS)} nach dem letzten erhöht den Wert um ${pct(C.COMBO_STEP)}, bis höchstens ×${fmt(C.COMBO_MAX)}.`),
@@ -404,7 +423,11 @@ function renderHelp() {
       + `Nach ${C.QUESTION_TRIES} Fehlversuchen kannst du eine Frage auflösen – dann ohne Punkte.`),
 
     h('h3', {}, 'Bereiche freischalten'),
-    table(['Freischaltung', 'Preis'], C.UNLOCK_PRICES.map((p, i) => [`${i + 1}. Bereich`, `${fmt(p)} Erkenntnis`])),
+    h('p', {}, W().klasse
+      ? `Du spielst ${W().name}: nur Inhalte dieser Klassenstufe, mit Stufen innerhalb der Klasse (1 = Grundwissen, 4 = Zusatzwissen). Die Preise passen sich der Klasse an.`
+      : 'Du spielst das freie Spiel mit der ganzen Wissensdatenbank.'),
+    table(['Freischaltung', 'Preis'], W().prices.slice(0, W().bereiche.length - W().start.length)
+      .map((p, i) => [`${i + 1}. Bereich`, `${fmt(p)} Erkenntnis`])),
 
     h('h3', {}, 'Upgrades'),
     h('p', {}, `Einmalige Effekte für den richtigen Moment. Es wirkt immer nur ein Multiplikator gleichzeitig, `
@@ -426,6 +449,76 @@ $('hilfe-knopf').addEventListener('click', () => {
   openOverlay('hilfe');
   $('hilfe-inhalt').querySelector('.zurueck').focus();
 });
+
+// ---------- Startbildschirm und Moduswahl (#16) ----------
+
+/** Kurzer Stand einer Welt für den Startbildschirm, ohne sie zu wechseln. */
+function worldProgress(w) {
+  const s = w.id === state.welt && !state.countdown ? state : loadLocal(w.id);
+  if (!s && !hasSave(w.id)) return null;
+  return { found: s ? discoveryCount(s) : 0, total: w.entries.length };
+}
+
+function renderStart() {
+  const current = W();
+  const frei = worldProgress(FREI);
+  fill($('start-inhalt'),
+    h('h2', { id: 'start-titel' }, 'Wie möchtest du spielen?'),
+    h('p', { class: 'start-intro' }, 'Jeder Modus hat seinen eigenen Spielstand. Wechseln kannst du jederzeit oben über den Modus-Knopf.'),
+    h('button', { type: 'button', class: 'primaer start-weiter', onclick: closeOverlay }, `Weiter mit ${current.name} →`),
+    h('div', { class: 'start-wahl' },
+      h('button', {
+        type: 'button', class: `start-karte${current.id === 'frei' ? ' aktiv' : ''}`, onclick: () => chooseWelt('frei'),
+      },
+      h('span', { class: 'start-name' }, 'Freies Spiel'),
+      h('span', { class: 'start-beschr' }, `Die ganze Wissensdatenbank mit ${fmt(FREI.entries.length)} Einträgen und `
+        + `${fmt(FREI.questions.length)} Fragen – von Archimedes bis zur Quantenphysik.`),
+      frei ? h('span', { class: 'start-stand' }, `Dein Stand: ${fmt(frei.found)} von ${fmt(frei.total)} entdeckt`) : null),
+      h('div', { class: `start-karte${current.klasse ? ' aktiv' : ''}` },
+        h('span', { class: 'start-name' }, 'Nach Klassenstufe'),
+        h('span', { class: 'start-beschr' }, 'Nur der Stoff deiner Klasse am Gymnasium – Begriffe, Formeln, Geräte, Versuche und eigene Fragen. '
+          + 'Ideal zum Lernen und Wiederholen.'),
+        h('div', { class: 'klassen-raster', role: 'group', 'aria-label': 'Klassenstufe wählen' },
+          KLASSEN_WELTEN.map((w) => {
+            const p = worldProgress(w);
+            return h('button', {
+              type: 'button', class: `klasse-knopf${current.id === w.id ? ' aktiv' : ''}`,
+              title: w.info.themen.join(' · '), onclick: () => chooseWelt(w.id),
+            },
+            h('span', { class: 'klasse-zahl' }, h('small', {}, 'Klasse'), w.klasse),
+            h('span', { class: 'klasse-stand' }, p ? `${p.found}/${p.total}` : `${w.entries.length} Einträge`));
+          })),
+        h('details', { class: 'klassen-themen' },
+          h('summary', {}, 'Was kommt in welcher Klasse dran?'),
+          h('dl', {}, KLASSEN_WELTEN.map((w) => [h('dt', {}, w.name), h('dd', {}, w.info.themen.join(' · '))]))),
+        h('p', { class: 'start-quelle' }, 'Grundlage: Kerncurricula für das Gymnasium in Niedersachsen (Naturwissenschaften 5–10, Physik Sek II). '
+          + 'Die Kerncurricula legen Doppeljahrgänge fest – die Aufteilung auf einzelne Klassen folgt der Zuordnungstabelle im Kerncurriculum und kann an deiner Schule abweichen.'))),
+  );
+}
+
+function openStart() {
+  renderStart();
+  openOverlay('start');
+  $('start-inhalt').querySelector('.start-weiter').focus();
+}
+
+/** Wechselt in eine andere Spielwelt und lädt deren eigenen Spielstand. */
+function chooseWelt(id) {
+  saveMode(id);
+  if (id !== state.welt || state.countdown) {
+    if (!state.countdown) saveLocal(state);
+    state = loadLocal(id) ?? newState(id);
+    countdownEndShown = false;
+    recent.length = 0;
+    $('verlauf').replaceChildren();
+    fill($('rueckmeldung'), h('p', { class: 'leer' }, `Du spielst jetzt: ${W().name}. Viel Erfolg!`));
+    rerenderAll();
+  }
+  closeOverlay();
+  input.focus();
+}
+
+$('modus-knopf').addEventListener('click', openStart);
 
 // ---------- Mindmap (#11) ----------
 
@@ -491,10 +584,11 @@ let questionFeedback = null;  // { text, cls }
 let questionSolved = null;    // Ergebnis einer gerade richtig beantworteten Frage
 
 function renderQuestions() {
+  const { questions: QUESTIONS } = W();
   const solved = QUESTIONS.filter((q) => questionStatus(state, q) === 'richtig').length;
   $('fragen-zahl').textContent = `${solved}/${QUESTIONS.length}`;
 
-  $('fragen').replaceChildren(...BEREICHE.map((b) => {
+  $('fragen').replaceChildren(...W().bereiche.map((b) => {
     const questions = QUESTIONS.filter((q) => q.bereich === b.id);
     if (!questions.length) return null;
     if (!isOpen(state, b.id)) {
@@ -518,7 +612,7 @@ function renderQuestionRow(q) {
       onclick: () => showQuestion(q.id),
     }, h('span', { class: 'frage-text' }, q.frage), h('span', { class: 'frage-punkte' }, badge)));
   if (status !== 'offen') {
-    const entry = INDEX.byId.get(q.antwort);
+    const entry = W().index.byId.get(q.antwort);
     li.append(h('div', { class: 'frage-loesung' }, `Antwort: ${entry.name}`, wikiLink(entry, 'Wikipedia')));
   }
   return li;
@@ -534,7 +628,7 @@ function showQuestion(id) {
 }
 
 function renderQuestionView() {
-  const q = QUESTIONS.find((x) => x.id === currentQuestion);
+  const q = W().questionById.get(currentQuestion);
   const card = $('frage-gross');
   if (!q) return;
 
@@ -703,7 +797,7 @@ function renderActive(now) {
 /** Der Spickzettel verrät Bereich, Gebiet, Anfangsbuchstaben und den Fun Fact – ohne den Namen. */
 function renderHint() {
   const card = $('spickzettel');
-  const entry = state.boosts.hint ? INDEX.byId.get(state.boosts.hint) : null;
+  const entry = state.boosts.hint ? W().index.byId.get(state.boosts.hint) : null;
   card.hidden = !entry;
   if (!entry) return;
   const words = [entry.name, ...entry.aliases]
@@ -723,7 +817,7 @@ function renderHint() {
 const openSections = new Set();
 
 function renderCodex() {
-  const total = ENTRIES.length;
+  const total = W().entries.length;
   const found = discoveryCount(state);
   $('codex-zahl').textContent = `${found}/${total}`;
 
@@ -731,8 +825,8 @@ function renderCodex() {
     h('div', { class: 'codex-gesamt' },
       h('strong', {}, `${found} von ${total} Einträgen entdeckt`),
       h('div', { class: 'fortschritt' }, bar(found / total))),
-    ...BEREICHE.map((b) => {
-      const entries = ENTRIES_BY_BEREICH[b.id];
+    ...W().bereiche.map((b) => {
+      const entries = entriesOf(b.id);
       const known = entries.filter((e) => state.discovered[e.id] != null)
         .sort((x, y) => x.tier - y.tier || x.name.localeCompare(y.name, 'de'));
       const open = isOpen(state, b.id);
@@ -776,10 +870,11 @@ function bar(share) {
 
 function renderStats() {
   const rows = [
-    ['Entdeckungen', `${discoveryCount(state)} von ${ENTRIES.length}`],
-    ['Offene Bereiche', `${state.unlocked.length} von ${BEREICHE.length}`],
+    ['Spielmodus', W().name],
+    ['Entdeckungen', `${discoveryCount(state)} von ${W().entries.length}`],
+    ['Offene Bereiche', `${state.unlocked.length} von ${W().bereiche.length}`],
     ['Konstanten mit Wert', Object.keys(state.values).length],
-    ['Fragen beantwortet', `${Object.keys(state.answered).length} von ${QUESTIONS.length}`],
+    ['Fragen beantwortet', `${Object.keys(state.answered).length} von ${W().questions.length}`],
     ['Eingaben', fmt(state.stats.inputs)],
     ['Davon gewertet', fmt(state.stats.hits)],
     ['Erkenntnis insgesamt', fmt(state.totalInsight)],
@@ -809,6 +904,7 @@ $('import-knopf').addEventListener('click', () => {
   try {
     state = importState($('import-text').value);
     saveLocal(state);
+    saveMode(state.welt);
     $('import-text').value = '';
     message.textContent = 'Spielstand geladen.';
     message.className = 'meldung gut';
@@ -820,9 +916,9 @@ $('import-knopf').addEventListener('click', () => {
 });
 
 $('reset-knopf').addEventListener('click', () => {
-  if (!confirm('Wirklich alles löschen? Erkenntnis, freigeschaltete Bereiche und Codex gehen verloren.')) return;
-  clearLocal();
-  state = newState();
+  if (!confirm(`Wirklich den Spielstand von „${W().name}“ löschen? Erkenntnis, freigeschaltete Bereiche und Codex gehen verloren.`)) return;
+  clearLocal(state.welt);
+  state = newState(state.welt);
   recent.length = 0;
   $('verlauf').replaceChildren();
   rerenderAll();
@@ -837,12 +933,12 @@ const clock = (ms) => {
 let countdownEndShown = false;
 
 function renderCountdownInfo() {
-  $('countdown-erklaerung').textContent = `Eine eigene Testrunde mit frischem Spielstand – dein normaler `
+  $('countdown-erklaerung').textContent = `Eine eigene Testrunde (${W().name}) mit frischem Spielstand – dein normaler `
     + `Spielstand bleibt unberührt. Die Uhr startet bei ${clock(COUNTDOWN.startMs)} Minuten und läuft herunter. `
     + `Jede neue Entdeckung bringt Zeit zurück: von ${fmt(COUNTDOWN.bonusMs[1] / 1000)} Sekunden (Stufe 1) `
     + `bis ${fmt(COUNTDOWN.bonusMs[5] / 1000)} Sekunden (Stufe 5), Fragen das ${fmt(COUNTDOWN.questionFactor)}-Fache. `
     + `Bei 0:00 ist die Runde vorbei.`;
-  const record = loadRecord();
+  const record = loadRecord(state.welt);
   $('countdown-rekord').textContent = record
     ? `Dein Rekord: ${fmt(record.insight)} Erkenntnis, ${record.found === 1 ? '1 Eintrag' : `${record.found} Einträge`}, `
       + `${clock(record.durationMs)} durchgehalten.`
@@ -851,7 +947,7 @@ function renderCountdownInfo() {
 
 function startCountdown() {
   if (!state.countdown) saveLocal(state); // normalen Spielstand sichern
-  state = newCountdownRun();
+  state = newCountdownRun(Date.now(), state.welt);
   countdownEndShown = false;
   recent.length = 0;
   $('verlauf').replaceChildren();
@@ -862,7 +958,7 @@ function startCountdown() {
 }
 
 function leaveCountdown() {
-  state = loadLocal() ?? newState();
+  state = loadLocal(state.welt) ?? newState(state.welt);
   countdownEndShown = false;
   recent.length = 0;
   $('verlauf').replaceChildren();
@@ -889,8 +985,8 @@ function showCountdownEnd() {
     durationMs: state.countdown.endedAt - state.countdown.startedAt,
     date: new Date().toISOString().slice(0, 10),
   };
-  const isRecord = saveRecord(run);
-  const record = loadRecord();
+  const isRecord = saveRecord(run, state.welt);
+  const record = loadRecord(state.welt);
   fill($('countdown-inhalt'),
     h('h2', { id: 'countdown-titel', class: 'countdown-titel' }, expired ? 'Zeit abgelaufen!' : 'Runde beendet'),
     isRecord ? h('p', { class: 'titel gut' }, '🏆 Neuer Rekord!') : null,
@@ -950,6 +1046,7 @@ function update() {
 }
 
 function rerenderAll() {
+  $('modus-knopf').textContent = W().name;
   renderBereiche(true);
   renderCodex();
   renderQuestions();
@@ -969,4 +1066,4 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) saveL
 window.addEventListener('pagehide', () => saveLocal(state));
 
 rerenderAll();
-input.focus();
+openStart(); // Beim Laden wählt man den Spielmodus (#16)

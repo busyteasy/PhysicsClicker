@@ -1,28 +1,29 @@
 // Spiellogik ohne DOM – damit sie sich mit Node testen lässt.
 
-import { ENTRIES } from '../data/index.js';
-import FRAGEN from '../data/fragen.js';
-import { buildIndex, checkValue, match } from './matcher.js';
+import { checkValue, match } from './matcher.js';
 import {
-  BEREICHE, BOOSTS, BOOST_PRICE_GROWTH, COMBO_MAX, COUNTDOWN, COMBO_STEP, COMBO_WINDOW_MS,
-  QUESTION_FACTOR, QUESTION_TRIES, REPEAT_COOLDOWN_MS, REPEAT_SHARE, START_BEREICHE,
-  TIER_POINTS, UNLOCK_PRICES, VALUE_FACTOR,
+  BOOSTS, BOOST_PRICE_GROWTH, COMBO_MAX, COUNTDOWN, COMBO_STEP, COMBO_WINDOW_MS,
+  QUESTION_FACTOR, QUESTION_TRIES, REPEAT_COOLDOWN_MS, REPEAT_SHARE,
+  TIER_POINTS, VALUE_FACTOR,
 } from './content.js';
+import { FREI, isWelt, welt, weltOf } from './welt.js';
 
-export const INDEX = buildIndex(ENTRIES);
-const BEREICH_IDS = new Set(BEREICHE.map((b) => b.id));
+export { FREI, KLASSEN_WELTEN, isWelt, welt, weltOf } from './welt.js';
 
-/** Fragen mit ihrem Bereich (= Kategorie des Antwort-Eintrags) */
-export const QUESTIONS = FRAGEN.map((q) => ({ ...q, bereich: INDEX.byId.get(q.antwort)?.cat }));
-const QUESTION_BY_ID = new Map(QUESTIONS.map((q) => [q.id, q]));
+// Index und Fragen des freien Spiels – für Stellen, die keinen Spielstand kennen
+export const INDEX = FREI.index;
+export const QUESTIONS = FREI.questions;
 const BOOST_BY_ID = new Map(BOOSTS.map((b) => [b.id, b]));
 
-export function newState() {
+/** Neuer Spielstand – im freien Spiel oder in einer Klassenwelt (`'k7'` …). */
+export function newState(weltId = 'frei') {
+  const w = welt(weltId);
   return {
     version: 2,
+    welt: w.id,          // Spielwelt (Issue #16)
     insight: 0,          // aktuelles Guthaben an Erkenntnis
     totalInsight: 0,     // insgesamt verdient
-    unlocked: [...START_BEREICHE], // freigeschaltete Bereiche (Kategorien)
+    unlocked: [...w.start], // freigeschaltete Bereiche (Kategorien)
     discovered: {},      // Eintrag-ID -> Zeitpunkt
     values: {},          // Konstanten-ID -> Zeitpunkt (Wert gewusst)
     lastSeen: {},        // Schlüssel -> Zeitpunkt der letzten Wertung
@@ -52,13 +53,15 @@ export const isOpen = (state, bereich) => state.unlocked.includes(bereich);
 
 /** Preis für den nächsten Bereich, `null` wenn alle offen sind. */
 export function unlockPrice(state) {
-  const bought = state.unlocked.filter((b) => !START_BEREICHE.includes(b)).length;
-  return UNLOCK_PRICES[bought] ?? null;
+  const w = weltOf(state);
+  const bought = state.unlocked.filter((b) => !w.start.includes(b)).length;
+  if (bought >= w.bereiche.length - w.start.length) return null;
+  return w.prices[bought] ?? null;
 }
 
 export function buyBereich(state, bereich) {
   const price = unlockPrice(state);
-  if (!BEREICH_IDS.has(bereich) || isOpen(state, bereich) || price == null || state.insight < price) return false;
+  if (!weltOf(state).bereichIds.has(bereich) || isOpen(state, bereich) || price == null || state.insight < price) return false;
   state.insight -= price;
   state.unlocked.push(bereich);
   return true;
@@ -73,7 +76,7 @@ export function discoveryCount(state) {
 export function bereichCount(state, bereich) {
   let n = 0;
   for (const id of Object.keys(state.discovered)) {
-    if (INDEX.byId.get(id)?.cat === bereich) n++;
+    if (weltOf(state).index.byId.get(id)?.cat === bereich) n++;
   }
   return n;
 }
@@ -90,8 +93,8 @@ export function comboMultiplier(count) {
 // ---------- Countdown-Modus (#12) ----------
 
 /** Neue Countdown-Runde: frischer Spielstand mit laufender Uhr. */
-export function newCountdownRun(now = Date.now()) {
-  const state = newState();
+export function newCountdownRun(now = Date.now(), weltId = 'frei') {
+  const state = newState(weltId);
   state.countdown = { startedAt: now, endsAt: now + COUNTDOWN.startMs, endedAt: null };
   return state;
 }
@@ -149,6 +152,7 @@ function repeatItem(state, entry, key, isValue, now) {
  *   locked: Einträge, die passen, aber in einem noch gesperrten Bereich liegen
  */
 export function submit(state, raw, now = Date.now()) {
+  const { index: INDEX } = weltOf(state);
   const result = match(INDEX, raw);
   if (result.kind === 'leer') return { status: 'leer', items: [], gained: 0, locked: [] };
   if (countdownOver(state, now)) return { status: 'vorbei', items: [], gained: 0, locked: [] };
@@ -231,6 +235,7 @@ export const canReveal = (state, q) => (state.attempts[q.id] || 0) >= QUESTION_T
  * offenen Fragen erreicht und erst danach wieder bei der ersten ankommt.
  */
 export function nextOpenQuestion(state, afterId) {
+  const { questions: QUESTIONS } = weltOf(state);
   const i = QUESTIONS.findIndex((q) => q.id === afterId);
   const after = QUESTIONS[i];
   const ring = [...QUESTIONS.slice(i + 1), ...QUESTIONS.slice(0, Math.max(0, i))]
@@ -243,7 +248,8 @@ export function nextOpenQuestion(state, afterId) {
  * Rückgabe: { status: 'richtig' | 'falsch' | 'leer' | 'nichtOffen', points, attempts, canReveal }
  */
 export function answerQuestion(state, id, raw, now = Date.now()) {
-  const q = QUESTION_BY_ID.get(id);
+  const { index: INDEX, questionById } = weltOf(state);
+  const q = questionById.get(id);
   if (!q || questionStatus(state, q) !== 'offen') return { status: 'nichtOffen', points: 0 };
   if (countdownOver(state, now)) return { status: 'vorbei', points: 0 };
   if (!String(raw).trim()) return { status: 'leer', points: 0 };
@@ -253,8 +259,10 @@ export function answerQuestion(state, id, raw, now = Date.now()) {
   if (q.wert) {
     correct = checkValue(entry, raw) === 'ok';
   } else {
+    // Neben der Antwort zählen auch ausdrücklich erlaubte Alternativen (`auch`)
+    const accepted = [q.antwort, ...(q.auch ?? [])];
     const result = match(INDEX, raw);
-    correct = result.kind === 'treffer' && result.ids.includes(q.antwort);
+    correct = result.kind === 'treffer' && result.ids.some((x) => accepted.includes(x));
   }
 
   if (!correct) {
@@ -272,10 +280,11 @@ export function answerQuestion(state, id, raw, now = Date.now()) {
 
 /** Löst eine Frage nach genug Fehlversuchen auf – ohne Punkte. */
 export function revealQuestion(state, id, now = Date.now()) {
-  const q = QUESTION_BY_ID.get(id);
+  const { index, questionById } = weltOf(state);
+  const q = questionById.get(id);
   if (!q || questionStatus(state, q) !== 'offen' || !canReveal(state, q)) return null;
   state.revealed[id] = now;
-  return INDEX.byId.get(q.antwort);
+  return index.byId.get(q.antwort);
 }
 
 // ---------- Einmal-Upgrades ----------
@@ -287,7 +296,7 @@ export function boostPrice(state, id) {
 
 /** Einträge, für die ein Spickzettel infrage kommt: offen, aber noch nicht entdeckt. */
 function hintCandidates(state) {
-  return ENTRIES.filter((e) => isOpen(state, e.cat) && !Object.hasOwn(state.discovered, e.id));
+  return weltOf(state).entries.filter((e) => isOpen(state, e.cat) && !Object.hasOwn(state.discovered, e.id));
 }
 
 /** Warum ein Upgrade gerade nicht kaufbar ist (oder null). Der Preis wird separat geprüft. */
@@ -335,10 +344,17 @@ function consumeMultiplier(state) {
 
 // ---------- Speichern ----------
 
-/** Übernimmt einen gespeicherten Zustand und verwirft Unbekanntes. */
-export function restore(saved) {
-  const state = newState();
-  if (!saved || typeof saved !== 'object') return state;
+/**
+ * Übernimmt einen gespeicherten Zustand und verwirft Unbekanntes.
+ * Alte Spielstände ohne `welt` gehören zum freien Spiel; `weltId` erzwingt
+ * eine Welt (z. B. beim Laden eines Klassen-Spielstands).
+ */
+export function restore(saved, weltId) {
+  const ok = saved && typeof saved === 'object';
+  const id = weltId ?? (ok && isWelt(saved.welt) ? saved.welt : 'frei');
+  const state = newState(id);
+  if (!ok) return state;
+  const { index: INDEX, questionById: QUESTION_BY_ID, bereichIds: BEREICH_IDS } = weltOf(state);
   const num = (x) => (Number.isFinite(x) && x >= 0 ? x : 0);
   state.insight = num(saved.insight);
   state.totalInsight = Math.max(num(saved.totalInsight), state.insight);
