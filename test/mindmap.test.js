@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import BEZUEGE from '../data/bezuege.js';
 import { BEREICHE } from '../src/content.js';
 import { INDEX, buyBereich, newState, submit } from '../src/game.js';
-import { mindmap, personLinks } from '../src/mindmap.js';
+import { mindmap, personLinks, verbindungen } from '../src/mindmap.js';
 
 test('Bezüge: nur Personen als Schlüssel, nur echte Einträge als Ziele', () => {
   for (const [person, ids] of Object.entries(BEZUEGE)) {
@@ -64,4 +64,35 @@ test('Bezüge einer Person erscheinen erst, wenn Person und Bereich bekannt sind
   const node = mindmap(s).areas.find((a) => a.id === 'relativ').bereiche
     .find((b) => b.id === 'person').nodes.find((n) => n.id === 'einstein');
   assert.deepEqual(node.links, personLinks(s, 'einstein'));
+});
+
+// Issue #31: Pfeile zwischen den Planeten kommen mit weiteren offenen Bereichen dazu
+test('Pfeile zwischen Gebieten erscheinen erst mit weiteren offenen Bereichen', () => {
+  const s = newState();
+  submit(s, 'Newton', 0);
+  assert.deepEqual(verbindungen(s), [], 'nur Personen offen: keine Pfeile');
+
+  s.insight = 1e6;
+  assert.ok(buyBereich(s, 'experiment'));
+  const pfeil = verbindungen(s).find((v) => v.key === 'mechanik>optik');
+  assert.ok(pfeil, 'Newton → Prismenversuch (Optik)');
+  assert.deepEqual([pfeil.von, pfeil.nach, pfeil.anzahl, pfeil.gefunden], ['mechanik', 'optik', 1, 0]);
+  assert.deepEqual(pfeil.personen, ['Isaac Newton']);
+
+  submit(s, 'Prismenversuch', 1);
+  assert.equal(verbindungen(s).find((v) => v.key === 'mechanik>optik').gefunden, 1);
+  assert.ok(verbindungen(s).every((v) => v.von !== v.nach), 'nur Pfeile zu anderen Gebieten');
+  assert.deepEqual(mindmap(s).links, verbindungen(s));
+});
+
+test('Mehr offene Bereiche bringen mehr Pfeile', () => {
+  const s = newState();
+  for (const p of ['Einstein', 'Planck', 'Dirac', 'Lorentz']) submit(s, p, 0);
+  s.insight = 1e6;
+  assert.ok(buyBereich(s, 'phaenomen'));
+  const vorher = verbindungen(s).reduce((x, v) => x + v.anzahl, 0);
+  assert.ok(vorher > 0);
+  assert.ok(buyBereich(s, 'formel'));
+  const nachher = verbindungen(s).reduce((x, v) => x + v.anzahl, 0);
+  assert.ok(nachher > vorher, `${vorher} → ${nachher}`);
 });
