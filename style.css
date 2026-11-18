@@ -518,6 +518,7 @@ textarea {
 .mm-begriffe .mm-knoten.unbekannt { color: var(--tinte-leise); }
 .mm-begriffe .mm-knoten:hover { border-color: var(--farbe); }
 .mm-knoten.aktiv { outline: 2.5px solid var(--farbe); outline-offset: 1px; }
+.mm-gehoert { font-size: 0.8rem; font-weight: 600; color: var(--farbe); }
 .mm-anzahl {
   display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px;
   background: var(--farbe); color: var(--flaeche); font-size: 0.72rem; font-weight: 800;

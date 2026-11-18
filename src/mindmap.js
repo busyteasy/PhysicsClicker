@@ -16,12 +16,28 @@ import { isOpen, weltOf } from './game.js';
 
 const known = (state, id) => Object.hasOwn(state.discovered, id);
 
+// Umgekehrte Bezüge: Eintrag-ID -> Personen-IDs, auf die er zurückgeht
+const PERSONEN_ZU = new Map();
+for (const [person, ids] of Object.entries(BEZUEGE)) {
+  for (const id of ids) PERSONEN_ZU.set(id, [...(PERSONEN_ZU.get(id) ?? []), person]);
+}
+
+/** Namen der schon entdeckten Personen, zu denen ein Eintrag gehört. */
+function bekanntePersonen(state, id) {
+  const { index } = weltOf(state);
+  return (PERSONEN_ZU.get(id) ?? [])
+    .filter((p) => known(state, p) && index.byId.has(p))
+    .map((p) => index.byId.get(p).name);
+}
+
 /** Ein Knoten: Name nur, wenn entdeckt. */
 function node(state, entry) {
   const isKnown = known(state, entry.id);
   return {
     id: entry.id, cat: entry.cat, bereich: entry.bereich, area: entry.area, tier: entry.tier,
     known: isKnown, name: isKnown ? entry.name : null,
+    // Entdeckte Personen dürfen genannt werden, auch wenn der Eintrag selbst noch offen ist
+    personen: bekanntePersonen(state, entry.id),
   };
 }
 

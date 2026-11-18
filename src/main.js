@@ -720,6 +720,7 @@ function zeigeBegriff(n) {
 }
 
 const nodeText = (n) => (n.known ? n.name : `? ${CATEGORIES[n.cat]}`);
+const nachname = (name) => name.split(' ').at(-1);
 
 /**
  * Bezugsbild: der gewählte Begriff links, alles, was dazugehört, rechts –
@@ -814,7 +815,9 @@ function planetAnsicht(map, a) {
         class: `mm-knoten ${n.known ? `bekannt ${n.cat}` : 'unbekannt'}${n.id === mmBegriff ? ' aktiv' : ''}${n.links?.length ? ' mit-bezug' : ''}`,
         title: n.known ? `${CATEGORIES[n.cat]} · Stufe ${n.tier}` : `Noch nicht entdeckt: ${CATEGORIES[n.cat]}, Stufe ${n.tier}`,
         onclick: () => { mmBegriff = n.id; renderMindmap(); $('mindmap-inhalt').querySelector('.mm-bezugsbild')?.scrollIntoView({ block: 'nearest' }); },
-      }, n.known ? n.name : '?', n.known ? null : h('sub', {}, n.tier), n.links?.length ? h('span', { class: 'mm-anzahl', 'aria-label': `${n.links.length} Bezüge` }, n.links.length) : null)))) : null,
+      }, n.known ? n.name : '?', n.known ? null : h('sub', {}, n.tier),
+      n.personen.length ? h('span', { class: 'mm-gehoert' }, `· ${n.personen.map(nachname).join(', ')}`) : null,
+      n.links?.length ? h('span', { class: 'mm-anzahl', 'aria-label': `${n.links.length} Bezüge` }, n.links.length) : null)))) : null,
     info ? bezugsBild(info, a) : null,
     raus.length || rein.length
       ? h('div', { class: 'mm-verbindungen' },

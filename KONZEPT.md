@@ -226,7 +226,9 @@ Tippt man einen Planeten an, zoomt die Mindmap hinein und wird zur Leseansicht:
 
 1. Oben die **Monde** (Bereiche) als Knöpfe mit Fortschrittsring und Zahl.
 2. Darunter die **Begriffe** des gewählten Mondes – entdeckte mit Namen, offene
-   als „?“ mit Stufe. Personen mit Bezügen tragen eine Zahl.
+   als „?“ mit Stufe. Hinter jedem Begriff steht, zu welcher schon entdeckten
+   Person er gehört (z. B. „? ¹ · Newton“) – unentdeckte Personen bleiben
+   verborgen. Personen mit Bezügen tragen eine Zahl.
 3. Ein Begriff antippen öffnet das **Bezugsbild**: Der Begriff links, rechts
    untereinander alles, was dazugehört, mit Pfeilen verbunden und ausgeschrieben
    („F = m·a“, „? Experiment · Optik · Stufe 1“). Bei einer Person sind das ihre

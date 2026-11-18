@@ -113,3 +113,18 @@ test('Bezüge eines Eintrags: Person → Einträge, Eintrag → Personen (#31)',
   assert.equal(p.node.name, null, 'Prismenversuch selbst noch unentdeckt');
   assert.equal(bezuege(s, 'gibtesnicht'), null);
 });
+
+test('Offene Einträge nennen ihre schon entdeckten Personen (#31)', () => {
+  const s = newState();
+  s.insight = 1e6;
+  assert.ok(buyBereich(s, 'gesetz'));
+  const traegheit = () => mindmap(s).areas.find((a) => a.id === 'mechanik').bereiche
+    .find((b) => b.id === 'gesetz').nodes.find((n) => n.id === 'traegheit');
+  assert.deepEqual(traegheit().personen, [], 'noch keine Person entdeckt');
+  submit(s, 'Newton', 0);
+  assert.deepEqual(traegheit().personen, ['Isaac Newton']);
+  assert.equal(traegheit().name, null, 'der Eintrag selbst bleibt verborgen');
+  assert.deepEqual(bezuege(s, 'traegheit').node.personen, ['Isaac Newton']);
+  submit(s, 'Galilei', 1);
+  assert.deepEqual(traegheit().personen.sort(), ['Galileo Galilei', 'Isaac Newton']);
+});
