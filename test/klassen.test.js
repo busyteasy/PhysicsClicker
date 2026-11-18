@@ -37,12 +37,12 @@ test('Jede Klasse bietet genug zu spielen', () => {
     assert.ok(w.entries.length >= 60, `${w.name}: nur ${w.entries.length} Einträge`);
     assert.ok(w.questions.length >= 30, `${w.name}: nur ${w.questions.length} Fragen`);
     for (const b of w.bereiche) {
-      const n = w.entries.filter((e) => e.cat === b.id).length;
+      const n = w.entries.filter((e) => e.bereich === b.id).length;
       const q = w.questions.filter((x) => x.bereich === b.id).length;
       assert.ok(n >= 3, `${w.name}: Bereich ${b.name} hat nur ${n} Einträge`);
       assert.ok(q >= 2, `${w.name}: Bereich ${b.name} hat nur ${q} Fragen`);
     }
-    assert.deepEqual(w.start, ['begriff'], `${w.name}: Start mit Größen & Begriffe`);
+    assert.ok(w.start.length === 1 && w.start[0].startsWith('begriff'), `${w.name}: Start mit Größen & Begriffen`);
   }
 });
 
@@ -80,7 +80,7 @@ test('Eine Klassenwelt kennt nur ihre eigenen Einträge', () => {
   assert.equal(k5.name, 'Klasse 5');
   const s = newState('k5');
   assert.equal(s.welt, 'k5');
-  assert.deepEqual(s.unlocked, ['begriff']);
+  assert.deepEqual(s.unlocked, ['begriff_einheit']);
   assert.equal(submit(s, 'Stromkreis', 0).status, 'treffer');
   assert.equal(submit(s, 'Schrödinger-Gleichung', 1).status, 'unbekannt', 'gehört nicht zur Klasse 5');
   assert.equal(match(FREI.index, 'Schrödinger-Gleichung').kind, 'treffer', 'im freien Spiel schon');
@@ -113,4 +113,49 @@ test('Spielstände bleiben in ihrer Welt', () => {
   const forced = restore({ welt: 'frei', discovered: { einstein: 1, b_stromkreis: 2 } }, 'k5');
   assert.equal(forced.welt, 'k5');
   assert.deepEqual(Object.keys(forced.discovered), ['b_stromkreis']);
+});
+
+// Issue #26: Kleine Klassen fassen Kategorien zu weniger Bereichen zusammen
+test('Untere Klassen haben weniger Bereiche als die Oberstufe', () => {
+  const n = (id) => welt(id).bereiche.length;
+  assert.ok(n('k5') <= 4, `Klasse 5 hat ${n('k5')} Bereiche`);
+  assert.ok(n('k5') < n('k7') && n('k7') < n('k12'));
+  const k5 = welt('k5');
+  assert.deepEqual(k5.bereiche.map((b) => b.name).sort(), ['Forscher & Versuche', 'Geräte & Bauteile', 'Größen & Einheiten', 'Phänomene']);
+  // Einträge behalten ihre Kategorie, gehören aber zum zusammengefassten Bereich
+  const volta = k5.index.byId.get('volta');
+  assert.equal(volta.cat, 'person');
+  assert.equal(volta.bereich, 'forschung');
+  // Im freien Spiel ist jede Kategorie ihr eigener Bereich
+  assert.ok(welt('frei').entries.every((e) => e.bereich === e.cat));
+});
+
+test('Gruppierte Bereiche lassen sich freischalten und bespielen', () => {
+  const s = newState('k5');
+  s.insight = 1e6;
+  assert.ok(buyBereich(s, 'forschung'));
+  assert.equal(submit(s, 'Volta', 0).status, 'treffer');
+  assert.equal(submit(s, 'Kugel-Ring-Versuch', 1).status, 'treffer');
+  assert.equal(submit(s, 'Volt', 2).status, 'treffer', 'Einheiten stecken im Startbereich');
+});
+
+test('Alte Klassen-Spielstände mit einzelnen Kategorien werden übernommen', () => {
+  const s = restore({ welt: 'k5', insight: 7, unlocked: ['begriff', 'einheit', 'person', 'geraet'], discovered: { volta: 1 } });
+  assert.deepEqual(s.unlocked, ['begriff_einheit', 'forschung', 'geraet']);
+  assert.ok(s.discovered.volta);
+});
+
+// Issue #25: nur ein Beispiel je Bereich, damit man nicht einfach abtippt
+test('Jeder Bereich zeigt genau ein Beispiel', () => {
+  for (const w of [welt('frei'), ...KLASSEN_WELTEN]) {
+    for (const b of w.bereiche) assert.ok(b.beispiel && !b.beispiel.includes(', '), `${w.name}/${b.name}: ${b.beispiel}`);
+  }
+});
+
+// Issue #27/#28: jede Klasse hat eine Beschreibung und eine Themenliste
+test('Jede Klasse hat eine kurze Inhaltsübersicht', () => {
+  for (const w of KLASSEN_WELTEN) {
+    assert.ok(w.info.beschreibung?.length > 30, `${w.name}: Beschreibung fehlt`);
+    assert.ok(w.info.themen.length >= 3, `${w.name}: zu wenige Themen`);
+  }
 });

@@ -2,6 +2,9 @@
 //
 // Eine Klasse besteht aus:
 //   klasse    5 … 13
+//   beschreibung  zwei, drei Sätze: Was kommt in dieser Klasse dran? (Startbildschirm)
+//   gruppen   optional: Bereichsgruppen aus BEREICH_GRUPPEN (content.js), die kleine
+//             Kategorien zusammenfassen, z. B. 'forschung' = Personen + Experimente
 //   themen    Themenbereiche nach Kerncurriculum (für die Anzeige)
 //   quelle    Kurzbeleg, woher die Zuordnung stammt
 //   eintraege ID eines Eintrags der Wissensdatenbank -> Stufe innerhalb der Klasse

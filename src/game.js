@@ -76,7 +76,7 @@ export function discoveryCount(state) {
 export function bereichCount(state, bereich) {
   let n = 0;
   for (const id of Object.keys(state.discovered)) {
-    if (weltOf(state).index.byId.get(id)?.cat === bereich) n++;
+    if (weltOf(state).index.byId.get(id)?.bereich === bereich) n++;
   }
   return n;
 }
@@ -161,13 +161,13 @@ export function submit(state, raw, now = Date.now()) {
   if (result.kind !== 'treffer') {
     const entry = result.id ? INDEX.byId.get(result.id) : null;
     // Bei gesperrten Konstanten nichts über den Wert verraten
-    if (entry && !isOpen(state, entry.cat)) return { status: 'gesperrt', items: [], gained: 0, locked: [entry] };
+    if (entry && !isOpen(state, entry.bereich)) return { status: 'gesperrt', items: [], gained: 0, locked: [entry] };
     return { status: result.kind, items: [], gained: 0, entry, locked: [] };
   }
 
   const matched = result.ids.map((id) => INDEX.byId.get(id));
-  const open = matched.filter((e) => isOpen(state, e.cat));
-  const locked = matched.filter((e) => !isOpen(state, e.cat));
+  const open = matched.filter((e) => isOpen(state, e.bereich));
+  const locked = matched.filter((e) => !isOpen(state, e.bereich));
   if (open.length === 0) return { status: 'gesperrt', items: [], gained: 0, locked };
 
   const items = [];
@@ -296,7 +296,7 @@ export function boostPrice(state, id) {
 
 /** Einträge, für die ein Spickzettel infrage kommt: offen, aber noch nicht entdeckt. */
 function hintCandidates(state) {
-  return weltOf(state).entries.filter((e) => isOpen(state, e.cat) && !Object.hasOwn(state.discovered, e.id));
+  return weltOf(state).entries.filter((e) => isOpen(state, e.bereich) && !Object.hasOwn(state.discovered, e.id));
 }
 
 /** Warum ein Upgrade gerade nicht kaufbar ist (oder null). Der Preis wird separat geprüft. */
@@ -354,11 +354,13 @@ export function restore(saved, weltId) {
   const id = weltId ?? (ok && isWelt(saved.welt) ? saved.welt : 'frei');
   const state = newState(id);
   if (!ok) return state;
-  const { index: INDEX, questionById: QUESTION_BY_ID, bereichIds: BEREICH_IDS } = weltOf(state);
+  const { index: INDEX, questionById: QUESTION_BY_ID, bereichIds: BEREICH_IDS, zuBereich } = weltOf(state);
   const num = (x) => (Number.isFinite(x) && x >= 0 ? x : 0);
   state.insight = num(saved.insight);
   state.totalInsight = Math.max(num(saved.totalInsight), state.insight);
-  for (const b of saved.unlocked || []) {
+  for (const old of saved.unlocked || []) {
+    // Alte Kategorien gehen in ihrem (zusammengefassten) Bereich auf (Issue #26)
+    const b = BEREICH_IDS.has(old) ? old : zuBereich.get(old);
     if (BEREICH_IDS.has(b) && !state.unlocked.includes(b)) state.unlocked.push(b);
   }
   for (const [id, t] of Object.entries(saved.discovered || {})) if (INDEX.byId.has(id)) state.discovered[id] = num(t);

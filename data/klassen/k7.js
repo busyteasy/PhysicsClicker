@@ -5,6 +5,9 @@ import { Q, QUELLE_SI, S } from './helpers.js';
 
 export default {
   klasse: 7,
+  beschreibung: 'Klasse 7 verfolgt Energie durch ihre Umwandlungen und beschreibt Bewegungen mit Weg, Zeit und Geschwindigkeit. Mit Linsen geht es zu Fernrohr, Mikroskop und Auge – und zum Schluss hinaus ins Weltall.',
+  // Zusammengefasste Bereiche (Issue #26)
+  gruppen: ['gesetz_formel', 'forschung'],
   themen: ['Energieformen und Energieumwandlung', 'Bewegungen beschreiben', 'Optische Instrumente und Farben', 'Sterne und Weltall'],
   quelle: `${QUELLE_SI}, Themenbereiche Energie (Zuordnung zu Jahrgang 7 nach Anhang A3) und Mechanik (Doppeljahrgang 7/8); optische Instrumente sowie Sterne und Weltall (im KC Sek I nicht verbindlich) nach gängigen Schulbuchreihen`,
   eintraege: {
@@ -31,7 +34,7 @@ export default {
     // Personen
     ...S(1, 'kopernikus galilei'),
     ...S(2, 'kepler_p ptolemaeus joule_p'),
-    ...S(3, 'brahe hubble_p herschel w_lippershey w_mayer'),
+    ...S(3, 'brahe hubble_p'),
     // Experimente
     ...S(1, 'prisma'),
     ...S(2, 'jupitermonde'),
@@ -55,7 +58,6 @@ export default {
     Q('k7_konto', 2, 'In welchem Modell wird Energie wie Geld zwischen Konten gebucht?', 'b_energiekonto'),
     Q('k7_erhaltung', 1, 'Welcher Satz besagt, dass Energie weder erzeugt noch vernichtet werden kann?', 'energieerhaltung'),
     Q('k7_entwertung', 3, 'Wie nennt man es, dass Energie als Wärme in die Umgebung geht und kaum noch nutzbar ist?', 'b_energieentwertung'),
-    Q('k7_mayer', 3, 'Welcher Heilbronner Arzt formulierte 1842 als einer der Ersten den Energieerhaltungssatz?', 'w_mayer'),
     // Bewegung
     Q('k7_gleichfoermig', 1, 'Wie heißt eine Bewegung mit konstanter Geschwindigkeit?', 'b_gleichfoermig'),
     Q('k7_ts', 1, 'In welchem Diagramm ist die Steigung der Kurve die Geschwindigkeit?', 'b_ts_diagramm'),
@@ -74,7 +76,6 @@ export default {
     Q('k7_subtraktiv', 2, 'Welche Farbmischung nutzen Drucker mit Cyan, Magenta und Gelb?', 'b_subtraktiv'),
     Q('k7_glasfaser', 2, 'Wie heißt das Kabel, das Internetdaten als Licht durch Totalreflexion transportiert?', 'd_lichtleiter'),
     Q('k7_snellius', 3, 'Welches Gesetz beschreibt, wie stark Licht beim Übergang zwischen zwei Stoffen gebrochen wird?', 'snellius'),
-    Q('k7_herschel', 3, 'Wer entdeckte im Jahr 1800 die Infrarotstrahlung?', 'herschel'),
     Q('k7_himmelblau', 3, 'Welche Streuung sorgt dafür, dass der Himmel blau ist?', 'rayleigh'),
     // Weltall
     Q('k7_planeten', 1, 'Wie heißen die acht großen Himmelskörper, die die Sonne umkreisen?', 'b_planet'),

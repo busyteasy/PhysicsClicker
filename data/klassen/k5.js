@@ -4,6 +4,9 @@ import { Q, QUELLE_SI, S } from './helpers.js';
 
 export default {
   klasse: 5,
+  beschreibung: 'Klasse 5 beginnt mit Magneten und einfachen Stromkreisen: Pole, Feldlinien, Leiter und Isolatoren. Dazu kommen Temperatur, Wärme und die Aggregatzustände, erklärt mit dem Teilchenmodell.',
+  // Zusammengefasste Bereiche (Issue #26)
+  gruppen: ['begriff_einheit', 'forschung'],
   themen: ['Magnetismus', 'Einfache Stromkreise', 'Temperatur und Wärme', 'Aggregatzustände und Teilchenmodell'],
   quelle: `${QUELLE_SI}, Themenbereich Magnetismus und Elektrizität (Doppeljahrgang 5/6); Temperatur, Wärme und Aggregatzustände nach den fächerverbindenden Inhalten im Anhang A3 (Biologie/Chemie 5/6) und gängigen Schulbüchern; Kelvin-Skala nur als Zusatzwissen (im KC erst Jahrgang 10)`,
   eintraege: {
@@ -14,17 +17,17 @@ export default {
     // Geräte & Bauteile
     ...S(1, 'd_kompass d_dauermagnet d_batterie d_gluehlampe d_schalter d_thermometer'),
     ...S(2, 'd_hufeisenmagnet d_elektromagnet d_spule d_sicherung d_bimetall d_thermoskanne d_led'),
-    ...S(3, 'd_klingel d_relais d_fi'),
+    ...S(3, 'd_klingel d_relais'),
     // Phänomene
     ...S(1, 'aggregatzustand waermeleitung konvektion waermestrahlung p_waermewirkung p_magnetwirkung p_lichtwirkung'),
-    ...S(2, 'p_verdunstungskaelte p_treibhauseffekt brownsche'),
-    ...S(3, 'p_anomalie ferromagnetismus'),
+    ...S(2, 'p_verdunstungskaelte p_treibhauseffekt'),
+    ...S(3, 'p_anomalie'),
     // Einheiten
     ...S(1, 'u_grad_celsius u_meter u_sekunde u_kilogramm'),
     ...S(2, 'u_volt'),
     // Personen
     ...S(2, 'celsius volta'),
-    ...S(3, 'oersted w_gilbert fahrenheit'),
+    ...S(3, 'oersted fahrenheit'),
     // Experimente
     ...S(1, 'e_eisenfeilspaene e_kugel_ring'),
     ...S(2, 'e_tinte e_zitrone'),

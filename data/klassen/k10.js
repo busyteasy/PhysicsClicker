@@ -6,6 +6,9 @@ import { Q, QUELLE_SI, S } from './helpers.js';
 
 export default {
   klasse: 10,
+  beschreibung: 'Klasse 10 behandelt Druck und Auftrieb, Gase und Wärmekraftmaschinen sowie Radioaktivität und Kernenergie. Außerdem: Halbleiter wie LED und Solarzelle und beschleunigte Bewegungen.',
+  // Zusammengefasste Bereiche (Issue #26)
+  gruppen: ['einheit_konstante'],
   themen: ['Druck und Auftrieb', 'Gase und Wärmekraftmaschinen', 'Radioaktivität und Kernenergie', 'Halbleiter, LED und Solarzelle', 'Beschleunigte Bewegungen'],
   quelle: `${QUELLE_SI}, Themenbereiche Thermodynamik, Atom- und Kernphysik, Magnetismus und Elektrizität (Doppeljahrgang 9/10, Zuordnung zu Jahrgang 10 nach Anhang A3)`,
   eintraege: {
@@ -42,7 +45,7 @@ export default {
     // Personen
     ...S(1, 'archimedes pascal_p curie roentgen'),
     ...S(2, 'torricelli_p guericke kelvin_p becquerel_p rutherford hahn meitner'),
-    ...S(3, 'w_boyle w_gay_lussac w_stirling w_geiger'),
+    ...S(3, 'w_boyle w_gay_lussac w_geiger'),
     // Experimente
     ...S(1, 'magdeburg e_abschirmung'),
     ...S(2, 'torricelli e_taucher e_wuerfel'),

@@ -5,6 +5,9 @@ import { Q, QUELLE_SI, S } from './helpers.js';
 
 export default {
   klasse: 8,
+  beschreibung: 'In Klasse 8 misst du Kräfte und sparst mit Hebel und Flaschenzug Kraft. In der Elektrizitätslehre geht es um Ladung, Stromstärke, Spannung, Widerstand und das Ohmsche Gesetz.',
+  // Zusammengefasste Bereiche (Issue #26)
+  gruppen: ['phaenomen_teilchen', 'einheit_konstante', 'forschung'],
   themen: ['Kraft und Masse', 'Hebel und Flaschenzug', 'Leistung', 'Elektrische Ladung und Stromkreis', 'Widerstand und Ohmsches Gesetz'],
   quelle: `${QUELLE_SI}, Themenbereiche Mechanik sowie Magnetismus und Elektrizität (Doppeljahrgang 7/8, Zuordnung zu Jahrgang 8 nach Anhang A3)`,
   eintraege: {

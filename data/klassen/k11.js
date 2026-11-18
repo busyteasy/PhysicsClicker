@@ -5,6 +5,7 @@ import { Q, QUELLE_SII, S } from './helpers.js';
 
 export default {
   klasse: 11,
+  beschreibung: 'In Klasse 11 (Einführungsphase) wird die Mechanik vertieft: Newtonsche Axiome, Fall und Wurf, Kreisbewegung, Energie und Impuls sowie Gravitation und Planetenbahnen.',
   themen: ['Dynamik: Fall, Wurf, Newtonsche Axiome', 'Kreisbewegung', 'Energie und Impuls', 'Gravitation und Planetenbahnen', 'Wahlmodule: Akustik, Optische Abbildungen, Strahlungsphysik'],
   quelle: `${QUELLE_SII}, Einführungsphase: Dynamik und Wahlmodule (Akustik, Optische Abbildungen, Strahlungsphysik); Impuls, Reibung und Gravitation (im KC Sek II nicht verbindlich) als Ergänzung nach gängigen Schulbüchern`,
   eintraege: {

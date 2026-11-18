@@ -604,6 +604,21 @@ button.start-karte:hover, .start-karte.aktiv { border-color: var(--akzent); }
 .klassen-themen dl { margin: 8px 0 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; }
 .klassen-themen dt { font-weight: 700; }
 .klassen-themen dd { margin: 0; color: var(--tinte-leise); }
+.klassen-uebersicht {
+  margin-top: 10px; padding: 12px 14px; border: 2px solid var(--akzent); border-radius: 10px;
+  background: var(--flaeche);
+}
+.klassen-uebersicht.leer { border-style: dashed; border-color: var(--linie, var(--tinte-leise)); color: var(--tinte-leise); font-size: 0.9rem; }
+.klassen-uebersicht h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.ku-beschr { margin: 0 0 8px; }
+.ku-themen { margin: 0 0 8px; padding-left: 1.2em; }
+.ku-themen li { margin: 2px 0; }
+.ku-zahlen { margin: 0 0 10px; font-size: 0.85rem; color: var(--tinte-leise); }
+.ku-los {
+  width: 100%; min-height: 44px; border: none; border-radius: var(--radius);
+  background: var(--akzent); color: var(--akzent-text); font-weight: 700; cursor: pointer;
+}
+.ku-los:hover { filter: brightness(1.1); }
 .start-quelle { font-size: 0.78rem; color: var(--tinte-leise); margin: 12px 0 0; }
 @media (max-width: 480px) {
   .modus-knopf { padding: 0 10px; font-size: 0.9rem; }

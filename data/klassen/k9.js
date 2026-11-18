@@ -6,6 +6,9 @@ import { Q, QUELLE_SI, S } from './helpers.js';
 
 export default {
   klasse: 9,
+  beschreibung: 'Klasse 9 rechnet mit Energie: Arbeit, Wärme, Leistung und Wirkungsgrad. Dazu kommen Elektromagnetismus und Induktion – die Grundlage von Motor, Generator und Transformator – und die Frage, wie wir Energie klimafreundlich bereitstellen.',
+  // Zusammengefasste Bereiche (Issue #26)
+  gruppen: ['gesetz_formel', 'einheit_konstante', 'forschung'],
   themen: ['Energie berechnen: Arbeit, Wärme, Wirkungsgrad', 'Elektromagnetismus und Induktion', 'Generator, Motor und Transformator', 'Energieversorgung und Klima'],
   quelle: `${QUELLE_SI}, Themenbereiche Energie sowie Magnetismus und Elektrizität (Doppeljahrgang 9/10, Zuordnung zu Jahrgang 9 nach Anhang A3); Motor, Generator und Transformator laut KC als „black box“ – Lorentzkraft, Lenzsche Regel und Induktionsgesetz nur als Zusatzwissen`,
   eintraege: {

@@ -16,30 +16,48 @@ export const AREA_NAMES = Object.fromEntries(AREAS.map((a) => [a.id, a.name]));
 // Bereiche = Kategorien der Wissensdatenbank. Zu Beginn ist nur der erste
 // offen; die übrigen kauft man mit Erkenntnis frei, in beliebiger Reihenfolge.
 export const BEREICHE = [
-  { id: 'person', name: 'Personen', beispiel: 'Marie Curie, Newton, Emmy Noether',
+  { id: 'person', name: 'Personen', beispiel: 'Marie Curie',
     desc: 'Physikerinnen und Physiker – mit Vor- und Nachnamen oder nur dem Nachnamen.' },
-  { id: 'einheit', name: 'Einheiten', beispiel: 'Tesla, Joule, 1 N = 1 kg·m/s²',
+  { id: 'einheit', name: 'Einheiten', beispiel: '1 N = 1 kg·m/s²',
     desc: 'Maßeinheiten, als Name oder als Definition.' },
-  { id: 'teilchen', name: 'Teilchen', beispiel: 'Myon, Gluon, Higgs-Boson',
+  { id: 'teilchen', name: 'Teilchen', beispiel: 'Myon',
     desc: 'Elementarteilchen und andere Bausteine der Materie.' },
-  { id: 'phaenomen', name: 'Phänomene', beispiel: 'Doppler-Effekt, Supraleitung, Regenbogen',
+  { id: 'phaenomen', name: 'Phänomene', beispiel: 'Regenbogen',
     desc: 'Effekte, Vorgänge und Erscheinungen der Natur.' },
-  { id: 'gesetz', name: 'Gesetze', beispiel: 'Ohmsches Gesetz, Pauli-Prinzip',
+  { id: 'gesetz', name: 'Gesetze', beispiel: 'Pauli-Prinzip',
     desc: 'Gesetze, Prinzipien und Hauptsätze.' },
-  { id: 'formel', name: 'Formeln', beispiel: 'F = m·a, E = mc², pV = nRT',
+  { id: 'formel', name: 'Formeln', beispiel: 'F = m·a',
     desc: 'Gleichungen mit „=“. Leerzeichen, Malpunkte und Reihenfolge sind egal.' },
-  { id: 'konstante', name: 'Konstanten', beispiel: 'Lichtgeschwindigkeit, h = 6,626·10⁻³⁴ Js',
+  { id: 'konstante', name: 'Konstanten', beispiel: 'h = 6,626·10⁻³⁴ Js',
     desc: 'Naturkonstanten – mit korrektem Wert gibt es doppelt.' },
-  { id: 'experiment', name: 'Experimente', beispiel: 'Foucaultsches Pendel, Millikan-Versuch, Schrödingers Katze',
+  { id: 'experiment', name: 'Experimente', beispiel: 'Schrödingers Katze',
     desc: 'Berühmte Versuche und Gedankenexperimente.' },
   // Neu für die Klassenstufen (Issue #16), auch im freien Spiel
-  { id: 'begriff', name: 'Größen & Begriffe', beispiel: 'Stromstärke, Dichte, Teilchenmodell',
+  { id: 'begriff', name: 'Größen & Begriffe', beispiel: 'Dichte',
     desc: 'Physikalische Größen, Fachbegriffe und Modelle.' },
-  { id: 'geraet', name: 'Geräte & Bauteile', beispiel: 'Kompass, Sammellinse, Transformator',
+  { id: 'geraet', name: 'Geräte & Bauteile', beispiel: 'Kompass',
     desc: 'Messgeräte, Bauteile und technische Geräte.' },
 ];
 
-export const BEREICH_NAMES = Object.fromEntries(BEREICHE.map((b) => [b.id, b.name]));
+// Zusammengefasste Bereiche (Issue #26): Klassen mit wenig Stoff legen kleine
+// Kategorien zusammen, z. B. Personen und Experimente zu „Forscher & Versuche“.
+// Welche Gruppen eine Klasse nutzt, steht in ihrer Datei unter `gruppen`.
+export const BEREICH_GRUPPEN = [
+  { id: 'begriff_einheit', name: 'Größen & Einheiten', teile: ['begriff', 'einheit'],
+    desc: 'Physikalische Größen, Fachbegriffe, Modelle – und die Einheiten, in denen man misst.' },
+  { id: 'einheit_konstante', name: 'Einheiten & Konstanten', teile: ['einheit', 'konstante'],
+    desc: 'Maßeinheiten und feste Werte der Physik – Konstanten mit korrektem Wert zählen doppelt.' },
+  { id: 'phaenomen_gesetz', name: 'Phänomene & Gesetze', teile: ['phaenomen', 'gesetz'],
+    desc: 'Was man in der Natur beobachtet, und die Regeln, nach denen es abläuft.' },
+  { id: 'phaenomen_teilchen', name: 'Phänomene & Teilchen', teile: ['phaenomen', 'teilchen'],
+    desc: 'Erscheinungen der Natur und die kleinen Bausteine der Materie.' },
+  { id: 'gesetz_formel', name: 'Gesetze & Formeln', teile: ['gesetz', 'formel'],
+    desc: 'Gesetze in Worten und als Gleichung mit „=“ – Malpunkte und Reihenfolge sind egal.' },
+  { id: 'forschung', name: 'Forscher & Versuche', teile: ['person', 'experiment'],
+    desc: 'Physikerinnen und Physiker und die Versuche, mit denen sie etwas herausgefunden haben.' },
+];
+
+export const BEREICH_NAMES = Object.fromEntries([...BEREICHE, ...BEREICH_GRUPPEN].map((b) => [b.id, b.name]));
 export const START_BEREICHE = ['person'];
 
 // Preis des n-ten freigekauften Bereichs (unabhängig davon, welcher es ist)
