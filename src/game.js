@@ -2,7 +2,7 @@
 
 import { checkValue, match } from './matcher.js';
 import {
-  BOOSTS, BOOST_PRICE_GROWTH, COMBO_MAX, COUNTDOWN, COMBO_STEP, COMBO_WINDOW_MS,
+  BOOSTS, BOOST_PRICE_GROWTH, COMBO_MAX, COUNTDOWN, COMBO_STEP, COMBO_WINDOW_MS, LUECKENWORT,
   QUESTION_FACTOR, QUESTION_TRIES, REPEAT_COOLDOWN_MS, REPEAT_SHARE,
   TIER_POINTS, VALUE_FACTOR,
 } from './content.js';
@@ -30,6 +30,7 @@ export function newState(weltId = 'frei') {
     answered: {},        // Frage-ID -> Zeitpunkt (richtig beantwortet)
     revealed: {},        // Frage-ID -> Zeitpunkt (aufgelöst, ohne Punkte)
     attempts: {},        // Frage-ID -> Zahl der Fehlversuche
+    luecken: {},         // Eintrag-ID -> gekaufte Buchstaben im Lückenwort (Issue #33)
     combo: { count: 0, until: 0 },
     boosts: newBoosts(),
     stats: { inputs: 0, hits: 0 },
@@ -45,6 +46,69 @@ function newBoosts() {
     hint: null,          // Eintrag-ID des Spickzettels
     bought: {},          // Upgrade-ID -> Anzahl Käufe (für den Preis)
   };
+}
+
+// ---------- Lückenwort (Issue #33) ----------
+//
+// Für einen noch unentdeckten Eintrag kann man Buchstaben kaufen. Leerzeichen,
+// Bindestriche und Zeichen wie „=“ oder „·“ sind von Anfang an sichtbar; der
+// erste Buchstabe kommt zuerst, danach die übrigen in einer festen, je Eintrag
+// gemischten Reihenfolge. Den letzten Buchstaben verrät das Spiel nie.
+
+const istBuchstabe = (c) => /[\p{L}\p{N}]/u.test(c);
+
+/** Kleiner, stabiler Hash, damit die Reihenfolge bei jedem Laden gleich bleibt. */
+function hash(text) {
+  let x = 2166136261;
+  for (const c of text) x = Math.imul(x ^ c.codePointAt(0), 16777619) >>> 0;
+  return x;
+}
+
+/** Positionen der Buchstaben in Aufdeck-Reihenfolge. */
+export function aufdeckReihenfolge(entry) {
+  const zeichen = Array.from(entry.name);
+  const pos = zeichen.map((c, i) => (istBuchstabe(c) ? i : -1)).filter((i) => i >= 0);
+  const [erster, ...rest] = pos;
+  rest.sort((a, b) => hash(`${entry.id}:${a}`) - hash(`${entry.id}:${b}`));
+  return erster == null ? [] : [erster, ...rest];
+}
+
+/** Preis eines Buchstabens: Anteil vom Grundwert der Stufe. */
+export function buchstabenPreis(entry) {
+  return Math.max(LUECKENWORT.min, Math.round(TIER_POINTS[entry.tier] * LUECKENWORT.faktor));
+}
+
+/**
+ * Lückenwort eines Eintrags. `muster` enthält je Zeichen das Zeichen selbst
+ * oder `null` für eine noch verdeckte Lücke – verdeckte Buchstaben verlässt
+ * diese Funktion nie.
+ */
+export function lueckenwort(state, id) {
+  const entry = weltOf(state).index.byId.get(id);
+  if (!entry) return null;
+  const zeichen = Array.from(entry.name);
+  const reihenfolge = aufdeckReihenfolge(entry);
+  const bekannt = Object.hasOwn(state.discovered, id);
+  const gekauft = bekannt ? reihenfolge.length : (state.luecken[id] ?? 0);
+  const offen = new Set(reihenfolge.slice(0, gekauft));
+  const muster = zeichen.map((c, i) => (!istBuchstabe(c) || offen.has(i) ? c : null));
+  const max = Math.max(0, reihenfolge.length - 1);
+  return {
+    id, entry, muster, bekannt,
+    gekauft: Math.min(gekauft, reihenfolge.length), gesamt: reihenfolge.length,
+    preis: buchstabenPreis(entry),
+    gesperrt: !isOpen(state, entry.bereich),
+    fertig: bekannt || gekauft >= max,   // nichts mehr zu kaufen
+  };
+}
+
+/** Kauft den nächsten Buchstaben; `false`, wenn das nicht geht. */
+export function kaufeBuchstabe(state, id) {
+  const w = lueckenwort(state, id);
+  if (!w || w.bekannt || w.gesperrt || w.fertig || state.insight < w.preis) return false;
+  state.insight -= w.preis;
+  state.luecken[id] = w.gekauft + 1;
+  return true;
 }
 
 // ---------- Bereiche ----------
@@ -199,7 +263,10 @@ export function submit(state, raw, now = Date.now()) {
     item.points = Math.round(item.points * multiplier);
     gained += item.points;
     const id = item.entry.id;
-    if (item.art === 'neu') state.discovered[id] = now;
+    if (item.art === 'neu') {
+      state.discovered[id] = now;
+      delete state.luecken[id];
+    }
     if (item.art === 'neu' && state.boosts.hint === id) state.boosts.hint = null;
     if (item.art === 'wert') state.values[id] = now;
     const isValue = item.art === 'wert' || item.art === 'wertWiederholung';
@@ -368,6 +435,12 @@ export function restore(saved, weltId) {
   for (const [k, t] of Object.entries(saved.lastSeen || {})) state.lastSeen[k] = num(t);
   for (const key of ['answered', 'revealed', 'attempts']) {
     for (const [id, v] of Object.entries(saved[key] || {})) if (QUESTION_BY_ID.has(id)) state[key][id] = num(v);
+  }
+  for (const [id, n] of Object.entries(saved.luecken || {})) {
+    if (!INDEX.byId.has(id) || Object.hasOwn(state.discovered, id)) continue;
+    const max = aufdeckReihenfolge(INDEX.byId.get(id)).length - 1;
+    const k = Math.min(Math.floor(num(n)), max);
+    if (k > 0) state.luecken[id] = k;
   }
   const b = saved.boosts || {};
   if (b.mult && BOOST_BY_ID.get(b.mult.id)?.effect.mult && num(b.mult.uses) > 0) {

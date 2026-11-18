@@ -205,6 +205,27 @@ Punktwerten, den Bereichspreisen und den Upgrades. Die Zahlen darin werden aus
 Zeigt pro Bereich den Fortschritt (gesperrte Bereiche ausgegraut), alle entdeckten Einträge mit Fun Fact und
 wie viele Einträge je Stufe noch fehlen.
 
+## Weiterdenken und Lückenwort (Issue #33)
+
+Damit man nicht hängen bleibt, wenn einem nichts mehr einfällt:
+
+- **Weiterdenken (Gedankenkette):** Unter jedem Treffer stehen bis zu drei
+  Anstöße. Nach einer Person: was zu ihr noch fehlt („Zu Isaac Newton fehlen dir
+  noch 4 Gesetze und 1 Experiment (Optik).“) oder in welchem gesperrten Bereich
+  es mehr gibt. Nach einem anderen Begriff: dass eine noch unentdeckte Person
+  dahintersteckt oder was von einer bekannten Person noch fehlt. Sonst: wie viel
+  im selben Gebiet und Bereich noch fehlt. Unentdeckte Namen werden nie genannt;
+  die Bezüge kommen aus `data/bezuege.js`. Funktioniert auch in den Klassen.
+- **Lückenwort:** Jeder Anstoß mit Ziel hat einen Knopf „Lückenwort“; im freien
+  Spiel gibt es es auch in der Mindmap beim Antippen eines „?“. Man sieht den
+  Namen als Kästchen (`_ = _·_`, `_____ ______`) und kann Buchstaben kaufen:
+  zuerst den ersten, dann die übrigen in fester, je Eintrag gemischter
+  Reihenfolge. Ein Buchstabe kostet 20 % vom Grundwert der Stufe, mindestens 2
+  Erkenntnis (`LUECKENWORT` in `content.js`): Stufe 1 = 2, Stufe 3 = 16,
+  Stufe 5 = 100. Den letzten Buchstaben verrät das Spiel nie. Gekaufte
+  Buchstaben stehen im Spielstand unter `luecken` und verschwinden, sobald der
+  Eintrag entdeckt ist.
+
 ## Mindmap
 
 Nur im freien Spiel (Issue #24). Über „Mindmap“ oben rechts oder im Codex öffnet

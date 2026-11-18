@@ -7,13 +7,14 @@ import { formatNumber as fmt } from './format.js';
 import {
   FREI, KLASSEN_WELTEN, answerQuestion, bereichCount, boostBlocked, boostPrice, buyBereich,
   buyBoost, canReveal, comboMultiplier, comboWindow, countdownLeft, countdownOver, discoveryCount, isOpen,
-  newCountdownRun, newState, nextOpenQuestion, questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
+  kaufeBuchstabe, lueckenwort, newCountdownRun, newState, nextOpenQuestion, questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
   weltOf,
 } from './game.js';
 import {
   clearLocal, exportState, hasSave, importState, loadLocal, loadMode, loadRecord, saveLocal, saveMode, saveRecord,
 } from './save.js';
 import { isRelation, normWord } from './normalize.js';
+import { anstoesse } from './anstoss.js';
 import { bezuege, mindmap } from './mindmap.js';
 import { wikiUrl } from './wiki.js';
 
@@ -115,6 +116,76 @@ function lockedHint(locked) {
   return `Gehört zum Bereich ${names.join(' bzw. ')} – den kannst du im Reiter „Bereiche“ freischalten.`;
 }
 
+// ---------- Lückenwort und Gedankenkette (#33) ----------
+
+/** Karte zum Buchstabenkaufen; ersetzt sich nach jedem Kauf selbst. */
+function lueckenKarte(id) {
+  const w = lueckenwort(state, id);
+  if (!w) return null;
+  const { entry } = w;
+  // Wörter nicht mitten im Wort umbrechen
+  const woerter = [[]];
+  for (const c of w.muster) {
+    if (c === ' ') woerter.push([]);
+    else {
+      woerter.at(-1).push(h('span', {
+        class: `luecke-zeichen${c === null ? ' leer' : /[\p{L}\p{N}]/u.test(c) ? '' : ' satz'}`,
+      }, c ?? '\u00a0'));
+    }
+  }
+  const vorlesen = w.muster.map((c) => (c === null ? 'Lücke' : c === ' ' ? 'Leerzeichen' : c)).join(', ');
+
+  const genug = state.insight >= w.preis;
+  const karte = h('div', { class: `luecke-karte ${entry.cat}` },
+    h('div', { class: 'luecke-kopf' }, 'Lückenwort',
+      h('span', { class: 'mm-zahl' }, `${CATEGORIES[entry.cat]} · ${AREA_NAMES[entry.area]} · Stufe ${entry.tier}`)),
+    h('div', { class: 'luecke-wort', role: 'img', 'aria-label': `Lückenwort: ${vorlesen}` },
+      woerter.map((teile) => h('span', { class: 'luecke-wortteil' }, teile))),
+    w.bekannt
+      ? h('p', { class: 'hinweis' }, `Schon entdeckt: ${entry.name}.`)
+      : w.gesperrt
+        ? h('p', { class: 'hinweis' }, `Der Bereich ${BEREICH_NAMES[entry.bereich]} ist noch gesperrt.`)
+        : [
+          h('div', { class: 'luecke-aktion' },
+            w.fertig
+              ? h('span', { class: 'hinweis' }, 'Mehr verrate ich nicht – den letzten Buchstaben weißt du!')
+              : h('button', {
+                type: 'button', class: 'luecke-kaufen', disabled: !genug,
+                onclick: () => {
+                  if (!kaufeBuchstabe(state, id)) return;
+                  saveLocal(state);
+                  update();
+                  const neu = lueckenKarte(id);
+                  karte.replaceWith(neu);
+                  neu.querySelector('.luecke-kaufen')?.focus();
+                },
+              }, genug ? `Buchstabe aufdecken · ${fmt(w.preis)} Erkenntnis` : `Ein Buchstabe kostet ${fmt(w.preis)} Erkenntnis`),
+            h('span', { class: 'mm-zahl' }, `${w.gekauft} von ${w.gesamt} Buchstaben`)),
+          h('p', { class: 'hinweis' }, 'Weißt du es? Tippe es ins Eingabefeld – je weniger Buchstaben du kaufst, desto mehr bleibt übrig.'),
+        ]);
+  return karte;
+}
+
+/** „Weiterdenken“: Anstöße nach einem Treffer, jeweils mit Lückenwort-Knopf. */
+function anstossBlock(ids) {
+  const liste = anstoesse(state, ids);
+  if (!liste.length) return null;
+  const platz = h('div', { class: 'luecke-platz' });
+  return h('div', { class: 'anstoesse' },
+    h('p', { class: 'anstoss-titel' }, 'Weiterdenken'),
+    liste.map((a) => h('div', { class: 'anstoss' },
+      h('span', {}, a.text),
+      a.ziel ? h('button', {
+        type: 'button', class: 'anstoss-knopf',
+        onclick: () => {
+          fill(platz, lueckenKarte(a.ziel));
+          platz.querySelector('.luecke-kaufen')?.focus();
+          platz.scrollIntoView({ block: 'nearest' });
+        },
+      }, 'Lückenwort') : null)),
+    platz);
+}
+
 function showFeedback(result, text) {
   const box = $('rueckmeldung');
   box.replaceChildren();
@@ -187,6 +258,8 @@ function showFeedback(result, text) {
   if (result.combo > 1) {
     box.append(h('p', { class: 'hinweis' }, `Combo ${result.combo} – alles ×${fmt(result.multiplier)}`));
   }
+  const anstoss = anstossBlock(result.items.map((i) => i.entry.id));
+  if (anstoss) box.append(anstoss);
 }
 
 function addHistory(result, text) {
@@ -416,6 +489,12 @@ function renderHelp() {
       h('li', {}, `Wiederholung: ${pct(C.REPEAT_SHARE)} des Werts als Trinkgeld – höchstens alle ${secs(C.REPEAT_COOLDOWN_MS)} pro Eintrag.`),
       h('li', {}, `Combo: Jeder Treffer innerhalb von ${secs(C.COMBO_WINDOW_MS)} nach dem letzten erhöht den Wert um ${pct(C.COMBO_STEP)}, bis höchstens ×${fmt(C.COMBO_MAX)}.`),
       h('li', {}, 'Einträge aus gesperrten Bereichen werden erkannt, bringen aber noch nichts.')),
+
+    h('h3', {}, 'Wenn dir nichts mehr einfällt'),
+    h('ul', {},
+      h('li', {}, 'Weiterdenken: Nach jedem Treffer schlägt das Spiel vor, was dazu noch fehlt – etwa die Gesetze einer Person, die du gerade eingegeben hast.'),
+      h('li', {}, `Lückenwort: Für einen fehlenden Eintrag kannst du Buchstaben kaufen. Ein Buchstabe kostet ${pct(C.LUECKENWORT.faktor)} vom Wert der Stufe `
+        + `(mindestens ${fmt(C.LUECKENWORT.min)} Erkenntnis); den letzten verrät das Spiel nie. Leerzeichen und Zeichen wie „=“ siehst du sofort.`)),
 
     h('h3', {}, 'Fragen'),
     h('p', {}, `Jede Frage im Fragekatalog bringt einmalig das ${fmt(C.QUESTION_FACTOR)}-Fache ihrer Stufe, `
@@ -738,8 +817,9 @@ function bezugsBild(info, a) {
       h('div', { class: 'mm-bezug-name' }, node.known ? node.name : 'Noch nicht entdeckt'),
       h('div', { class: 'mm-zahl' }, `${CATEGORIES[node.cat]} · Stufe ${node.tier}${node.area !== a.id ? ` · ${AREA_NAMES[node.area]}` : ''}`)));
 
+  const luecke = node.known ? null : lueckenKarte(node.id);
   if (!rows.length) {
-    return h('div', { class: 'mm-bezugsbild' }, kopf,
+    return h('div', { class: 'mm-bezugsbild' }, kopf, luecke,
       h('p', { class: 'mm-bezug-leer' }, node.cat === 'person' && !node.known
         ? 'Entdecke diese Person, dann siehst du, was zu ihr gehört.'
         : node.cat === 'person'
@@ -773,7 +853,7 @@ function bezugsBild(info, a) {
         n.known ? null : sv('tspan', { class: 'mm-bezug-gebiet' }, `  Stufe ${n.tier}`)));
     }));
 
-  return h('div', { class: 'mm-bezugsbild' }, kopf,
+  return h('div', { class: 'mm-bezugsbild' }, kopf, luecke,
     h('p', { class: 'mm-bezug-titel' }, info.nach.length ? 'Gehört dazu:' : 'Gehört zu:'),
     svg,
     h('p', { class: 'mm-bezug-leer' }, 'Tippe auf einen Eintrag, um dorthin zu springen.'));

@@ -76,6 +76,13 @@ export const TIER_POINTS = [0, 10, 30, 80, 200, 500];
 export const VALUE_FACTOR = 2;          // Konstante mit korrektem Wert
 export const QUESTION_FACTOR = 2;       // Fragen bringen das Doppelte ihrer Stufe
 export const QUESTION_TRIES = 3;        // nach so vielen Fehlversuchen darf man auflösen
+
+// Lückenwort (Issue #33): Buchstaben eines unentdeckten Eintrags kaufen.
+// Ein Buchstabe kostet diesen Anteil vom Grundwert der Stufe (mindestens `min`).
+// Der letzte Buchstabe wird nie verraten – den Rest muss man selbst wissen.
+export const LUECKENWORT = { faktor: 0.2, min: 2 };
+// Gedankenkette (Issue #33): so viele Anstöße höchstens nach einem Treffer
+export const ANSTOESSE_MAX = 3;
 export const REPEAT_SHARE = 0.05;       // Trinkgeld für Wiederholungen
 export const REPEAT_COOLDOWN_MS = 60_000;
 export const COMBO_WINDOW_MS = 8_000;
