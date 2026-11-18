@@ -705,3 +705,61 @@ button.start-karte:hover, .start-karte.aktiv { border-color: var(--akzent); }
 }
 .luecke-kaufen:disabled { opacity: 0.5; cursor: not-allowed; }
 .luecke-karte .hinweis { margin: 8px 0 0; }
+
+/* ---------- Einführung (#35) ---------- */
+
+.intro-karte { max-width: 460px; text-align: center; }
+.intro-karte .overlay-leiste { margin-bottom: 10px; }
+.intro-skip { border: none; background: none; color: var(--tinte-leise); font: inherit; font-weight: 600; cursor: pointer; padding: 6px 4px; }
+.intro-skip:hover { color: var(--akzent); }
+.intro-bild {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  min-height: 170px; padding: 18px 12px; border-radius: 12px; background: var(--flaeche-2);
+  background-image: linear-gradient(var(--linie) 1px, transparent 1px), linear-gradient(90deg, var(--linie) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.intro-titel { margin: 18px 0 6px; font-size: 1.45rem; }
+.intro-text { margin: 0 auto; max-width: 30ch; font-size: 1.05rem; line-height: 1.45; color: var(--tinte-leise); }
+.intro-eingabe {
+  display: inline-flex; align-items: center; padding: 10px 16px; min-width: 200px; border: 2px solid var(--akzent);
+  border-radius: var(--radius); background: var(--flaeche); font-size: 1.1rem; font-weight: 600;
+}
+.intro-cursor { width: 2px; height: 1.2em; margin-left: 2px; background: var(--akzent); animation: intro-blinken 1s steps(1) infinite; }
+@keyframes intro-blinken { 50% { opacity: 0; } }
+.intro-pfeil { font-size: 1.4rem; color: var(--tinte-leise); line-height: 1; }
+.intro-pille {
+  display: inline-block; padding: 7px 14px; border-radius: 999px; font-weight: 700; background: var(--flaeche);
+  border: 2px solid var(--linie);
+}
+.intro-pille.gut { border-color: var(--gut, #1f8a4c); color: var(--gut, #1f8a4c); font-size: 1.1rem; }
+.intro-pille.offen { border-color: var(--akzent); color: var(--akzent); }
+.intro-pille.zu { border-style: dashed; color: var(--tinte-leise); }
+.intro-pille.tipp { border-color: var(--akzent); border-left-width: 5px; border-radius: 8px; font-weight: 600; font-size: 0.95rem; }
+.intro-bild:has(.intro-kachel) { flex-direction: row; flex-wrap: wrap; }
+.intro-kachel {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; width: 92px; padding: 12px 6px;
+  border-radius: 12px; background: var(--flaeche); border: 2px solid var(--linie); font-size: 0.9rem; font-weight: 600;
+}
+.intro-kachel b { font-size: 1.5rem; color: var(--akzent); }
+.intro-luecke { display: inline-flex; gap: 4px; }
+.intro-luecke span {
+  display: inline-grid; place-items: center; width: 1.6em; height: 1.9em; border-bottom: 3px solid var(--tinte);
+  font-family: var(--mono); font-size: 1.3rem; font-weight: 700;
+}
+.intro-luecke span.leer { border-bottom-color: var(--akzent); background: var(--flaeche); border-radius: 4px 4px 0 0; }
+.intro-punkte { display: flex; justify-content: center; gap: 8px; margin: 18px 0 14px; }
+.intro-punkt {
+  width: 10px; height: 10px; padding: 0; border-radius: 50%; border: none; cursor: pointer; background: var(--linie);
+}
+.intro-punkt.jetzt { width: 26px; border-radius: 5px; background: var(--akzent); }
+.intro-knoepfe { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.intro-weiter {
+  padding: 11px 20px; border: none; border-radius: var(--radius); cursor: pointer;
+  background: var(--akzent); color: var(--akzent-text); font: inherit; font-weight: 700;
+}
+.intro-weiter:hover { filter: brightness(1.1); }
+.intro-nochmal {
+  margin: 0 0 12px; padding: 7px 14px; border: 1.5px solid var(--akzent); border-radius: 999px; cursor: pointer;
+  background: var(--flaeche); color: var(--akzent); font: inherit; font-weight: 700;
+}
+@media (prefers-reduced-motion: reduce) { .intro-cursor { animation: none; } }

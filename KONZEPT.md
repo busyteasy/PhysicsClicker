@@ -205,6 +205,22 @@ Punktwerten, den Bereichspreisen und den Upgrades. Die Zahlen darin werden aus
 Zeigt pro Bereich den Fortschritt (gesperrte Bereiche ausgegraut), alle entdeckten Einträge mit Fun Fact und
 wie viele Einträge je Stufe noch fehlen.
 
+## Einführung beim ersten Besuch (Issue #35)
+
+Wer die Seite zum allerersten Mal öffnet, sieht vier Folien mit je einem kleinen
+Bild, einer Überschrift und einem Satz – danach folgt die Moduswahl:
+
+1. **Tippe, was du weißt** – Eingabe → Erkenntnis.
+2. **Schalte Bereiche frei** – mit Erkenntnis, in beliebiger Reihenfolge.
+3. **Hol mehr heraus** – Fragen, Combo, Upgrades.
+4. **Du hängst? Kein Problem** – Weiterdenken, Lückenwort, Mindmap.
+
+Weiter per Knopf, Punkt, Wischen oder Pfeiltaste; „Überspringen“ und Escape
+führen direkt zur Moduswahl. Als erster Besuch gilt: kein Merker
+`physicsclicker-einfuehrung`, kein gewählter Modus und kein Spielstand im
+freien Spiel – wer schon gespielt hat, sieht die Einführung also nicht. In der
+Hilfe („?“) gibt es „Einführung noch einmal ansehen“.
+
 ## Weiterdenken und Lückenwort (Issue #33)
 
 Damit man nicht hängen bleibt, wenn einem nichts mehr einfällt:

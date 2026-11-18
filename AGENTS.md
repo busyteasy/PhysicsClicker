@@ -49,7 +49,7 @@ Repo liegt, von GitHub Pages ausgeliefert werden können.
 ## Aufbau
 
 ```
-index.html        Seite: Eingabe-Spalte, Reiter (Bereiche, Fragen, Upgrades, Codex, Optionen), Overlays (Start, Frage, Hilfe, Mindmap, Countdown)
+index.html        Seite: Eingabe-Spalte, Reiter (Bereiche, Fragen, Upgrades, Codex, Optionen), Overlays (Einführung, Start, Frage, Hilfe, Mindmap, Countdown)
 style.css         „Laborheft“-Look; Farben als CSS-Variablen in :root, Dunkelmodus per prefers-color-scheme
 src/
   content.js      Balance + Stammdaten: AREAS, BEREICHE, Preise, TIER_POINTS, BOOSTS …
@@ -168,7 +168,8 @@ zu einzelnen Klassen folgt Anhang A3 des KC 5–10.
 
 Der Zustand des freien Spiels liegt in `localStorage` unter
 `physicsclicker-spielstand-v1`, Klassenwelten unter `physicsclicker-k7-v1` usw.
-(`storageKey` in `save.js`); der zuletzt gewählte Modus unter `physicsclicker-modus`.
+(`storageKey` in `save.js`); der zuletzt gewählte Modus unter `physicsclicker-modus`,
+der Merker für die gesehene Einführung unter `physicsclicker-einfuehrung`.
 Ein Spielstand ohne Feld `welt` gehört zum freien Spiel.
 Countdown-Runden (`state.countdown` gesetzt) werden von `saveLocal` nie gespeichert;
 ihr Rekord liegt separat unter `physicsclicker-countdown-rekord`.
@@ -188,7 +189,7 @@ Spielende haben echte Spielstände – **niemals einfach brechen**:
   (Overlays nutzen `window.history.pushState`). Die Verlaufsliste heißt `recent`.
 - Inhalte immer über die aktuelle Welt holen (`W()` in `main.js`, `weltOf(state)`
   in der Logik) – nie direkt `ENTRIES`, `QUESTIONS` oder `BEREICHE` benutzen.
-- Overlays (`start`, `frage`, `hilfe`, `mindmap`, `countdown`) über `openOverlay(name)` / `closeOverlay()` öffnen
+- Overlays (`intro`, `start`, `frage`, `hilfe`, `mindmap`, `countdown`) über `openOverlay(name)` / `closeOverlay()` öffnen
   und schließen; sie legen einen History-Eintrag an, damit Escape, der
   „Zurück“-Knopf und die Browser-/Handy-Zurück-Taste funktionieren.
 - Teure Listen (Bereiche, Upgrades) rendern nur neu, wenn sich ihre „Signatur“
