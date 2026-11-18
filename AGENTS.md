@@ -83,7 +83,7 @@ test/             data, matcher, game, fragen, upgrades, wiki, mindmap, countdow
 | Begriff | Bedeutung |
 |---|---|
 | **Gebiet** (`area`) | Physikalisches Themenfeld, z. B. Mechanik. Nur zur Ordnung der Daten. |
-| **Kategorie / Bereich** (`cat`) | Art des Wissens: `person`, `einheit`, `teilchen`, `phaenomen`, `gesetz`, `formel`, `konstante`, `experiment`. Ein Bereich ist das, was man im Spiel freischaltet. |
+| **Kategorie / Bereich** (`cat`) | Art des Wissens: `person`, `einheit`, `teilchen`, `phaenomen`, `gesetz`, `formel`, `konstante`, `experiment`. Ein Bereich ist das, was man im freien Spiel freischaltet (in den Klassen ist alles offen). |
 | **Stufe** (`tier`) | 1 (Schulwissen) bis 5 (Spezialwissen), bestimmt die Punkte. |
 | **Erkenntnis** (`insight`) | Die Spielwährung. |
 | **Boost / Upgrade** | Einmal-Effekt aus `BOOSTS` (Geistesblitz, Spickzettel …). |
@@ -150,7 +150,7 @@ der Klasse auswählen. `test/klassen.test.js` prüft unter anderem:
 - jeder Bereich einer Klasse hat mindestens 3 Einträge und 2 Fragen;
 - jede Frage ist mit dem Namen ihrer Antwort lösbar und hat einen
   Wikipedia-Link (Formeln brauchen dafür einen Titel in `data/wiki.js`);
-- das Freikaufen aller Bereiche bleibt erreichbar.
+- alle Bereiche einer Klasse sind von Anfang an offen (Freischalten gibt es nur im freien Spiel).
 
 Inhalte richten sich nach den niedersächsischen Kerncurricula (Gymnasium,
 Naturwissenschaften 5–10 und Physik Sek II). Die Zuordnung der Doppeljahrgänge

@@ -63,13 +63,13 @@ export const START_BEREICHE = ['person'];
 // Preis des n-ten freigekauften Bereichs (unabhängig davon, welcher es ist)
 export const UNLOCK_PRICES = [100, 500, 1_200, 2_500, 4_500, 7_000, 10_000, 14_000, 19_000];
 
-// Klassenstufen (Issue #16): Jede Klasse ist eine eigene, kleinere Spielwelt.
-// Man startet mit „Größen & Begriffe“. Die Preise richten sich nach der
-// Datenmenge der Klasse: Alle Bereiche zusammen kosten diesen Anteil der
-// Erkenntnis, die man in der Klasse insgesamt verdienen kann (ohne Combo).
-// Der n-te Kauf kostet n-mal so viel wie der erste.
-export const KLASSEN_START = ['begriff'];
-export const KLASSEN_PREIS_ANTEIL = 0.4;
+// Klassenstufen (Issue #16, #30): Jede Klasse ist eine eigene, kleinere
+// Spielwelt. Dort ist von Anfang an jeder Bereich offen – man kann sofort alles
+// eingeben; Freischalten gibt es nur im freien Spiel. Diese Reihenfolge gilt für
+// die Anzeige der Bereiche in den Klassen.
+export const KLASSEN_BEREICH_REIHENFOLGE = [
+  'begriff', 'geraet', 'phaenomen', 'gesetz', 'formel', 'einheit', 'konstante', 'teilchen', 'person', 'experiment',
+];
 
 // Grundwert einer Erstentdeckung je Stufe (Index = Stufe)
 export const TIER_POINTS = [0, 10, 30, 80, 200, 500];
