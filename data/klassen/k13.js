@@ -6,6 +6,7 @@ import { Q, QUELLE_SII, S } from './helpers.js';
 
 export default {
   klasse: 13,
+  beschreibung: 'Klasse 13 führt in die Quantenphysik und die Atom- und Kernphysik: Photonen und Fotoeffekt, Elektronen als Quantenobjekte, Atomhülle und Spektren, Atomkern und Radioaktivität.',
   themen: ['Photonen und Fotoeffekt', 'Elektronen als Quantenobjekte', 'Deutung der Quantenphysik', 'Atomhülle und Spektren', 'Atomkern und Radioaktivität'],
   quelle: `${QUELLE_SII}, Qualifikationsphase: Quantenobjekte, Atomhülle und Atomkern (grundlegendes und erhöhtes Anforderungsniveau)`,
   eintraege: {

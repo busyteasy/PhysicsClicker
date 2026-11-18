@@ -23,7 +23,7 @@ export function personLinks(state, id) {
   if (!known(state, id)) return [];
   return (BEZUEGE[id] || [])
     .map((x) => weltOf(state).index.byId.get(x))
-    .filter((e) => e && isOpen(state, e.cat))
+    .filter((e) => e && isOpen(state, e.bereich))
     .map((e) => node(state, e));
 }
 
@@ -33,7 +33,7 @@ export function mindmap(state) {
   const areas = AREAS.map((area) => {
     const bereiche = openBereiche.map((b) => {
       const entries = ENTRIES
-        .filter((e) => e.area === area.id && e.cat === b.id)
+        .filter((e) => e.area === area.id && e.bereich === b.id)
         .sort((x, y) => known(state, y.id) - known(state, x.id) || x.tier - y.tier
           || (known(state, x.id) ? x.name.localeCompare(y.name, 'de') : 0));
       const nodes = entries.map((e) => {

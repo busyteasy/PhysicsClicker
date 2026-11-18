@@ -4,6 +4,9 @@ import { Q, QUELLE_SI, S } from './helpers.js';
 
 export default {
   klasse: 6,
+  beschreibung: 'In Klasse 6 geht es um Licht und Schall: wie wir sehen, wie Schatten, Spiegel- und Linsenbilder entstehen, woher Farben kommen und wie sich Schall ausbreitet. Außerdem lernst du Energieformen kennen.',
+  // Zusammengefasste Bereiche (Issue #26)
+  gruppen: ['phaenomen_gesetz', 'einheit_konstante', 'forschung'],
   themen: ['Licht und Sehen', 'Schatten, Spiegel und Linsen', 'Farben', 'Schall', 'Energie und Energieformen'],
   quelle: `${QUELLE_SI}, Themenbereich Phänomenorientierte Optik (Doppeljahrgang 5/6); Schall (im KC Sek I nicht verbindlich) und ein erster Energiebegriff (im KC ab Jahrgang 7) nach gängigen Schulbuchreihen`,
   eintraege: {
@@ -32,7 +35,7 @@ export default {
     ...S(3, 'k_schall_wasser'),
     // Personen
     ...S(2, 'newton'),
-    ...S(3, 'alhazen snellius_p'),
+    ...S(3, 'snellius_p'),
     // Experimente
     ...S(1, 'e_muenze'),
     ...S(2, 'prisma e_farbscheibe'),
@@ -91,7 +94,6 @@ export default {
     Q('k6_schall', 2, 'Wie schnell breitet sich Schall in Luft aus? (Zahl mit Einheit)', 'schallgeschwindigkeit', true),
     Q('k6_licht', 3, 'Wie schnell ist Licht? (Zahl mit Einheit)', 'lichtgeschwindigkeit', true),
     Q('k6_newton', 2, 'Wer zeigte mit einem Prisma, dass weißes Licht aus Farben besteht?', 'newton'),
-    Q('k6_alhazen', 3, 'Welcher arabische Gelehrte beschrieb um das Jahr 1000 als Erster richtig, dass Licht von Gegenständen ins Auge fällt?', 'alhazen'),
     Q('k6_muenze', 1, 'Bei welchem Versuch taucht eine verdeckte Münze auf, wenn man Wasser in die Tasse gießt?', 'e_muenze'),
     Q('k6_farbscheibe', 2, 'Welche drehende Scheibe zeigt, dass Spektralfarben zusammen Weiß ergeben?', 'e_farbscheibe'),
   ],

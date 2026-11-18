@@ -24,8 +24,14 @@ Beim Laden der Seite wählt man, wie man spielen möchte:
   sagt dann „Das gehört nicht zum Stoff von Klasse 7“.
 
 Jede Spielwelt hat ihren **eigenen Spielstand**; gewechselt wird jederzeit über
-den Modus-Knopf oben. Eingabefeld, Fragen, Upgrades, Codex, Mindmap und
-Countdown funktionieren in allen Welten gleich.
+den Modus-Knopf oben. Eingabefeld, Fragen, Upgrades, Codex und Countdown
+funktionieren in allen Welten gleich. Die **Mindmap** gibt es nur im freien
+Spiel (Issue #24).
+
+Tippt man im Startbildschirm auf eine Klasse, erscheint zuerst eine kurze
+**Inhaltsübersicht** (Issue #27/#28): zwei, drei Sätze, worum es geht, die
+Themen, die Zahl der Begriffe und Fragen und welche Bereiche man freischalten
+kann. Erst der Knopf „Klasse N spielen“ wechselt die Welt.
 
 | Klasse | Themen |
 |---|---|
@@ -47,7 +53,26 @@ Schulen abweichen. Die Oberstufe ist so aufgeteilt: 11 = Einführungsphase,
 12 = Elektrizität sowie Schwingungen und Wellen, 13 = Quantenobjekte, Atomhülle
 und Atomkern.
 
-In einer Klasse startet man mit dem Bereich **Größen & Begriffe**. Die Preise
+**Bereiche je Klasse** (Issue #26): Wo eine Klasse nur wenige Einträge einer
+Kategorie hat, werden kleine Kategorien zu einem Bereich zusammengefasst, damit
+die unteren Klassen weniger, aber vollere Bereiche haben:
+
+| Gruppe | enthält | genutzt in |
+|---|---|---|
+| Größen & Einheiten | Größen & Begriffe, Einheiten | 5 |
+| Forscher & Versuche | Personen, Experimente | 5–9 |
+| Phänomene & Gesetze | Phänomene, Gesetze | 6 |
+| Einheiten & Konstanten | Einheiten, Konstanten | 6, 8, 9, 10 |
+| Phänomene & Teilchen | Phänomene, Teilchen | 8 |
+| Gesetze & Formeln | Gesetze, Formeln | 7, 9 |
+
+Klasse 5 hat so 4 Bereiche, Klasse 12 dagegen 10. In den unteren Klassen
+kommen außerdem nur bekannte Physikerinnen und Physiker vor (nicht mehr z. B.
+William Gilbert, Alhazen oder Lipperhey). Ältere Klassen-Spielstände werden
+übernommen: Ein schon gekaufter Einzelbereich öffnet seine Gruppe.
+
+In einer Klasse startet man mit dem Bereich **Größen & Begriffe** (in Klasse 5
+„Größen & Einheiten“). Die Preise
 für weitere Bereiche richten sich nach der Klasse: Alle Bereiche zusammen kosten
 40 % der Erkenntnis, die man in der Klasse ohne Combo verdienen kann; der n-te
 Kauf kostet n-mal so viel wie der erste.
@@ -125,6 +150,9 @@ Teilchenmodell) und **Geräte & Bauteile** (Messgeräte, Bauteile, technische
 Geräte – etwa Kompass, Sammellinse, Transformator). In den Klassenstufen gelten
 eigene Preise (siehe oben).
 
+Jeder Bereich zeigt **nur ein Beispiel** (Issue #25), damit man die Lösungen
+nicht einfach abtippen kann.
+
 Eingaben aus einem gesperrten Bereich werden erkannt, aber nicht gewertet und
 nicht gemerkt; das Spiel sagt, welcher Bereich dafür nötig ist. Mehrdeutige
 Eingaben wie `Newton` zählen nur für die offenen Bereiche.
@@ -179,7 +207,7 @@ wie viele Einträge je Stufe noch fehlen.
 
 ## Mindmap
 
-Über „Mindmap“ oben rechts oder im Codex öffnet sich eine Übersicht, in der man
+Nur im freien Spiel (Issue #24). Über „Mindmap“ oben rechts oder im Codex öffnet sich eine Übersicht, in der man
 sieht, wo noch etwas fehlt. In der Mitte steht „Physik“, davon gehen die acht
 Gebiete ab (Mechanik, Optik …), darunter die **offenen** Bereiche mit ihren
 Einträgen. Gesperrte Bereiche erscheinen nicht.

@@ -6,6 +6,7 @@ import { Q, QUELLE_SII, S } from './helpers.js';
 
 export default {
   klasse: 12,
+  beschreibung: 'Klasse 12 (Qualifikationsphase) dreht sich um Felder und Wellen: elektrisches und magnetisches Feld, Kondensator, Elektronen in Feldern, Induktion, Schwingungen und Interferenz.',
   themen: ['Elektrisches Feld und Kondensator', 'Magnetfeld und Lorentzkraft', 'Elektronen in Feldern', 'Induktion', 'Schwingungen', 'Wellen und Interferenz'],
   quelle: `${QUELLE_SII}, Qualifikationsphase: Elektrizität sowie Schwingungen und Wellen (grundlegendes und erhöhtes Anforderungsniveau)`,
   eintraege: {

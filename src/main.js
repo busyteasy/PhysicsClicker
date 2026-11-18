@@ -32,7 +32,7 @@ function h(tag, props = {}, ...children) {
     else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
     else if (v !== false && v != null) el.setAttribute(k, v === true ? '' : v);
   }
-  for (const c of children.flat()) {
+  for (const c of children.flat(Infinity)) {
     if (c != null && c !== false) el.append(c instanceof Node ? c : String(c));
   }
   return el;
@@ -40,7 +40,7 @@ function h(tag, props = {}, ...children) {
 
 /** Ersetzt den Inhalt eines Elements; leere Teile (null, false) werden übersprungen. */
 function fill(el, ...children) {
-  el.replaceChildren(...children.flat().filter((c) => c != null && c !== false));
+  el.replaceChildren(...children.flat(Infinity).filter((c) => c != null && c !== false));
 }
 
 /** Link „Auf Wikipedia nachlesen“ (#15) – oder null, wenn es keinen gibt. */
@@ -55,7 +55,7 @@ const byBereichCache = new Map();
 function entriesOf(bereich) {
   const w = W();
   if (!byBereichCache.has(w.id)) {
-    byBereichCache.set(w.id, Object.fromEntries(w.bereiche.map((b) => [b.id, w.entries.filter((e) => e.cat === b.id)])));
+    byBereichCache.set(w.id, Object.fromEntries(w.bereiche.map((b) => [b.id, w.entries.filter((e) => e.bereich === b.id)])));
   }
   return byBereichCache.get(w.id)[bereich] ?? [];
 }
@@ -111,7 +111,7 @@ const ART_TEXT = {
 };
 
 function lockedHint(locked) {
-  const names = [...new Set(locked.map((e) => BEREICH_NAMES[e.cat]))];
+  const names = [...new Set(locked.map((e) => BEREICH_NAMES[e.bereich]))];
   return `Gehört zum Bereich ${names.join(' bzw. ')} – den kannst du im Reiter „Bereiche“ freischalten.`;
 }
 
@@ -459,6 +459,31 @@ function worldProgress(w) {
   return { found: s ? discoveryCount(s) : 0, total: w.entries.length };
 }
 
+// Im Startbildschirm ausgewählte Klasse (zeigt ihre Inhaltsübersicht, Issue #28)
+let startAuswahl = null;
+
+/** Kurze Inhaltsübersicht einer Klasse: Worum geht es, welche Themen und Bereiche? */
+function klassenUebersicht(w) {
+  if (!w) {
+    return h('div', { class: 'klassen-uebersicht leer', id: 'klassen-uebersicht', 'aria-live': 'polite' },
+      'Tippe auf eine Klasse, um zu sehen, was drankommt.');
+  }
+  const start = w.bereiche.filter((b) => w.start.includes(b.id));
+  const rest = w.bereiche.filter((b) => !w.start.includes(b.id));
+  const p = worldProgress(w);
+  return h('div', { class: 'klassen-uebersicht', id: 'klassen-uebersicht', 'aria-live': 'polite' },
+    h('h3', {}, `Das kommt in ${w.name} dran`),
+    h('p', { class: 'ku-beschr' }, w.info.beschreibung),
+    h('ul', { class: 'ku-themen' }, w.info.themen.map((t) => h('li', {}, t))),
+    h('p', { class: 'ku-zahlen' },
+      `${fmt(w.entries.length)} Begriffe zum Eintippen und ${fmt(w.questions.length)} Fragen. `
+      + `Du startest mit „${start.map((b) => b.name).join('“, „')}“`
+      + (rest.length ? `, danach schaltest du ${rest.length === 1 ? 'einen weiteren Bereich' : `${rest.length} weitere Bereiche`} frei: `
+        + `${rest.map((b) => b.name).join(', ')}.` : '.')),
+    h('button', { type: 'button', class: 'primaer ku-los', onclick: () => chooseWelt(w.id) },
+      p ? `Weiter mit ${w.name} →` : `${w.name} spielen →`));
+}
+
 function renderStart() {
   const current = W();
   const frei = worldProgress(FREI);
@@ -482,21 +507,26 @@ function renderStart() {
           KLASSEN_WELTEN.map((w) => {
             const p = worldProgress(w);
             return h('button', {
-              type: 'button', class: `klasse-knopf${current.id === w.id ? ' aktiv' : ''}`,
-              title: w.info.themen.join(' · '), onclick: () => chooseWelt(w.id),
+              type: 'button', class: `klasse-knopf${startAuswahl === w.id ? ' aktiv' : ''}`,
+              'aria-pressed': String(startAuswahl === w.id), 'aria-controls': 'klassen-uebersicht',
+              onclick: () => { startAuswahl = w.id; renderStart(); $('klassen-uebersicht').scrollIntoView({ block: 'nearest' }); },
             },
             h('span', { class: 'klasse-zahl' }, h('small', {}, 'Klasse'), w.klasse),
             h('span', { class: 'klasse-stand' }, p ? `${p.found}/${p.total}` : `${w.entries.length} Einträge`));
           })),
+        klassenUebersicht(KLASSEN_WELTEN.find((w) => w.id === startAuswahl)),
         h('details', { class: 'klassen-themen' },
-          h('summary', {}, 'Was kommt in welcher Klasse dran?'),
-          h('dl', {}, KLASSEN_WELTEN.map((w) => [h('dt', {}, w.name), h('dd', {}, w.info.themen.join(' · '))]))),
+          h('summary', {}, 'Was kommt in jeder Klasse dran?'),
+          h('dl', {}, KLASSEN_WELTEN.map((w) => [
+            h('dt', {}, w.name),
+            h('dd', {}, h('span', { class: 'kt-themen' }, w.info.themen.join(' · ')))]))),
         h('p', { class: 'start-quelle' }, 'Grundlage: Kerncurricula für das Gymnasium in Niedersachsen (Naturwissenschaften 5–10, Physik Sek II). '
           + 'Die Kerncurricula legen Doppeljahrgänge fest – die Aufteilung auf einzelne Klassen folgt der Zuordnungstabelle im Kerncurriculum und kann an deiner Schule abweichen.'))),
   );
 }
 
 function openStart() {
+  startAuswahl = W().klasse ? W().id : null;
   renderStart();
   openOverlay('start');
   $('start-inhalt').querySelector('.start-weiter').focus();
@@ -570,6 +600,7 @@ function renderMindmap() {
 }
 
 function openMindmap() {
+  if (W().klasse) return; // Mindmap gibt es nur im freien Spiel (Issue #24)
   renderMindmap();
   openOverlay('mindmap');
   $('mindmap-inhalt').querySelector('.zurueck').focus();
@@ -1047,6 +1078,9 @@ function update() {
 
 function rerenderAll() {
   $('modus-knopf').textContent = W().name;
+  // Mindmap nur im freien Spiel (Issue #24)
+  $('mindmap-knopf').hidden = W().klasse != null;
+  $('mindmap-codex').hidden = W().klasse != null;
   renderBereiche(true);
   renderCodex();
   renderQuestions();
