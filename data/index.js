@@ -12,6 +12,20 @@ export const ENTRIES = [
   ...astro, ...quanten, ...relativ, ...kern,
 ];
 
+// Mehrzahl für Texte wie „2 Gesetze und 1 Experiment“
+export const CATEGORIES_PLURAL = {
+  formel: 'Formeln',
+  konstante: 'Konstanten',
+  gesetz: 'Gesetze',
+  phaenomen: 'Phänomene',
+  teilchen: 'Teilchen',
+  person: 'Personen',
+  einheit: 'Einheiten',
+  experiment: 'Experimente',
+  begriff: 'Begriffe',
+  geraet: 'Geräte',
+};
+
 export const CATEGORIES = {
   formel: 'Formel',
   konstante: 'Konstante',

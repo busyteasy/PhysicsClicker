@@ -55,6 +55,7 @@ src/
   content.js      Balance + Stammdaten: AREAS, BEREICHE, Preise, TIER_POINTS, BOOSTS …
   welt.js         Spielwelten: FREI und KLASSEN_WELTEN (Einträge, Index, Fragen, Bereiche, Preise); welt(id), weltOf(state)
   game.js         Zustand und Regeln: newState(weltId), submit, buyBereich, answerQuestion, buyBoost, restore,
+                  Lückenwort (lueckenwort, kaufeBuchstabe),
                   Countdown-Modus (newCountdownRun, countdownLeft, countdownOver) …
   matcher.js      buildIndex(ENTRIES) und match(index, eingabe) – Eingabe → Einträge
   normalize.js    Vereinheitlicht Wörter, Formeln, Einheiten; parseQuantity liest Zahlen
@@ -63,6 +64,7 @@ src/
   mindmap.js      mindmap(state): Gebiete → offene Bereiche → Einträge (ohne Namen, solange unentdeckt);
                   verbindungen(state): Pfeile zwischen Gebieten für das Sonnensystem;
                   bezuege(state, id): was zu einem Eintrag gehört (für das Bezugsbild)
+  anstoss.js      anstoesse(state, ids): „Weiterdenken“-Anstöße nach einem Treffer (Gedankenkette)
   wiki.js         wikiUrl(entry): Link zur deutschen Wikipedia (über die Suche mit „go“)
   main.js         UI: Rendering, Overlays, Hauptschleife (update alle 100 ms), Autosave
 data/
@@ -73,7 +75,7 @@ data/
   bezuege.js      Person → zugehörige Einträge (für die Mindmap)
   wiki.js         Wikipedia-Artikeltitel je Eintrag-ID (Pflicht für jede Fragen-Antwort, Test)
   klassen/        k5.js … k13.js: Auswahl der Einträge je Klasse mit Stufe 1–4 und eigenem Fragekatalog
-test/             data, matcher, game, fragen, upgrades, wiki, mindmap, countdown, klassen
+test/             data, matcher, game, fragen, upgrades, wiki, mindmap, countdown, klassen, denkhilfe
 ```
 
 ### Begriffe

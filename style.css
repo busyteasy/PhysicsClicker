@@ -672,3 +672,36 @@ button.start-karte:hover, .start-karte.aktiv { border-color: var(--akzent); }
   .klassen-themen dl { grid-template-columns: 1fr; }
   .klassen-themen dd { margin-bottom: 6px; }
 }
+
+/* ---------- Gedankenkette und Lückenwort (#33) ---------- */
+
+.anstoesse { margin-top: 12px; padding: 10px 12px; border-left: 3px solid var(--akzent); background: var(--flaeche-2); border-radius: 0; }
+.anstoss-titel { margin: 0 0 6px; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: var(--akzent); }
+.anstoss { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 5px 0; font-size: 0.92rem; }
+.anstoss + .anstoss { border-top: 1px solid var(--linie); }
+.anstoss-knopf {
+  flex: none; padding: 5px 10px; border: 1.5px solid var(--akzent); border-radius: 999px; cursor: pointer;
+  background: var(--flaeche); color: var(--akzent); font: inherit; font-size: 0.82rem; font-weight: 700;
+}
+.anstoss-knopf:hover { background: var(--akzent); color: var(--akzent-text); }
+.luecke-platz:empty { display: none; }
+.luecke-platz { margin-top: 8px; }
+
+.luecke-karte { padding: 12px; border: 2px dashed var(--akzent); border-radius: 12px; background: var(--flaeche); }
+.mm-bezugsbild .luecke-karte { margin-top: 10px; }
+.luecke-kopf { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-weight: 800; }
+.luecke-wort { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 10px 0; }
+.luecke-wortteil { display: inline-flex; flex-wrap: wrap; gap: 2px; max-width: 100%; }
+.luecke-zeichen {
+  display: inline-grid; place-items: center; min-width: 1.15em; height: 1.65em; padding: 0 1px;
+  border-bottom: 2.5px solid var(--tinte); font-family: var(--mono); font-size: 1.05rem; font-weight: 700;
+}
+.luecke-zeichen.leer { border-bottom-color: var(--akzent); background: var(--flaeche-2); border-radius: 4px 4px 0 0; }
+.luecke-zeichen.satz { border-bottom-color: transparent; min-width: 0.8em; }
+.luecke-aktion { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.luecke-kaufen {
+  padding: 8px 14px; border: none; border-radius: var(--radius); cursor: pointer;
+  background: var(--akzent); color: var(--akzent-text); font: inherit; font-weight: 700;
+}
+.luecke-kaufen:disabled { opacity: 0.5; cursor: not-allowed; }
+.luecke-karte .hinweis { margin: 8px 0 0; }

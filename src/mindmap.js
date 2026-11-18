@@ -22,6 +22,9 @@ for (const [person, ids] of Object.entries(BEZUEGE)) {
   for (const id of ids) PERSONEN_ZU.set(id, [...(PERSONEN_ZU.get(id) ?? []), person]);
 }
 
+/** IDs der Personen, auf die ein Eintrag zurückgeht. */
+export const personenZu = (id) => PERSONEN_ZU.get(id) ?? [];
+
 /** Namen der schon entdeckten Personen, zu denen ein Eintrag gehört. */
 function bekanntePersonen(state, id) {
   const { index } = weltOf(state);
