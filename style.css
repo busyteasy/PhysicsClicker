@@ -11,9 +11,12 @@
   --akzent: #2d4fd6;
   --akzent-text: #ffffff;
   --marker: #ffd84d;
-  --gut: #1f8a4c;
-  --warn: #b8630a;
+  --marker-text: #1d2433;
+  /* Grün und Orange so dunkel, dass sie auf Weiß und Papier 4,5 : 1 erreichen (#38) */
+  --gut: #18723f;
+  --warn: #9c5208;
   --schlecht: #c0392b;
+  --gefahr-text: #ffffff;
   --schatten: 0 1px 2px rgba(29, 36, 51, 0.06), 0 4px 14px rgba(29, 36, 51, 0.06);
   --radius: 10px;
   --mm-mechanik: #2d4fd6;
@@ -40,10 +43,12 @@
     --linie: #323b4b;
     --akzent: #7d97ff;
     --akzent-text: #10131a;
-    --marker: #8a7414;
+    --marker: #c9a92a;
+    --marker-text: #10131a;
     --gut: #4cc282;
     --warn: #f0a24a;
     --schlecht: #ff7a6b;
+    --gefahr-text: #10131a;
     --schatten: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 14px rgba(0, 0, 0, 0.25);
     --mm-mechanik: #7d97ff;
     --mm-optik: #f0b54a;
@@ -236,7 +241,7 @@ h2.klein {
   border-radius: 999px; background: var(--flaeche-2); border: 1px solid var(--linie);
   color: var(--tinte-leise); white-space: nowrap;
 }
-.marke.neu { background: var(--marker); color: var(--tinte); border-color: transparent; }
+.marke.neu { background: var(--marker); color: var(--marker-text); border-color: transparent; }
 
 /* ---------- Verlauf ---------- */
 
@@ -303,7 +308,7 @@ h2.klein {
 .aktiv:empty { display: none; }
 .aktiv li {
   font-size: 0.82rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
-  background: var(--marker); color: var(--tinte);
+  background: var(--marker); color: var(--marker-text);
 }
 .spickzettel {
   margin-top: 12px; padding: 10px 14px; border-radius: var(--radius);
@@ -321,7 +326,8 @@ h2.klein {
   font-size: 0.95rem; margin: 0 0 8px;
 }
 .fragen-gruppe .zahl { font-weight: 400; font-size: 0.85rem; color: var(--tinte-leise); }
-.fragen-gruppe.zu { opacity: 0.6; }
+/* Gesperrt: gestrichelt statt durchsichtig – Transparenz machte die Schrift unlesbar (#38) */
+.fragen-gruppe.zu, .fragen-gruppe.zu h3 { border-style: dashed; color: var(--tinte-leise); }
 .fragen-gruppe .offen { font-size: 0.85rem; color: var(--tinte-leise); margin: 0; }
 .fragen-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .frage { border: 1px solid var(--linie); border-radius: var(--radius); background: var(--flaeche); }
@@ -411,7 +417,8 @@ body.overlay-offen { overflow: hidden; }
 }
 .fortschritt span { display: block; height: 100%; background: var(--akzent); }
 
-.gebiet.zu { opacity: 0.6; }
+.gebiet.zu { border-style: dashed; }
+.gebiet.zu summary .name { color: var(--tinte-leise); }
 .gebiet { border: 1px solid var(--linie); border-radius: var(--radius); margin-bottom: 8px; background: var(--flaeche); }
 .gebiet summary {
   cursor: pointer; padding: 10px 14px; display: grid;
@@ -447,7 +454,7 @@ textarea {
 .meldung { font-size: 0.9rem; }
 .meldung.gut { color: var(--gut); }
 .meldung.schlecht { color: var(--schlecht); }
-.gefahr { background: var(--schlecht); color: #fff; }
+.gefahr { background: var(--schlecht); color: var(--gefahr-text); }
 
 @media (prefers-reduced-motion: reduce) {
   .plus, .eingabe.wackeln input { animation: none; }
@@ -577,7 +584,7 @@ textarea {
 
 .test-marke {
   font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; vertical-align: middle;
-  padding: 2px 7px; border-radius: 999px; background: var(--marker); color: var(--tinte);
+  padding: 2px 7px; border-radius: 999px; background: var(--marker); color: var(--marker-text);
 }
 .countdown {
   position: relative; margin: 0 0 14px; padding: 10px 14px 12px; border-radius: var(--radius);

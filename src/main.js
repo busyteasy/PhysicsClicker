@@ -201,7 +201,8 @@ function showFeedback(result, text) {
   if (result.status === 'unbekannt') {
     const open = openBereiche().map((b) => b.name).join(', ');
     const w = W();
-    box.append(
+    // fill() statt append(): append schreibt ein bedingtes null als Text „null“ in die Seite (#38)
+    fill(box,
       h('p', { class: 'titel schlecht' }, w.klasse ? `Das gehört nicht zum Stoff von ${w.name}.` : 'Das kenne ich (noch) nicht.'),
       h('p', { class: 'hinweis' }, isRelation(text)
         ? 'Formeln vergleiche ich ohne Leerzeichen und Malpunkte, Seiten und Faktoren dürfen vertauscht sein. Vielleicht fehlt diese Form noch in der Datenbank.'
