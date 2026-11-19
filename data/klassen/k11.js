@@ -1,7 +1,7 @@
 // Klasse 11 – Einführungsphase: Dynamik (verbindlich), dazu die Inhalte der
 // Wahlmodule Akustik, Optische Abbildungen und Strahlungsphysik sowie Impuls,
 // Reibung und Gravitation als Ergänzung.
-import { Q, QUELLE_SII, S } from './helpers.js';
+import { Q, QUELLE_SII, S, ausFreiListe } from './helpers.js';
 
 export default {
   klasse: 11,
@@ -122,5 +122,11 @@ export default {
     Q('k11_gleichgewicht', 2, 'Wie heißt der Zustand, in dem die Erde so viel Energie abstrahlt, wie sie von der Sonne aufnimmt?', 'b_strahlungsgleichgewicht'),
     Q('k11_selektiv', 3, 'Wie heißt es, dass CO₂ nur bestimmte Wellenlängen im Infraroten absorbiert?', 'p_selektive_absorption'),
     Q('k11_solar', 3, 'Wie groß ist die Solarkonstante? (Zahl mit Einheit)', 'solarkonstante', true),
+  ],
+  // Schätzfragen (Issue #46)
+  schaetzen: [
+    ...ausFreiListe(11, 1, 's_fall_45m s_sprinter s_mondwaage'),
+    ...ausFreiListe(11, 2, 's_pendel_1m s_iss s_aequator s_mond_umlauf'),
+    ...ausFreiListe(11, 3, 's_elektronen_1a s_blitz_strom s_wasser_100m'),
   ],
 };

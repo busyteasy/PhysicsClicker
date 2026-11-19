@@ -1,6 +1,6 @@
 // Klasse 6 – Doppeljahrgang 5/6, zweiter Teil: phänomenorientierte Optik,
 // Schall und ein erster Energiebegriff.
-import { Q, QUELLE_SI, S } from './helpers.js';
+import { Q, QUELLE_SI, S, ausFreiListe, SZ } from './helpers.js';
 
 export default {
   klasse: 6,
@@ -99,5 +99,19 @@ export default {
     Q('k6_newton', 2, 'Wer zeigte mit einem Prisma, dass weißes Licht aus Farben besteht?', 'newton'),
     Q('k6_muenze', 1, 'Bei welchem Versuch taucht eine verdeckte Münze auf, wenn man Wasser in die Tasse gießt?', 'e_muenze'),
     Q('k6_farbscheibe', 2, 'Welche drehende Scheibe zeigt, dass Spektralfarben zusammen Weiß ergeben?', 'e_farbscheibe'),
+  ],
+  // Schätzfragen (Issue #46)
+  schaetzen: [
+    ...ausFreiListe(6, 1, 's_sonnenlicht s_mondlicht s_donner s_mond_abstand s_mond_umlauf'),
+    ...ausFreiListe(6, 2, 's_erde_sonne s_sonne_erden'),
+    ...ausFreiListe(6, 3, 's_gruenes_licht'),
+    SZ('k6_s_kammerton', 2, 'mechanik', 'Wie oft pro Sekunde schwingt die Luft beim Kammerton a, nach dem Orchester stimmen?', 440, 'Hz',
+      { min: 10, max: 1e6, bezug: ['u_hertz'],
+        erklaerung: 'Der Kammerton a schwingt 440-mal pro Sekunde. Danach stimmen Orchester ihre Instrumente.',
+        quelle: 'ISO 16 (Kammerton a¹ = 440 Hz)' }),
+    SZ('k6_s_echo', 1, 'mechanik', 'Du rufst gegen eine Felswand und hörst die Antwort nach 2 s. Wie viele Meter ist die Wand entfernt?', 343, 'm',
+      { min: 1, max: 1e6, bezugWert: ['schallgeschwindigkeit'],
+        erklaerung: 'Der Ruf muss hin und zurück, also braucht er für jeden Weg 1 s. In einer Sekunde kommt er in Luft rund 340 m weit.',
+        quelle: 'Schall in Luft bei 20 °C, 343 m/s' }),
   ],
 };

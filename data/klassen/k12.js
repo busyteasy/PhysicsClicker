@@ -2,7 +2,7 @@
 // und magnetisches Feld, Kondensator, Bewegung von Ladungen, Hall-Effekt,
 // Induktion) sowie Schwingungen und Wellen (harmonische Schwingung,
 // Schwingkreis, Wellen, Interferenz am Doppelspalt und Gitter).
-import { Q, QUELLE_SII, S } from './helpers.js';
+import { Q, QUELLE_SII, S, ausFreiListe } from './helpers.js';
 
 export default {
   klasse: 12,
@@ -143,5 +143,12 @@ export default {
     Q('k12_spektrum', 2, 'Wie heißt die Gesamtheit aller elektromagnetischen Wellen von Radiowellen bis Gammastrahlung?', 'b_em_spektrum'),
     Q('k12_einzelspalt', 3, 'Wie heißt die Beugungserscheinung mit breitem Hauptmaximum hinter nur einem schmalen Spalt?', 'b_einzelspalt'),
     Q('k12_hertz', 1, 'Wer wies 1886 bis 1888 als Erster elektromagnetische Wellen im Labor nach?', 'hertz_p'),
+  ],
+  // Schätzfragen (Issue #46)
+  schaetzen: [
+    ...ausFreiListe(12, 1, 's_sonnenlicht s_mondlicht'),
+    ...ausFreiListe(12, 2, 's_gruenes_licht s_licht_meter s_atom_groesse s_elektronen_1a'),
+    ...ausFreiListe(12, 3, 's_schluck_wasser s_mensch_atome s_sonne_oberflaeche'),
+    ...ausFreiListe(12, 4, 's_gps'),
   ],
 };

@@ -1,6 +1,6 @@
 // Klasse 5 – Doppeljahrgang 5/6, erster Teil: Magnetismus und Elektrizität,
 // Temperatur und Wärme (Teilchenmodell, Aggregatzustände).
-import { Q, QUELLE_SI, S } from './helpers.js';
+import { Q, QUELLE_SI, S, ausFreiListe, SZ } from './helpers.js';
 
 export default {
   klasse: 5,
@@ -79,5 +79,19 @@ export default {
     Q('k5_oersted', 3, 'Wer entdeckte 1820, dass ein stromdurchflossener Draht eine Kompassnadel ablenkt?', 'oersted'),
     Q('k5_kugel', 1, 'Bei welchem Versuch passt eine erhitzte Metallkugel nicht mehr durch einen Ring?', 'e_kugel_ring'),
     Q('k5_tinte', 2, 'Welcher Versuch zeigt, dass sich Teilchen in warmem Wasser schneller bewegen?', 'e_tinte'),
+  ],
+  // Schätzfragen (Issue #46)
+  schaetzen: [
+    ...ausFreiListe(5, 1, 's_steckdose s_aa_batterie s_wasserkocher s_kerze s_mensch_waerme'),
+    ...ausFreiListe(5, 2, 's_eiffelturm s_blitz_temp'),
+    ...ausFreiListe(5, 3, 's_zugspitze'),
+    SZ('k5_s_gefrierfach', 1, 'waerme', 'Wie kalt ist es in einem üblichen Gefrierfach?', -18, '°C',
+      { min: -60, max: 60, skala: 'linear', toleranz: 2,
+        erklaerung: 'Tiefkühlgeräte halten rund −18 °C. So kalt bleibt Essen monatelang frisch, weil Bakterien fast stillstehen.',
+        quelle: 'Lebensmittelhygiene-Empfehlung für Tiefkühlkost (−18 °C)' }),
+    SZ('k5_s_fieber', 1, 'waerme', 'Ab wie viel °C spricht man beim Menschen von Fieber?', 38, '°C',
+      { min: 0, max: 150, skala: 'linear', toleranz: 0.5,
+        erklaerung: 'Normal sind etwa 36,5–37,5 °C. Ab rund 38 °C spricht man von Fieber, über 39 °C von hohem Fieber.',
+        quelle: 'Gängige medizinische Einteilung der Körpertemperatur' }),
   ],
 };

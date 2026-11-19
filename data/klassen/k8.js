@@ -1,7 +1,7 @@
 // Klasse 8 – Doppeljahrgang 7/8, zweiter Teil: Kraft und Masse, Hebel und
 // Flaschenzug, Leistung, elektrischer Stromkreis (Ladung, Stromstärke,
 // Spannung, Widerstand, Ohmsches Gesetz, Kirchhoffsche Regeln).
-import { Q, QUELLE_SI, S } from './helpers.js';
+import { Q, QUELLE_SI, S, ausFreiListe } from './helpers.js';
 
 export default {
   klasse: 8,
@@ -113,5 +113,11 @@ export default {
     Q('k8_volta', 2, 'Wer baute um 1800 die erste Batterie?', 'volta'),
     Q('k8_drachen', 2, 'Mit welchem Versuch soll Franklin gezeigt haben, dass Blitze elektrische Entladungen sind?', 'drachen'),
     Q('k8_mondfall', 2, 'Welcher Versuch auf dem Mond zeigte, dass ohne Luft alle Körper gleich schnell fallen?', 'hammer_feder'),
+  ],
+  // Schätzfragen (Issue #46)
+  schaetzen: [
+    ...ausFreiListe(8, 1, 's_steckdose s_aa_batterie s_wasserkocher s_mondwaage s_mensch_waerme s_luft_liter'),
+    ...ausFreiListe(8, 2, 's_handyakku s_blitz_strom s_fall_45m'),
+    ...ausFreiListe(8, 3, 's_elektronen_1a'),
   ],
 };

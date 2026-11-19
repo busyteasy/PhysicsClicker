@@ -3,6 +3,7 @@
 import { checkValue, match } from './matcher.js';
 import {
   BOOSTS, BOOST_PRICE_GROWTH, COMBO_MAX, COUNTDOWN, COMBO_STEP, COMBO_WINDOW_MS, LUECKENWORT, ZEUGNIS_STUFEN,
+  SCHAETZ_FACTOR, SCHAETZ_REGLER, SCHAETZ_STUFEN, SCHAETZ_ZIFFERN,
   QUESTION_FACTOR, QUESTION_TRIES, REPEAT_COOLDOWN_MS, REPEAT_SHARE,
   TIER_POINTS, VALUE_FACTOR,
 } from './content.js';
@@ -31,6 +32,7 @@ export function newState(weltId = 'frei') {
     revealed: {},        // Frage-ID -> Zeitpunkt (aufgelöst, ohne Punkte)
     attempts: {},        // Frage-ID -> Zahl der Fehlversuche
     luecken: {},         // Eintrag-ID -> gekaufte Buchstaben im Lückenwort (Issue #33)
+    schaetzungen: {},    // Schätzfrage-ID -> { t, schaetzung, punkte } (Issue #46)
     combo: { count: 0, until: 0 },
     boosts: newBoosts(),
     stats: { inputs: 0, hits: 0 },
@@ -102,6 +104,113 @@ function mitEhrungen(state, aktion) {
   const result = aktion();
   result.ehrungen = zeugnisFortschritte(vorher, zeugnis(state));
   return result;
+}
+
+// ---------- Schätzen (Issue #46) ----------
+//
+// Jede Schätzfrage wird genau einmal gewertet. Sie ist verschlossen, solange
+// man Einträge aus ihrem Text (`bezug`) noch nicht entdeckt hat oder den Wert
+// einer Konstante (`bezugWert`) noch nicht kennt, aus der sich ihr Wert
+// berechnen ließe – so verrät Schätzen nichts, was man selbst holen kann.
+
+/** Grundwert einer Schätzfrage (Volltreffer). */
+export const schaetzGrundwert = (s) => TIER_POINTS[s.tier] * SCHAETZ_FACTOR;
+
+/**
+ * Rundet eine Schätzung so, wie der Regler sie anzeigt (und wie sie gewertet wird):
+ * Log-Skala auf drei gültige Ziffern, lineare Skala auf eine Zehnerstufe unter der Toleranz.
+ */
+export function rundeSchaetzung(s, zahl) {
+  if (s.skala === 'linear') {
+    const schritt = 10 ** Math.floor(Math.log10(s.toleranz));
+    return Number((Math.round(zahl / schritt) * schritt).toFixed(Math.max(0, -Math.log10(schritt))));
+  }
+  return Number(zahl.toPrecision(SCHAETZ_ZIFFERN));
+}
+
+/** Reglerstellung 0 … SCHAETZ_REGLER → gerundete Schätzung. */
+export function schaetzAusRegler(s, pos) {
+  const t = Math.min(1, Math.max(0, pos / SCHAETZ_REGLER));
+  const roh = s.skala === 'linear'
+    ? s.min + t * (s.max - s.min)
+    : 10 ** (Math.log10(s.min) + t * (Math.log10(s.max) - Math.log10(s.min)));
+  return Math.min(s.max, Math.max(s.min, rundeSchaetzung(s, roh)));
+}
+
+/** Schätzung → Reglerstellung 0 … SCHAETZ_REGLER (auch für die Marken im Ergebnis). */
+export function reglerAusSchaetzung(s, zahl) {
+  const t = s.skala === 'linear'
+    ? (zahl - s.min) / (s.max - s.min)
+    : (Math.log10(zahl) - Math.log10(s.min)) / (Math.log10(s.max) - Math.log10(s.min));
+  return Math.round(Math.min(1, Math.max(0, t)) * SCHAETZ_REGLER);
+}
+
+/** Rein rechnerisch: Wie gut ist eine Schätzung? null bei ungültiger Zahl. */
+export function bewerteSchaetzung(s, zahl) {
+  if (typeof zahl !== 'number' || !Number.isFinite(zahl)) return null;
+  if (s.skala === 'linear') {
+    const abweichung = Math.abs(zahl - s.wert);
+    const stufe = SCHAETZ_STUFEN.find((z) => abweichung <= z.linear * s.toleranz + 1e-9) ?? null;
+    return { faktor: null, abweichung, stufe, anteil: stufe?.anteil ?? 0 };
+  }
+  if (zahl <= 0) return null;
+  const faktor = Math.max(zahl / s.wert, s.wert / zahl);
+  const stufe = SCHAETZ_STUFEN.find((z) => faktor <= z.faktor + 1e-9) ?? null;
+  return { faktor, abweichung: null, stufe, anteil: stufe?.anteil ?? 0 };
+}
+
+/**
+ * Was fehlt noch, damit eine Schätzfrage offen ist? Nur Kategorie und Gebiet –
+ * nie Namen, denn die wären selbst ein Spoiler.
+ */
+export function schaetzSperre(state, s) {
+  const { index } = weltOf(state);
+  const fehlt = [];
+  for (const id of s.bezug) {
+    if (!Object.hasOwn(state.discovered, id)) fehlt.push({ cat: index.byId.get(id).cat, area: index.byId.get(id).area, wert: false });
+  }
+  for (const id of s.bezugWert) {
+    if (!Object.hasOwn(state.values, id)) fehlt.push({ cat: index.byId.get(id).cat, area: index.byId.get(id).area, wert: true });
+  }
+  return fehlt;
+}
+
+export function schaetzStatus(state, s) {
+  if (Object.hasOwn(state.schaetzungen, s.id)) return 'geschaetzt';
+  return schaetzSperre(state, s).length ? 'verschlossen' : 'offen';
+}
+
+/** Nächste offene Schätzfrage nach `afterId` – erst im selben Gebiet, dann irgendwo. */
+export function naechsteSchaetzfrage(state, afterId) {
+  const liste = weltOf(state).schaetzfragen;
+  const i = liste.findIndex((x) => x.id === afterId);
+  const after = liste[i];
+  const ring = [...liste.slice(i + 1), ...liste.slice(0, Math.max(0, i))]
+    .filter((x) => schaetzStatus(state, x) === 'offen');
+  return ring.find((x) => x.gebiet === after?.gebiet) ?? ring[0] ?? null;
+}
+
+/**
+ * Eine Schätzung abgeben. Rückgabe:
+ *   { status: 'geschaetzt', punkte, stufe, faktor, abweichung, wert, schaetzung, boost }
+ *   oder { status: 'nichtOffen' | 'countdown' | 'ungueltig', punkte: 0 }
+ */
+export function schaetze(state, id, zahl, now = Date.now()) {
+  const s = weltOf(state).schaetzById.get(id);
+  if (!s || schaetzStatus(state, s) !== 'offen') return { status: 'nichtOffen', punkte: 0 };
+  if (state.countdown) return { status: 'countdown', punkte: 0 };
+  if (typeof zahl !== 'number' || !Number.isFinite(zahl)) return { status: 'ungueltig', punkte: 0 };
+  const schaetzung = Math.min(s.max, Math.max(s.min, zahl)); // wie der Regler
+  const bewertung = bewerteSchaetzung(s, schaetzung);
+  if (!bewertung) return { status: 'ungueltig', punkte: 0 };
+  const boost = bewertung.anteil > 0 ? consumeMultiplier(state) : null;
+  const punkte = bewertung.anteil > 0
+    ? Math.max(1, Math.round(schaetzGrundwert(s) * bewertung.anteil * (boost?.factor ?? 1)))
+    : 0;
+  state.schaetzungen[id] = { t: now, schaetzung, punkte };
+  state.insight += punkte;
+  state.totalInsight += punkte;
+  return { status: 'geschaetzt', punkte, ...bewertung, wert: s.wert, schaetzung, boost };
 }
 
 // ---------- Lückenwort (Issue #33) ----------
@@ -507,6 +616,16 @@ export function restore(saved, weltId) {
     const max = aufdeckReihenfolge(INDEX.byId.get(id)).length - 1;
     const k = Math.min(Math.floor(num(n)), max);
     if (k > 0) state.luecken[id] = k;
+  }
+  // Schätzungen (Issue #46): nur bekannte IDs, gültige Zahlen, Punkte gedeckelt
+  const { schaetzById } = weltOf(state);
+  for (const [sid, v] of Object.entries(saved.schaetzungen || {})) {
+    const s = schaetzById.get(sid);
+    if (!s || !v || typeof v !== 'object' || !Number.isFinite(v.schaetzung)) continue;
+    if (s.skala !== 'linear' && v.schaetzung <= 0) continue;
+    state.schaetzungen[sid] = {
+      t: num(v.t), schaetzung: v.schaetzung, punkte: Math.min(Math.round(num(v.punkte)), schaetzGrundwert(s) * 2),
+    };
   }
   const b = saved.boosts || {};
   if (b.mult && BOOST_BY_ID.get(b.mult.id)?.effect.mult && num(b.mult.uses) > 0) {

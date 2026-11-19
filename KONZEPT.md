@@ -259,6 +259,50 @@ Zurück-Taste von Browser bzw. Handy. Nach einer richtigen Antwort führt
 - Mit „Überspringen →“ lässt man eine Frage erst einmal aus; sie bleibt offen.
   Es geht reihum weiter – erst im selben Bereich, dann in den anderen offenen.
 
+## Schätzen (Issue #46)
+
+Eigener Reiter „Schätzen“ neben „Fragen“: Man schätzt physikalische Größen
+(„Wie lange braucht der Donner für einen Kilometer?“) mit einem Regler oder als
+Zahl. Danach zeigt das Spiel den echten Wert, wie weit man daneben lag, und eine
+kurze Erklärung mit Faustregel. Schätzen gibt es im freien Spiel (40 Fragen) und
+in jeder Klasse (je 10 Fragen, eigener Katalog mit IDs `kN_…`). Im
+Countdown ist der Reiter ausgeblendet; zum Zeugnis zählt Schätzen nicht.
+
+**Regler:** meist logarithmisch (`min` … `max` über mindestens drei
+Zehnerpotenzen), bei Temperaturen linear. Die angezeigte Zahl ist auf drei
+gültige Ziffern gerundet und genau die Zahl, die gewertet wird. Das Zahlenfeld
+nimmt dieselben Schreibweisen wie das Eingabefeld (`3e8`, `3·10^8`, `300 000`);
+Werte außerhalb des Bereichs werden auf den Rand gesetzt.
+
+**Wertung** (`SCHAETZ_STUFEN` in `content.js`), nur ein Versuch je Frage.
+Grundwert = Stufenwert × `SCHAETZ_FACTOR` (1,5).
+
+| Bewertung | Faktor daneben (Log) | linear | Anteil |
+|---|---|---|---|
+| 🎯 Volltreffer | ≤ 1,1 | ≤ 1 × Toleranz | 100 % |
+| ◎ Sehr gut | ≤ 1,25 | ≤ 2 × Toleranz | 70 % |
+| ○ Gut | ≤ 1,6 | ≤ 4 × Toleranz | 40 % |
+| · Richtige Größenordnung | ≤ 3 | ≤ 8 × Toleranz | 15 % |
+
+Mindestens 1 Punkt, sobald eine Stufe erreicht ist. Ein aktiver Multiplikator
+(Geistesblitz …) wird nur verbraucht, wenn es Punkte gibt.
+
+**Balance** (Tests in `test/schaetzen.test.js`):
+- Alle Volltreffer einer Welt zusammen ≤ 15 % ihrer Fragenpunkte (`SCHAETZ_BUDGET`).
+- Der echte Wert liegt nicht in der Reglermitte (≥ 0,3 Zehnerpotenzen bzw.
+  > 8 × Toleranz) und nicht am Rand (≥ 0,5 Zehnerpotenzen bzw. ≥ 4 × Toleranz).
+- Zufälliges Raten bringt im Mittel weniger als 15 % des Grundwerts.
+
+**Keine Spoiler:**
+- Kommt ein Name aus der Wissensdatenbank im Text vor (auch die Einheit), steht
+  er in `bezug`; die Schätzfrage öffnet sich erst, wenn man ihn entdeckt hat.
+- Lässt sich der Wert aus einer Konstante ablesen (gleiche Einheit, < 10 %
+  Abstand) oder braucht man sie zum Rechnen, steht sie in `bezugWert`; dann muss
+  man ihren **Zahlenwert** schon eingegeben haben.
+- Keine Formeln („=“) in Frage oder Erklärung.
+- Verschlossene Schätzfragen zeigen nur Stufe und „Entdecke zuerst eine Konstante
+  aus Mechanik mit Zahlenwert“ – nie Namen oder den Fragetext.
+
 ## Hilfe
 
 Ein „?“-Knopf oben rechts öffnet eine Anleitung mit dem Grundkonzept, allen
@@ -373,7 +417,8 @@ Spiel. Alle Werte stehen in `COUNTDOWN` in `src/content.js`.
 Automatisch im Browser (localStorage), dazu Export/Import als Text und Reset.
 Jede Spielwelt speichert getrennt: das freie Spiel wie bisher unter
 `physicsclicker-spielstand-v1`, die Klassen unter `physicsclicker-k7-v1` usw.
-Der zuletzt gewählte Modus steht unter `physicsclicker-modus`. Ein exportierter
+Der zuletzt gewählte Modus steht unter `physicsclicker-modus`. Abgegebene
+Schätzungen stehen im Feld `schaetzungen` (fehlt es, ist es leer). Ein exportierter
 Spielstand weiß, zu welcher Welt er gehört; „Spielstand löschen“ betrifft nur
 die aktuelle Welt.
 

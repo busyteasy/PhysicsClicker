@@ -1,7 +1,7 @@
 // Klasse 7 – Doppeljahrgang 7/8, erster Teil: Energie (Formen, Umwandlung,
 // Übertragung, Energieflussdiagramme), Bewegungen beschreiben, optische
 // Instrumente und Farben, Sterne und Weltall.
-import { Q, QUELLE_SI, S } from './helpers.js';
+import { Q, QUELLE_SI, S, ausFreiListe } from './helpers.js';
 
 export default {
   klasse: 7,
@@ -94,5 +94,11 @@ export default {
     Q('k7_komet', 1, 'Wie heißt ein Himmelskörper aus Eis und Staub, der nahe der Sonne einen Schweif bildet?', 'b_komet'),
     Q('k7_sonnenende', 3, 'Welcher Sternrest bleibt am Ende von unserer Sonne übrig?', 'weisser_zwerg'),
     Q('k7_eratosthenes', 3, 'Wie heißt der antike Versuch, den Erdumfang mit Schattenwinkeln zu bestimmen?', 'eratosthenes'),
+  ],
+  // Schätzfragen (Issue #46)
+  schaetzen: [
+    ...ausFreiListe(7, 1, 's_50kmh s_flugzeug s_sprinter s_fahrrad s_donner s_sonnenlicht'),
+    ...ausFreiListe(7, 2, 's_mondlicht s_iss s_aequator'),
+    ...ausFreiListe(7, 3, 's_licht_meter'),
   ],
 };

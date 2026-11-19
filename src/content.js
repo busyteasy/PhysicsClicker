@@ -102,6 +102,24 @@ export const ZEUGNIS_STUFEN = [
   { id: 'gold', name: 'Gold', ab: 0.9, zeichen: '🥇' },
 ];
 
+// Minispiel „Schätzen“ (Issue #46): Grundwert = TIER_POINTS[stufe] × SCHAETZ_FACTOR.
+// Etwas weniger als bei Fragen, weil es Teilpunkte gibt. Jede Schätzfrage wird
+// genau einmal gewertet. Maß ist auf der Log-Skala der Faktor zwischen Schätzung
+// und Wert, auf der linearen Skala die Abweichung in Vielfachen der `toleranz`.
+export const SCHAETZ_FACTOR = 1.5;
+export const SCHAETZ_STUFEN = [
+  { id: 'voll', name: 'Volltreffer', zeichen: '🎯', faktor: 1.1, linear: 1, anteil: 1 },
+  { id: 'sehrgut', name: 'Sehr gut', zeichen: '◎', faktor: 1.25, linear: 2, anteil: 0.7 },
+  { id: 'gut', name: 'Gut', zeichen: '○', faktor: 1.6, linear: 4, anteil: 0.4 },
+  { id: 'ordnung', name: 'Richtige Größenordnung', zeichen: '·', faktor: 3, linear: 8, anteil: 0.15 },
+];
+// Alle Volltreffer einer Welt zusammen höchstens dieser Anteil der Fragenpunkte (Test)
+export const SCHAETZ_BUDGET = 0.15;
+// Feinheit des Reglers: so viele Schritte zwischen min und max
+export const SCHAETZ_REGLER = 1000;
+// Gültige Ziffern, auf die eine Schätzung auf der Log-Skala gerundet wird
+export const SCHAETZ_ZIFFERN = 3;
+
 // Grundwert einer Erstentdeckung je Stufe (Index = Stufe)
 export const TIER_POINTS = [0, 10, 30, 80, 200, 500];
 export const VALUE_FACTOR = 2;          // Konstante mit korrektem Wert

@@ -41,7 +41,8 @@ Läuft mit dem eingebauten Test-Runner von Node (ab Version 18), ohne Abhängigk
 | `src/main.js`       | Oberfläche, Hauptschleife                              |
 | `src/game.js`       | Spiellogik ohne DOM (Punkte, Bereiche, Speichern)      |
 | `src/welt.js`       | Spielwelten: freies Spiel und Klassenstufen            |
-| `data/klassen/`     | Klassenstufen 5–13: Auswahl, Stufen und Fragen         |
+| `data/klassen/`     | Klassenstufen 5–13: Auswahl, Stufen, Fragen, Schätzfragen |
+| `data/schaetzen.js` | Schätzfragen des freien Spiels                         |
 | `src/content.js`    | Balance: Bereiche, Preise, Punktwerte                  |
 | `src/matcher.js`    | Ordnet Eingaben den Datenbank-Einträgen zu             |
 | `src/normalize.js`  | Vereinheitlicht Schreibweisen von Wörtern und Formeln  |
