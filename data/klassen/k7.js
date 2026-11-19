@@ -44,6 +44,9 @@ export default {
     ...S(3, 'd_kepler_fernrohr'),
     ...S(3, 'd_galilei_fernrohr'),
     ...S(1, 'b_lichtenergie b_elektrische_energie'),
+    // Erweiterung: fehlende Grundbegriffe (Issue #40)
+    ...S(1, 'b_auge d_linse b_mond b_sonne b_erde u_km_h u_m_s b_licht'),
+    ...S(2, 'd_zerstreuungslinse gravitation'),
   },
   fragen: [
     // Energie

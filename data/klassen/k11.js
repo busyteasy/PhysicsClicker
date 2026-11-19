@@ -49,6 +49,8 @@ export default {
     ...S(3, 'impulserhaltung'),
     ...S(3, 'impuls'),
     ...S(2, 'b_grundton'),
+    // Erweiterung: fehlende Grundbegriffe (Issue #40)
+    ...S(1, 'gravitation fallgesetz u_m_s'),
   },
   fragen: [
     // Fall und Wurf

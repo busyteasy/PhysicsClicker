@@ -37,8 +37,8 @@ export default inArea('quanten', [
   W('bohr', 2, 'Niels Bohr', ['Bohr'], 'Sein Institut in Kopenhagen war das Zentrum der frühen Quantenphysik.'),
   W('pauli_p', 3, 'Wolfgang Pauli', ['Pauli'], 'Postulierte 1930 das Neutrino.'),
   W('dirac', 3, 'Paul Dirac', ['Dirac'], 'Sagte aus seiner Gleichung das Positron voraus.'),
-  W('de_broglie_p', 3, 'Louis de Broglie', ['de Broglie'], 'Schrieb der Materie in seiner Doktorarbeit 1924 Welleneigenschaften zu.'),
-  W('born', 3, 'Max Born', [], 'Deutete die Wellenfunktion als Wahrscheinlichkeit.'),
+  W('de_broglie_p', 3, 'Louis de Broglie', ['de Broglie', 'Broglie'], 'Schrieb der Materie in seiner Doktorarbeit 1924 Welleneigenschaften zu.'),
+  W('born', 3, 'Max Born', ['Born'], 'Deutete die Wellenfunktion als Wahrscheinlichkeit.'),
   W('feynman', 3, 'Richard Feynman', ['Feynman'], 'Erfand die Feynman-Diagramme und spielte gern Bongos.'),
 
   U('u_ev', 2, 'Elektronenvolt', ['Elektronvolt'], 'So viel Energie gewinnt ein Elektron beim Durchlaufen einer Spannung von einem Volt.'),

@@ -117,7 +117,7 @@ export default inArea('waerme', [
   F('f_gas_allg', 3, 'p·V/T = konstant', ['pV/T=const', 'p1V1/T1=p2V2/T2'], 'Die allgemeine Gasgleichung fasst alle drei Gasgesetze zusammen.'),
   K('k_siede_wasser', 1, 'Siedetemperatur von Wasser', ['Siedepunkt von Wasser'], ['ϑ_s', 'T_s'], [[100, ['°C', '°c']], [373.15, ['K'], 0.001]], 'Bei Normaldruck 100 °C – im Schnellkochtopf über 110 °C.'),
   K('k_c_wasser', 2, 'Spezifische Wärmekapazität von Wasser', ['Wärmekapazität von Wasser'], ['c_W', 'cW', 'c_Wasser'], [[4.19, ['kJ/(kgK)', 'kJ/kgK', 'kJ/(kg°C)'], 0.01], [4190, ['J/(kgK)', 'J/kgK', 'J/(kg°C)'], 0.01]], 'Rund 4,19 kJ pro Kilogramm und Kelvin – darum speichern Meere so viel Wärme.'),
-  W('w_mayer', 3, 'Julius Robert Mayer', ['Robert Mayer'], 'Der Heilbronner Arzt formulierte 1842 als einer der Ersten den Energieerhaltungssatz.'),
+  W('w_mayer', 3, 'Julius Robert Mayer', ['Robert Mayer', 'Mayer', 'Robert Mayer'], 'Der Heilbronner Arzt formulierte 1842 als einer der Ersten den Energieerhaltungssatz.'),
   W('w_stirling', 3, 'Robert Stirling', ['Stirling'], 'Der schottische Pfarrer erfand 1816 den Heißluftmotor.'),
   W('w_boyle', 3, 'Robert Boyle', ['Boyle'], 'Entdeckte 1662, dass Druck und Volumen eines Gases bei gleicher Temperatur umgekehrt proportional sind.'),
   W('w_gay_lussac', 3, 'Joseph Louis Gay-Lussac', [], 'Stieg 1804 mit einem Ballon auf über 7000 m, um die Luft zu untersuchen.'),
@@ -126,8 +126,8 @@ export default inArea('waerme', [
   E('e_kugel_ring', 1, 'Kugel-Ring-Versuch', [], 'Die erhitzte Metallkugel passt nicht mehr durch den Ring – erst wenn sie abkühlt.'),
   E('e_tinte', 1, 'Tintenversuch', ['Diffusionsversuch', 'Diffusion'], 'Tinte verteilt sich in warmem Wasser viel schneller als in kaltem – die Teilchen bewegen sich schneller.'),
 
-  W('w_wien', 4, 'Wilhelm Wien', [], 'Erhielt 1911 den Nobelpreis für seine Gesetze der Wärmestrahlung.'),
-  W('w_stefan', 4, 'Josef Stefan', [], 'Fand 1879 aus Messungen, dass die Strahlungsleistung mit der vierten Potenz der Temperatur wächst; Boltzmann begründete es theoretisch.'),
+  W('w_wien', 4, 'Wilhelm Wien', ['Wien'], 'Erhielt 1911 den Nobelpreis für seine Gesetze der Wärmestrahlung.'),
+  W('w_stefan', 4, 'Josef Stefan', ['Stefan'], 'Fand 1879 aus Messungen, dass die Strahlungsleistung mit der vierten Potenz der Temperatur wächst; Boltzmann begründete es theoretisch.'),
 
   // Ergänzungen nach fachlicher Prüfung (Issue #16)
   B('b_schmelzwaerme', 2, 'Schmelzwärme', ['spezifische Schmelzwärme', 'Schmelzenergie'], 'Um 1 kg Eis bei 0 °C zu schmelzen, braucht man rund 334 kJ – so viel wie für das Erwärmen von 1 kg Wasser um etwa 80 K.'),

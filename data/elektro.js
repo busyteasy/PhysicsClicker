@@ -195,7 +195,7 @@ export default inArea('elektro', [
   F('f_hall', 5, 'U_H = B·v·d', ['UH=Bvd', 'U_H=v·B·d'], 'Die Hallspannung wächst mit Flussdichte und Driftgeschwindigkeit.'),
   W('w_gilbert', 3, 'William Gilbert', ['Gilbert'], 'Erkannte um 1600, dass die Erde selbst ein großer Magnet ist.'),
   W('w_lenz', 3, 'Heinrich Lenz', ['Lenz', 'Emil Lenz'], 'Der Physiker aus Dorpat fand 1834 die Regel über die Richtung induzierter Ströme.'),
-  W('w_hall', 4, 'Edwin Hall', ['Edwin Herbert Hall'], 'Entdeckte 1879 als Doktorand den nach ihm benannten Effekt.'),
+  W('w_hall', 4, 'Edwin Hall', ['Edwin Herbert Hall', 'Hall'], 'Entdeckte 1879 als Doktorand den nach ihm benannten Effekt.'),
   W('w_helmholtz', 3, 'Hermann von Helmholtz', ['Helmholtz'], 'Universalgelehrter: formulierte die Energieerhaltung allgemein und erfand den Augenspiegel.'),
   W('w_edison', 2, 'Thomas Alva Edison', ['Edison'], 'Machte die Glühlampe ab 1879 alltagstauglich und baute eines der ersten öffentlichen Stromnetze.'),
 
@@ -214,4 +214,9 @@ export default inArea('elektro', [
   D('d_ntc', 2, 'Heißleiter', ['NTC-Widerstand', 'NTC'], 'Leitet bei Wärme besser als in der Kälte – genutzt als Temperatursensor.'),
   B('b_dielektrikum', 3, 'Dielektrikum', ['Permittivitätszahl', 'relative Permittivität', 'Dielektrizitätszahl'], 'Ein Isolator zwischen den Kondensatorplatten erhöht die Kapazität um die Permittivitätszahl ε_r – bei Wasser etwa 80.'),
   B('b_radialfeld', 3, 'Radialfeld', ['radiales Feld'], 'Das Feld einer Punktladung: Die Feldlinien laufen sternförmig nach außen, die Feldstärke nimmt mit 1/r² ab.'),
+
+  // Erweiterung: fehlende Grundbegriffe (Issue #40)
+  B('b_strom', 1, 'Strom', ['Elektrischer Strom'], 'Strom ist bewegte Ladung. In einem Kupferdraht kriechen die Elektronen dabei meist langsamer als einen Millimeter pro Sekunde.'),
+  D('d_magnet', 1, 'Magnet', ['Magnete'], 'Zerbricht man einen Magneten, hat jedes Bruchstück wieder einen Nord- und einen Südpol.'),
+  P('magnetismus', 1, 'Magnetismus', [], 'Benannt nach der Landschaft Magnesia, wo man schon in der Antike Magneteisenstein fand.'),
 ]);

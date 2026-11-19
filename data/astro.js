@@ -59,7 +59,7 @@ export default inArea('astro', [
   W('sagan', 2, 'Carl Sagan', ['Sagan'], 'Brachte Millionen Menschen mit der Fernsehserie „Unser Kosmos“ die Astronomie nahe.'),
   W('leavitt', 4, 'Henrietta Leavitt', ['Leavitt'], 'Entdeckte, wie man mit pulsierenden Sternen Entfernungen im All misst.'),
   W('zwicky', 4, 'Fritz Zwicky', ['Zwicky'], 'Vermutete schon 1933 die Dunkle Materie.'),
-  W('bell_burnell', 4, 'Jocelyn Bell Burnell', ['Bell Burnell', 'Jocelyn Bell'], 'Entdeckte 1967 als Doktorandin den ersten Pulsar.'),
+  W('bell_burnell', 4, 'Jocelyn Bell Burnell', ['Bell Burnell', 'Jocelyn Bell', 'Bell Burnell', 'Burnell'], 'Entdeckte 1967 als Doktorandin den ersten Pulsar.'),
   W('eddington_p', 3, 'Arthur Eddington', ['Eddington'], 'Leitete 1919 die Expedition, die Einsteins Lichtablenkung bestätigte.'),
   W('ptolemaeus', 2, 'Claudius Ptolemäus', ['Ptolemäus'], 'Sein Weltbild mit der Erde im Zentrum hielt sich rund 1400 Jahre.'),
   G('kosmologisches_prinzip', 3, 'Kosmologisches Prinzip', [], 'Im Großen sieht das Universum überall und in jeder Richtung gleich aus.'),
@@ -90,4 +90,9 @@ export default inArea('astro', [
   W('w_russell', 4, 'Henry Norris Russell', ['Russell'], 'Entwickelte um 1913 mit Ejnar Hertzsprung das nach beiden benannte Diagramm.'),
 
   K('k_ortsfaktor_mond', 2, 'Ortsfaktor auf dem Mond', ['Fallbeschleunigung auf dem Mond', 'Mondbeschleunigung'], ['g_Mond', 'gMond'], [[1.62, ['N/kg', 'm/s^2'], 0.02]], 'Rund 1,6 N/kg – ein Sechstel des Erdwerts. Die Masse eines Astronauten bleibt dabei gleich.'),
+
+  // Erweiterung: fehlende Grundbegriffe (Issue #40)
+  B('b_mond', 1, 'Mond', ['Erdmond'], 'Der Mond entfernt sich jedes Jahr knapp 4 cm von der Erde.'),
+  B('b_sonne', 1, 'Sonne', [], 'In ihrem Inneren wandelt die Sonne jede Sekunde rund 4 Millionen Tonnen Masse in Energie um.'),
+  B('b_erde', 1, 'Erde', [], 'Die Erde ist nicht ganz rund: Am Äquator ist ihr Durchmesser gut 40 km größer als von Pol zu Pol.'),
 ]);

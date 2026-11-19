@@ -770,3 +770,48 @@ button.start-karte:hover, .start-karte.aktiv { border-color: var(--akzent); }
   background: var(--flaeche); color: var(--akzent); font: inherit; font-weight: 700;
 }
 @media (prefers-reduced-motion: reduce) { .intro-cursor { animation: none; } }
+
+/* ---------- Zeugnisse (#42) ---------- */
+
+:root { --bronze: #8a5a2b; --silber: #5d6572; --gold: #8a6a00; }
+@media (prefers-color-scheme: dark) { :root { --bronze: #e0a36a; --silber: #c9d0db; --gold: #f2cf4a; } }
+.medaille { display: inline-flex; align-items: center; gap: 2px; font-size: 0.85rem; font-weight: 800; white-space: nowrap; }
+.medaille.bronze { color: var(--bronze); }
+.medaille.silber { color: var(--silber); }
+.medaille.gold { color: var(--gold); }
+.medaille.keine { color: var(--tinte-leise); font-weight: 600; }
+.bereich .kopf .medaille { margin-left: auto; }
+.zeugnis-zeile { margin-top: 4px; font-size: 0.8rem; color: var(--tinte-leise); }
+.zeugnis {
+  margin: 0 0 14px; padding: 12px 14px; border: 2px solid var(--linie); border-radius: var(--radius); background: var(--flaeche);
+}
+.zeugnis-kopf { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.zeugnis-titel { font-weight: 800; font-size: 1.05rem; }
+.zeugnis-kopf .medaille { font-size: 1rem; }
+.zeugnis-zahl { margin: 4px 0 6px; font-size: 0.9rem; }
+.zeugnis-regel { margin: 8px 0 0; font-size: 0.8rem; color: var(--tinte-leise); }
+.ehrungen { margin-bottom: 10px; }
+.ehrung {
+  display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding: 8px 12px; border-radius: var(--radius);
+  font-weight: 800; background: var(--flaeche-2); border-left: 5px solid var(--linie);
+}
+.ehrung.bronze { border-left-color: var(--bronze); color: var(--bronze); }
+.ehrung.silber { border-left-color: var(--silber); color: var(--silber); }
+.ehrung.gold { border-left-color: var(--gold); color: var(--gold); }
+.ehrung-zeichen { font-size: 1.4rem; }
+.klasse-medaille { font-size: 1rem; line-height: 1; }
+.ku-zeugnis { margin: 0 0 10px; font-size: 0.9rem; }
+@media (prefers-reduced-motion: no-preference) { .ehrung { animation: ehrung-ein 0.5s ease-out; } }
+@keyframes ehrung-ein { from { transform: scale(0.96); opacity: 0; } }
+
+/* ---------- Auswahlkriterien (#43) ---------- */
+
+.textlink {
+  margin-top: 6px; padding: 4px 0; border: 0; background: none; cursor: pointer;
+  color: var(--akzent); font: inherit; font-size: 0.88rem; font-weight: 600; text-decoration: underline;
+}
+details.auswahl { margin-top: 6px; font-size: 0.85rem; }
+details.auswahl summary { cursor: pointer; color: var(--akzent); font-weight: 600; }
+details.auswahl p { margin: 4px 0 0; color: var(--tinte-leise); }
+.auswahl-liste dt { margin-top: 8px; font-weight: 700; }
+.auswahl-liste dd { margin: 2px 0 0; color: var(--tinte-leise); }

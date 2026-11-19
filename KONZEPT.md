@@ -83,7 +83,62 @@ Phase 1 ist ein **rein deutsches Spiel**: Oberfläche, Rückmeldungen, Fun Facts
 und die Namen in der Wissensdatenbank sind deutsch. Formeln und Einheiten sind
 ohnehin sprachneutral.
 
+## Zeugnisse in den Klassen (Issue #42)
+
+In jeder Klasse gibt es für jeden Bereich und für die ganze Klasse eine
+Medaille. Es zählt der Anteil aus entdeckten Einträgen und richtig
+beantworteten Fragen (aufgelöste Fragen zählen nicht):
+
+| Medaille  | ab   |
+|-----------|------|
+| 🥉 Bronze | 40 % |
+| 🥈 Silber | 70 % |
+| 🥇 Gold   | 90 % |
+
+Der Reiter „Bereiche“ zeigt oben das Zeugnis der Klasse und auf jeder Karte die
+Medaille des Bereichs mit „Noch X bis …“. Wer eine Stufe neu erreicht, sieht eine
+Glückwunsch-Zeile über der Rückmeldung bzw. nach der richtigen Antwort. Im
+Startbildschirm steht die Medaille der Klasse auf dem Klassenknopf und in der
+Inhaltsübersicht. Das Zeugnis wird aus dem Spielstand berechnet und nicht
+gespeichert; alte Spielstände bekommen ihre Medaillen also automatisch. Werte:
+`ZEUGNIS_STUFEN` in `content.js`, Logik: `zeugnis()` in `game.js`.
+
+## Wonach wurde ausgewählt? (Issue #43)
+
+Die Wissensdatenbank ist von Hand zusammengestellt und nicht vollständig. Damit
+man versteht, warum etwas fehlt, erklärt das Spiel die Auswahl offen – in der
+Hilfe (Abschnitt „Wonach wurde ausgewählt?“), aufklappbar auf jeder
+Bereichskarte und als Link bei jeder unbekannten Eingabe. Texte: `AUSWAHL` und
+`auswahl` je Bereich in `content.js`.
+
+- **Personen:** Namensgeber von Einheiten, Gesetzen, Effekten oder Versuchen;
+  Forschende mit grundlegenden Entdeckungen aus Schule und Studium (oft mit
+  Nobelpreis); einige, die Physik in den Alltag oder zu vielen Menschen gebracht
+  haben (z. B. Edison, Sagan).
+- **Andere Bereiche:** was in den Kerncurricula Niedersachsen (5–13), in
+  Formelsammlungen und in Einführungsvorlesungen vorkommt und einen eigenen
+  Namen hat; Experimente, die Physikgeschichte geschrieben haben, und klassische
+  Schulversuche.
+- **Bewusst nicht gezählt:** sehr allgemeine Wörter mit unklarer Bedeutung
+  („Gewicht“), Abkürzungen unter drei Zeichen (kg, V) und Nachnamen mehrerer
+  Personen – dann hilft der vollständige Name („Gustav Hertz“).
+- **Klassen:** nur, was laut Kerncurriculum in dieser Klasse drankommt.
+
+Jede Person ist über ihren Nachnamen erreichbar; Ausnahmen sind nur Wu (zu
+kurz), Hertz (Heinrich und Gustav) und Gay-Lussac (zugleich ein Gesetz)
+(`test/auswahl.test.js`). Dazu wurden fehlende Nachnamen ergänzt (u. a. Thomson
+– „Thompson“ wird als Tippfehler erkannt –, Born, Hahn, Higgs, de Broglie) und
+die Bezüge von 20 Namensgebern zu ihren Einträgen nachgetragen (z. B. Lenz →
+Lenzsche Regel, Geiger → Geiger-Müller-Zählrohr).
+
 ## Was das Eingabefeld erkennt
+
+Seit Issue #40 sind typische Grundbegriffe dabei, die vorher fehlten: Magnet,
+Magnetismus, Strom, Licht, Gravitation/Schwerkraft, Linse, Spiegel, Auge, Mond,
+Sonne, Erde, Pendel, Feder, Welle, Fallgesetz, Meter pro Sekunde, km/h und
+Atomkraftwerk (als Schreibweise des Kernreaktors). Sie stehen auch in den
+passenden Klassen (z. B. Zerstreuungslinse und Auge in Klasse 7).
+`test/grundbegriffe.test.js` prüft, dass sie erkannt werden.
 
 Die Eingaben werden gegen eine **lokale Wissensdatenbank** geprüft (`data/`).
 Kein Server, keine KI – das Spiel läuft komplett im Browser.
@@ -142,9 +197,15 @@ Spiel am Anfang nur **Personen**. Die übrigen neun kauft man mit Erkenntnis fre
 Lieblingsthema weitermachen kann. Der Preis hängt nur davon ab, der wievielte
 Bereich es ist:
 
-| Freischaltung | 1.  | 2.  | 3.    | 4.    | 5.    | 6.    | 7.     | 8.     | 9.     |
-|---------------|-----|-----|-------|-------|-------|-------|--------|--------|--------|
-| Preis         | 100 | 500 | 1.200 | 2.500 | 4.500 | 7.000 | 10.000 | 14.000 | 19.000 |
+| Freischaltung | 1.  | 2.  | 3.  | 4.  | 5.    | 6.    | 7.    | 8.    | 9.    |
+|---------------|-----|-----|-----|-----|-------|-------|-------|-------|-------|
+| Preis         | 100 | 300 | 600 | 900 | 1.200 | 1.500 | 1.800 | 2.100 | 2.500 |
+
+Seit Issue #41 sind die Preise flacher (vorher bis 19.000). Simuliert mit einer
+Spielerin, die alle Einträge der Stufe 1, die Hälfte der Stufe 2 und die
+leichten Fragen kennt: Ohne Combo reicht das bis zum 8. Bereich; für den 9.
+braucht es etwas Stufe-3-Wissen oder Combos. Alle Freischaltungen zusammen
+kosten 11.000 Erkenntnis, rund 14 % dessen, was man insgesamt holen kann.
 
 Seit den Klassenstufen gibt es zwei neue Bereiche: **Größen & Begriffe**
 (physikalische Größen, Fachbegriffe, Modelle – etwa Stromstärke, Dichte,

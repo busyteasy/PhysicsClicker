@@ -27,7 +27,7 @@ export default inArea('optik', [
   W('huygens', 2, 'Christiaan Huygens', ['Huygens'], 'Entwickelte die Wellentheorie des Lichts und baute die erste Pendeluhr.'),
   W('snellius_p', 3, 'Willebrord Snellius', ['Snellius', 'Snell'], 'Niederländischer Mathematiker und Pionier der Landvermessung durch Triangulation.'),
   W('fresnel', 3, 'Augustin Jean Fresnel', ['Fresnel', 'Augustin Fresnel'], 'Seine Stufenlinsen machten Leuchttürme weithin sichtbar.'),
-  W('young', 3, 'Thomas Young', [], 'Half nebenbei, die Hieroglyphen auf dem Stein von Rosetta zu entziffern.'),
+  W('young', 3, 'Thomas Young', ['Young'], 'Half nebenbei, die Hieroglyphen auf dem Stein von Rosetta zu entziffern.'),
   W('alhazen', 3, 'Alhazen', ['Ibn al-Haytham', 'Ibn al-Haitham'], 'Erklärte um das Jahr 1000, dass Licht von den Dingen ins Auge fällt – nicht umgekehrt.'),
 
   U('u_dioptrie', 2, 'Dioptrie', ['dpt'], 'Eine Dioptrie entspricht einer Brennweite von einem Meter.'),
@@ -128,4 +128,10 @@ export default inArea('optik', [
   B('b_lichtenergie', 1, 'Lichtenergie', ['Strahlungsenergie'], 'Pflanzen speichern Lichtenergie bei der Fotosynthese als chemische Energie.'),
   B('b_einzelspalt', 3, 'Beugung am Einzelspalt', ['Einzelspalt'], 'Hinter einem einzelnen schmalen Spalt entsteht ein breites Hauptmaximum mit schwächeren Nebenmaxima.'),
   B('b_em_spektrum', 2, 'Elektromagnetisches Spektrum', [], 'Radiowellen, Mikrowellen, Infrarot, sichtbares Licht, UV, Röntgen- und Gammastrahlung – alles dieselbe Art Welle, nur mit anderer Wellenlänge.'),
+
+  // Erweiterung: fehlende Grundbegriffe (Issue #40)
+  B('b_licht', 1, 'Licht', [], 'Licht braucht von der Sonne bis zur Erde gut acht Minuten.'),
+  D('d_linse', 1, 'Linse', ['Linsen', 'Optische Linse'], 'In der Mitte dicker als am Rand: Sie sammelt Licht. Dünner: Sie zerstreut es.'),
+  D('d_spiegel', 1, 'Spiegel', [], 'Ein Spiegel vertauscht nicht links und rechts, sondern vorne und hinten.'),
+  B('b_auge', 1, 'Auge', ['Menschliches Auge'], 'Das Bild auf der Netzhaut steht auf dem Kopf – erst das Gehirn dreht es richtig herum.'),
 ]);

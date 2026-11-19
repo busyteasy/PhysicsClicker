@@ -53,6 +53,8 @@ export default {
     ...S(2, 'carnot_f'),
     ...S(3, 'starke_ww perpetuum'),
     ...S(2, 'd_ldr d_ntc b_zerfallskurve'),
+    // Erweiterung: fehlende Grundbegriffe (Issue #40)
+    ...S(1, 'fallgesetz u_m_s u_km_h'),
   },
   fragen: [
     // Druck und Auftrieb

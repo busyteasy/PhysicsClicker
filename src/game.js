@@ -2,7 +2,7 @@
 
 import { checkValue, match } from './matcher.js';
 import {
-  BOOSTS, BOOST_PRICE_GROWTH, COMBO_MAX, COUNTDOWN, COMBO_STEP, COMBO_WINDOW_MS, LUECKENWORT,
+  BOOSTS, BOOST_PRICE_GROWTH, COMBO_MAX, COUNTDOWN, COMBO_STEP, COMBO_WINDOW_MS, LUECKENWORT, ZEUGNIS_STUFEN,
   QUESTION_FACTOR, QUESTION_TRIES, REPEAT_COOLDOWN_MS, REPEAT_SHARE,
   TIER_POINTS, VALUE_FACTOR,
 } from './content.js';
@@ -46,6 +46,62 @@ function newBoosts() {
     hint: null,          // Eintrag-ID des Spickzettels
     bought: {},          // Upgrade-ID -> Anzahl Käufe (für den Preis)
   };
+}
+
+// ---------- Zeugnisse in den Klassen (Issue #42) ----------
+//
+// Je Bereich und für die ganze Klasse: Anteil aus entdeckten Einträgen und
+// richtig beantworteten Fragen → Bronze, Silber oder Gold (ZEUGNIS_STUFEN).
+// Wird nur berechnet, nicht gespeichert – alte Spielstände bekommen ihre
+// Medaillen also automatisch.
+
+/** Höchste erreichte Stufe für einen Anteil (0…1), sonst null. */
+export function zeugnisStufe(anteil) {
+  let stufe = null;
+  for (const z of ZEUGNIS_STUFEN) if (anteil >= z.ab - 1e-9) stufe = z;
+  return stufe;
+}
+
+function zeugnisZeile(state, id, name, entries, questions) {
+  const geschafft = entries.filter((e) => Object.hasOwn(state.discovered, e.id)).length
+    + questions.filter((q) => Object.hasOwn(state.answered, q.id)).length;
+  const gesamt = entries.length + questions.length;
+  const anteil = gesamt ? geschafft / gesamt : 0;
+  return {
+    id, name, geschafft, gesamt, anteil,
+    stufe: zeugnisStufe(anteil),
+    naechste: ZEUGNIS_STUFEN.find((z) => anteil < z.ab - 1e-9) ?? null,
+  };
+}
+
+/** Zeugnis einer Klassenwelt; im freien Spiel null. */
+export function zeugnis(state) {
+  const w = weltOf(state);
+  if (w.klasse == null) return null;
+  return {
+    gesamt: zeugnisZeile(state, w.id, w.name, w.entries, w.questions),
+    bereiche: w.bereiche.map((b) => zeugnisZeile(state, b.id, b.name,
+      w.entries.filter((e) => e.bereich === b.id), w.questions.filter((q) => q.bereich === b.id))),
+  };
+}
+
+const stufenRang = (z) => (z ? ZEUGNIS_STUFEN.indexOf(z) + 1 : 0);
+
+/** Medaillen, die zwischen zwei Zeugnissen neu dazugekommen sind. */
+export function zeugnisFortschritte(vorher, nachher) {
+  if (!vorher || !nachher) return [];
+  const paare = [[vorher.gesamt, nachher.gesamt, true],
+    ...nachher.bereiche.map((b, i) => [vorher.bereiche[i], b, false])];
+  return paare
+    .filter(([a, b]) => stufenRang(b.stufe) > stufenRang(a?.stufe))
+    .map(([, b, klasse]) => ({ id: b.id, name: b.name, stufe: b.stufe, klasse }));
+}
+
+function mitEhrungen(state, aktion) {
+  const vorher = zeugnis(state);
+  const result = aktion();
+  result.ehrungen = zeugnisFortschritte(vorher, zeugnis(state));
+  return result;
 }
 
 // ---------- Lückenwort (Issue #33) ----------
@@ -215,7 +271,12 @@ function repeatItem(state, entry, key, isValue, now) {
  *     art: 'neu' | 'wert' | 'wiederholung' | 'wertWiederholung' | 'abklingend'
  *   locked: Einträge, die passen, aber in einem noch gesperrten Bereich liegen
  */
+/** Eingabe werten; meldet zusätzlich neu erreichte Zeugnis-Medaillen (Issue #42). */
 export function submit(state, raw, now = Date.now()) {
+  return mitEhrungen(state, () => submitIntern(state, raw, now));
+}
+
+function submitIntern(state, raw, now) {
   const { index: INDEX } = weltOf(state);
   const result = match(INDEX, raw);
   if (result.kind === 'leer') return { status: 'leer', items: [], gained: 0, locked: [] };
@@ -314,7 +375,12 @@ export function nextOpenQuestion(state, afterId) {
  * Beantwortet eine Frage aus dem Katalog.
  * Rückgabe: { status: 'richtig' | 'falsch' | 'leer' | 'nichtOffen', points, attempts, canReveal }
  */
+/** Antwort werten; meldet zusätzlich neu erreichte Zeugnis-Medaillen (Issue #42). */
 export function answerQuestion(state, id, raw, now = Date.now()) {
+  return mitEhrungen(state, () => answerQuestionIntern(state, id, raw, now));
+}
+
+function answerQuestionIntern(state, id, raw, now) {
   const { index: INDEX, questionById } = weltOf(state);
   const q = questionById.get(id);
   if (!q || questionStatus(state, q) !== 'offen') return { status: 'nichtOffen', points: 0 };
