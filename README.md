@@ -13,6 +13,7 @@ eigenen Fragen und Schwierigkeitsstufen. So lässt sich gezielt lernen.
 
 Das Konzept steht in [KONZEPT.md](KONZEPT.md). Wer am Code mitarbeitet (auch
 Coding-Agents), findet Aufbau, Regeln und Arbeitsablauf in [AGENTS.md](AGENTS.md).
+Wie das Spiel entstanden ist, zeigt der Chatverlauf in [CHATVERLAUF.md](CHATVERLAUF.md).
 
 ## Starten
 
