@@ -52,6 +52,9 @@ export default {
     ...S(3, 'e_waltenhofen hertz_versuch'),
     ...S(3, 'b_dielektrikum b_radialfeld b_einzelspalt'),
     ...S(2, 'b_em_spektrum'),
+    // Erweiterung: fehlende Grundbegriffe (Issue #40)
+    ...S(1, 'b_pendel b_welle'),
+    ...S(2, 'd_feder'),
   },
   fragen: [
     // Elektrisches Feld

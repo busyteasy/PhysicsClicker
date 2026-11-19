@@ -47,6 +47,9 @@ export default {
     ...S(2, 'b_frequenz'),
     ...S(2, 'b_amplitude'),
     ...S(2, 'b_lichtenergie b_elektrische_energie'),
+    // Erweiterung: fehlende Grundbegriffe (Issue #40)
+    ...S(1, 'b_licht d_spiegel b_auge b_sonne b_mond'),
+    ...S(2, 'd_linse'),
   },
   fragen: [
     // Begriffe

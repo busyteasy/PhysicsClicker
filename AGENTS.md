@@ -55,7 +55,7 @@ src/
   content.js      Balance + Stammdaten: AREAS, BEREICHE, Preise, TIER_POINTS, BOOSTS …
   welt.js         Spielwelten: FREI und KLASSEN_WELTEN (Einträge, Index, Fragen, Bereiche, Preise); welt(id), weltOf(state)
   game.js         Zustand und Regeln: newState(weltId), submit, buyBereich, answerQuestion, buyBoost, restore,
-                  Lückenwort (lueckenwort, kaufeBuchstabe),
+                  Lückenwort (lueckenwort, kaufeBuchstabe), Zeugnisse der Klassen (zeugnis, zeugnisFortschritte),
                   Countdown-Modus (newCountdownRun, countdownLeft, countdownOver) …
   matcher.js      buildIndex(ENTRIES) und match(index, eingabe) – Eingabe → Einträge
   normalize.js    Vereinheitlicht Wörter, Formeln, Einheiten; parseQuantity liest Zahlen
@@ -75,7 +75,8 @@ data/
   bezuege.js      Person → zugehörige Einträge (für die Mindmap)
   wiki.js         Wikipedia-Artikeltitel je Eintrag-ID (Pflicht für jede Fragen-Antwort, Test)
   klassen/        k5.js … k13.js: Auswahl der Einträge je Klasse mit Stufe 1–4 und eigenem Fragekatalog
-test/             data, matcher, game, fragen, upgrades, wiki, mindmap, countdown, klassen, denkhilfe
+test/             data, matcher, game, fragen, upgrades, wiki, mindmap, countdown, klassen, denkhilfe,
+                  grundbegriffe, zeugnis, auswahl
 ```
 
 ### Begriffe
@@ -125,6 +126,8 @@ Regeln (alle werden von `test/data.test.js` geprüft):
 - Jeder Eintrag muss über seinen eigenen Namen gefunden werden.
 - Formeln werden normalisiert (Seiten und Faktoren sortiert, `·`/`*`/Leerzeichen
   egal). Zwei Formeln, die gleich normalisieren, kollidieren.
+- Personen müssen über ihren Nachnamen erreichbar sein (`test/auswahl.test.js`);
+  neue Einträge müssen zu den Auswahlkriterien (`AUSWAHL`, `auswahl` in `content.js`) passen.
 - Fakten sollen kurz, korrekt und überraschend sein. Physikalische Angaben
   sorgfältig prüfen – sie werden den Spielenden als Wissen gezeigt.
 

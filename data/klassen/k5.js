@@ -34,6 +34,8 @@ export default {
     ...S(3, 'oersted_versuch'),
     ...S(4, 'u_kelvin'),
     ...S(4, 'nullpunkt'),
+    // Erweiterung: fehlende Grundbegriffe (Issue #40)
+    ...S(1, 'd_magnet magnetismus b_strom'),
   },
   fragen: [
     // Begriffe

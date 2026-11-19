@@ -40,7 +40,7 @@ function makeWelt({ id, name, kurz, klasse = null, entries: raw, fragen, start: 
     const def = GRUPPE_BY_ID.get(bid) ?? BEREICHE.find((b) => b.id === bid);
     const own = entries.filter((e) => e.bereich === bid).sort((x, y) => x.tier - y.tier);
     // Nur ein Beispiel (Issue #25), in Klassenwelten aus der Klasse selbst
-    return { id: bid, name: def.name, desc: def.desc, beispiel: klasse == null && def.beispiel ? def.beispiel : own[0].name };
+    return { id: bid, name: def.name, desc: def.desc, auswahl: def.auswahl ?? null, beispiel: klasse == null && def.beispiel ? def.beispiel : own[0].name };
   });
   return {
     id, name, kurz, klasse, info, entries, index, questions,

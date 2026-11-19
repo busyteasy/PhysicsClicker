@@ -17,27 +17,49 @@ export const AREA_NAMES = Object.fromEntries(AREAS.map((a) => [a.id, a.name]));
 // offen; die übrigen kauft man mit Erkenntnis frei, in beliebiger Reihenfolge.
 export const BEREICHE = [
   { id: 'person', name: 'Personen', beispiel: 'Marie Curie',
-    desc: 'Physikerinnen und Physiker – mit Vor- und Nachnamen oder nur dem Nachnamen.' },
+    desc: 'Physikerinnen und Physiker – mit Vor- und Nachnamen oder nur dem Nachnamen.',
+    auswahl: 'Personen, nach denen eine Einheit, ein Gesetz, ein Effekt oder ein Versuch benannt ist; Forschende mit grundlegenden Entdeckungen, die in Schule und Studium vorkommen (oft mit Nobelpreis); dazu einige, die Physik in den Alltag oder zu vielen Menschen gebracht haben. Eine Auswahl von gut 100 Personen – keine vollständige Liste.' },
   { id: 'einheit', name: 'Einheiten', beispiel: '1 N = 1 kg·m/s²',
-    desc: 'Maßeinheiten, als Name oder als Definition.' },
+    desc: 'Maßeinheiten, als Name oder als Definition.',
+    auswahl: 'SI-Basiseinheiten, abgeleitete SI-Einheiten und gebräuchliche Einheiten aus Schule und Alltag, z. B. km/h.' },
   { id: 'teilchen', name: 'Teilchen', beispiel: 'Myon',
-    desc: 'Elementarteilchen und andere Bausteine der Materie.' },
+    desc: 'Elementarteilchen und andere Bausteine der Materie.',
+    auswahl: 'Teilchen des Standardmodells, Bausteine von Atomen und Kernen sowie Teilchen aus Strahlung und Kosmos.' },
   { id: 'phaenomen', name: 'Phänomene', beispiel: 'Regenbogen',
-    desc: 'Effekte, Vorgänge und Erscheinungen der Natur.' },
+    desc: 'Effekte, Vorgänge und Erscheinungen der Natur.',
+    auswahl: 'Erscheinungen und Effekte, die man beobachten kann oder die im Unterricht und in Einführungsvorlesungen erklärt werden.' },
   { id: 'gesetz', name: 'Gesetze', beispiel: 'Pauli-Prinzip',
-    desc: 'Gesetze, Prinzipien und Hauptsätze.' },
+    desc: 'Gesetze, Prinzipien und Hauptsätze.',
+    auswahl: 'Gesetze, Regeln und Prinzipien, die in Lehrbüchern einen eigenen Namen tragen.' },
   { id: 'formel', name: 'Formeln', beispiel: 'F = m·a',
-    desc: 'Gleichungen mit „=“. Leerzeichen, Malpunkte und Reihenfolge sind egal.' },
+    desc: 'Gleichungen mit „=“. Leerzeichen, Malpunkte und Reihenfolge sind egal.',
+    auswahl: 'Gleichungen aus Formelsammlungen bis zum Abitur und die wichtigsten aus Einführungsvorlesungen.' },
   { id: 'konstante', name: 'Konstanten', beispiel: 'h = 6,626·10⁻³⁴ Js',
-    desc: 'Naturkonstanten – mit korrektem Wert gibt es doppelt.' },
+    desc: 'Naturkonstanten – mit korrektem Wert gibt es doppelt.',
+    auswahl: 'Naturkonstanten und wichtige Messwerte wie die Erdbeschleunigung, die in Formelsammlungen stehen.' },
   { id: 'experiment', name: 'Experimente', beispiel: 'Schrödingers Katze',
-    desc: 'Berühmte Versuche und Gedankenexperimente.' },
+    desc: 'Berühmte Versuche und Gedankenexperimente.',
+    auswahl: 'Versuche, die Physikgeschichte geschrieben haben, berühmte Gedankenexperimente und klassische Schulversuche.' },
   // Neu für die Klassenstufen (Issue #16), auch im freien Spiel
   { id: 'begriff', name: 'Größen & Begriffe', beispiel: 'Dichte',
-    desc: 'Physikalische Größen, Fachbegriffe und Modelle.' },
+    desc: 'Physikalische Größen, Fachbegriffe und Modelle.',
+    auswahl: 'Größen, Fachbegriffe und Modelle aus den niedersächsischen Kerncurricula (Klasse 5–13) und Alltagswörter mit klarer physikalischer Bedeutung wie Licht oder Strom.' },
   { id: 'geraet', name: 'Geräte & Bauteile', beispiel: 'Kompass',
-    desc: 'Messgeräte, Bauteile und technische Geräte.' },
+    desc: 'Messgeräte, Bauteile und technische Geräte.',
+    auswahl: 'Messgeräte, Bauteile und technische Geräte, die im Unterricht vorkommen oder Physik im Alltag nutzen.' },
 ];
+
+// Wonach wurde ausgewählt? (Issue #43) – nur im freien Spiel: in der Hilfe,
+// auf den Bereichskarten (dort statt des Beispiels) und bei unbekannten
+// Eingaben. Je Bereich steht es als `auswahl` oben in BEREICHE.
+export const AUSWAHL = {
+  allgemein: 'Die Wissensdatenbank ist von Hand zusammengestellt und nicht vollständig. Maßstab ist, was in der Schule '
+    + '(Kerncurricula Niedersachsen) und im Grundstudium vorkommt und in der Physik einen eigenen Namen hat. '
+    + 'Die Stufe sagt, wie bekannt etwas ist: 1 = Schulwissen bis 5 = Spezialwissen.',
+  nichtGezaehlt: 'Bewusst nicht gezählt werden sehr allgemeine Wörter mit unklarer Bedeutung (z. B. „Gewicht“, das mal Masse, '
+    + 'mal Gewichtskraft meint), Abkürzungen mit weniger als drei Zeichen (z. B. kg, V) und Nachnamen, die mehrere Personen '
+    + 'tragen – dann hilft der vollständige Name, z. B. „Gustav Hertz“.',
+};
 
 // Zusammengefasste Bereiche (Issue #26): Klassen mit wenig Stoff legen kleine
 // Kategorien zusammen, z. B. Personen und Experimente zu „Forscher & Versuche“.
@@ -61,7 +83,7 @@ export const BEREICH_NAMES = Object.fromEntries([...BEREICHE, ...BEREICH_GRUPPEN
 export const START_BEREICHE = ['person'];
 
 // Preis des n-ten freigekauften Bereichs (unabhängig davon, welcher es ist)
-export const UNLOCK_PRICES = [100, 500, 1_200, 2_500, 4_500, 7_000, 10_000, 14_000, 19_000];
+export const UNLOCK_PRICES = [100, 300, 600, 900, 1_200, 1_500, 1_800, 2_100, 2_500]; // flacher seit Issue #41
 
 // Klassenstufen (Issue #16, #30): Jede Klasse ist eine eigene, kleinere
 // Spielwelt. Dort ist von Anfang an jeder Bereich offen – man kann sofort alles
@@ -69,6 +91,15 @@ export const UNLOCK_PRICES = [100, 500, 1_200, 2_500, 4_500, 7_000, 10_000, 14_0
 // die Anzeige der Bereiche in den Klassen.
 export const KLASSEN_BEREICH_REIHENFOLGE = [
   'begriff', 'geraet', 'phaenomen', 'gesetz', 'formel', 'einheit', 'konstante', 'teilchen', 'person', 'experiment',
+];
+
+// Zeugnisse in den Klassen (Issue #42): Für jeden Bereich und für die ganze
+// Klasse zählt der Anteil aus entdeckten Einträgen und richtig beantworteten
+// Fragen. Ab diesem Anteil gibt es die Medaille.
+export const ZEUGNIS_STUFEN = [
+  { id: 'bronze', name: 'Bronze', ab: 0.4, zeichen: '🥉' },
+  { id: 'silber', name: 'Silber', ab: 0.7, zeichen: '🥈' },
+  { id: 'gold', name: 'Gold', ab: 0.9, zeichen: '🥇' },
 ];
 
 // Grundwert einer Erstentdeckung je Stufe (Index = Stufe)

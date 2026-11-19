@@ -55,6 +55,8 @@ export default {
     ...S(3, 'hallwachs'),
     ...S(3, 'laser'),
     ...S(3, 'b_koinzidenz e_neutronen d_weisse_led b_zerfallskurve'),
+    // Erweiterung: fehlende Grundbegriffe (Issue #40)
+    ...S(1, 'b_licht'),
   },
   fragen: [
     // Photonen

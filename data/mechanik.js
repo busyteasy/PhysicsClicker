@@ -250,4 +250,13 @@ export default inArea('mechanik', [
 
   // Ergänzungen nach fachlicher Prüfung (Issue #16)
   B('b_grundton', 2, 'Grundton', [], 'Der tiefste Ton eines Klangs; er bestimmt die Tonhöhe, die wir hören.'),
+
+  // Erweiterung: fehlende Grundbegriffe (Issue #40)
+  P('gravitation', 1, 'Gravitation', ['Schwerkraft', 'Massenanziehung'], 'Alle Massen ziehen sich gegenseitig an – dieselbe Kraft lässt Äpfel fallen und hält den Mond auf seiner Bahn.'),
+  G('fallgesetz', 1, 'Fallgesetz', ['Fallgesetze', 'Galileisches Fallgesetz'], 'Ohne Luftwiderstand fallen alle Körper gleich schnell – egal ob Feder oder Hammer.'),
+  B('b_pendel', 1, 'Pendel', [], 'Die Schwingungsdauer hängt von der Länge ab, nicht von der Masse – darauf beruhen Pendeluhren.'),
+  D('d_feder', 1, 'Feder', ['Schraubenfeder', 'Spiralfeder'], 'Doppelte Kraft, doppelte Verlängerung – solange man die Feder nicht überdehnt.'),
+  B('b_welle', 1, 'Welle', [], 'Eine Welle transportiert Energie, aber kein Material: Die Wasserteilchen bewegen sich nur auf und ab.'),
+  U('u_m_s', 1, 'Meter pro Sekunde', [], 'Wer mit 36 km/h fährt, legt in jeder Sekunde 10 m zurück.'),
+  U('u_km_h', 1, 'Kilometer pro Stunde', ['km/h', 'Stundenkilometer'], 'Von km/h zu m/s kommt man, indem man durch 3,6 teilt.'),
 ]);

@@ -8,7 +8,7 @@ import {
   FREI, KLASSEN_WELTEN, answerQuestion, bereichCount, boostBlocked, boostPrice, buyBereich,
   buyBoost, canReveal, comboMultiplier, comboWindow, countdownLeft, countdownOver, discoveryCount, isOpen,
   kaufeBuchstabe, lueckenwort, newCountdownRun, newState, nextOpenQuestion, questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
-  weltOf,
+  weltOf, zeugnis,
 } from './game.js';
 import {
   clearLocal, exportState, hasSave, importState, isFirstVisit, loadLocal, loadMode, loadRecord, markIntroSeen, saveLocal,
@@ -78,6 +78,8 @@ form.addEventListener('submit', (event) => {
   if (result.timeBonus > 0) showTimeBonus(result.timeBonus);
 
   showFeedback(result, text);
+  const ehrung = ehrungenBlock(result.ehrungen);
+  if (ehrung) $('rueckmeldung').prepend(ehrung);
   flash(result.gained > 0 ? 'treffer' : 'wackeln');
   if (result.gained > 0) floatPoints(result.gained);
   addHistory(result, text);
@@ -210,6 +212,8 @@ function showFeedback(result, text) {
       w.klasse && FREI.index.byKey.has(`w:${normWord(text)}`)
         ? h('p', { class: 'hinweis' }, 'Im freien Spiel gibt es diesen Begriff – oben über die Moduswahl erreichbar.')
         : null,
+      w.klasse ? null : h('button', { type: 'button', class: 'textlink', onclick: () => openHilfe('hilfe-auswahl') },
+        'Wonach wurde ausgewählt?'),
     );
     return;
   }
@@ -359,9 +363,59 @@ for (const tab of document.querySelectorAll('[role="tab"]')) {
 
 let bereicheSignature = '';
 
+// ---------- Zeugnisse in den Klassen (#42) ----------
+
+const medaille = (stufe) => (stufe
+  ? h('span', { class: `medaille ${stufe.id}`, title: stufe.name }, h('span', { 'aria-hidden': 'true' }, stufe.zeichen), ` ${stufe.name}`)
+  : null);
+const prozent = (x) => `${Math.floor(x * 100)} %`;
+
+/** Zeile „noch X bis Silber“ – wie viele Einträge oder Fragen bis zur nächsten Medaille fehlen. */
+function bisZurNaechsten(z) {
+  if (!z.naechste) return 'Höchste Stufe erreicht.';
+  const fehlt = Math.ceil(z.naechste.ab * z.gesamt - 1e-9) - z.geschafft;
+  return `Noch ${fehlt} bis ${z.naechste.name}`;
+}
+
+/** Glückwunsch-Zeilen für neu erreichte Medaillen. */
+function ehrungenBlock(ehrungen) {
+  if (!ehrungen?.length) return null;
+  return h('div', { class: 'ehrungen', role: 'status' }, ehrungen.map((e) => h('p', { class: `ehrung ${e.stufe.id}` },
+    h('span', { class: 'ehrung-zeichen', 'aria-hidden': 'true' }, e.stufe.zeichen),
+    e.klasse ? `${e.stufe.name}-Zeugnis für ${e.name}!` : `${e.stufe.name} im Bereich „${e.name}“!`)));
+}
+
+function renderZeugnis() {
+  const z = zeugnis(state);
+  const box = $('zeugnis');
+  box.hidden = !z;
+  if (!z) return;
+  const s = C.ZEUGNIS_STUFEN;
+  fill(box,
+    h('div', { class: 'zeugnis-kopf' },
+      h('span', { class: 'zeugnis-titel' }, `Zeugnis ${W().name}`),
+      medaille(z.gesamt.stufe) ?? h('span', { class: 'medaille keine' }, 'noch keine Medaille')),
+    h('div', { class: 'zeugnis-zahl' }, `${prozent(z.gesamt.anteil)} geschafft · ${bisZurNaechsten(z.gesamt)}`),
+    h('div', { class: 'fortschritt' }, bar(z.gesamt.anteil)),
+    h('p', { class: 'zeugnis-regel' },
+      `Zählt Einträge und richtig beantwortete Fragen: ${s.map((x) => `${x.zeichen} ${x.name} ab ${prozent(x.ab)}`).join(' · ')}.`));
+}
+
+/**
+ * Was eine Bereichskarte unter der Beschreibung zeigt: im freien Spiel, wonach
+ * ausgewählt wurde – das ersetzt das Beispiel, weil man Einträge daraus
+ * herleiten kann (#43). In den Klassen bleibt es beim einen Beispiel (#25).
+ */
+function bereichHinweis(b) {
+  return !W().klasse && b.auswahl
+    ? h('div', { class: 'auswahl' }, h('span', { class: 'auswahl-titel' }, 'Ausgewählt: '), b.auswahl)
+    : h('div', { class: 'beispiel' }, `z. B. ${b.beispiel}`);
+}
+
 function renderBereiche(force = false) {
   const price = unlockPrice(state);
-  const signature = state.welt + '|' + state.unlocked.join(',') + '|' + discoveryCount(state);
+  const signature = state.welt + '|' + state.unlocked.join(',') + '|' + discoveryCount(state)
+    + '|' + Object.keys(state.answered).length;
   const list = $('bereiche');
 
   if (force || signature !== bereicheSignature) {
@@ -370,24 +424,31 @@ function renderBereiche(force = false) {
       ? 'Alle Bereiche sind offen.'
       : `Der nächste Bereich kostet ${fmt(price)} Erkenntnis – welcher, entscheidest du.`;
 
+    renderZeugnis();
+    const z = zeugnis(state);
     list.replaceChildren(...W().bereiche.map((b) => {
       const total = entriesOf(b.id).length;
       if (isOpen(state, b.id)) {
         const found = bereichCount(state, b.id);
+        const zb = z?.bereiche.find((x) => x.id === b.id);
         return h('li', { class: 'bereich offen' },
           h('div', { class: 'kopf' },
             h('span', { class: 'name' }, b.name),
-            h('span', { class: 'status' }, `${found}/${total}`)),
+            h('span', { class: 'status' }, `${found}/${total}`),
+            zb ? medaille(zb.stufe) : null),
           h('div', { class: 'beschr' }, b.desc),
-          h('div', { class: 'beispiel' }, `z. B. ${b.beispiel}`),
-          h('div', { class: 'fortschritt' }, bar(found / total)));
+          bereichHinweis(b),
+          zb
+            ? [h('div', { class: 'fortschritt' }, bar(zb.anteil)),
+              h('div', { class: 'zeugnis-zeile' }, `${prozent(zb.anteil)} mit Fragen · ${bisZurNaechsten(zb)}`)]
+            : h('div', { class: 'fortschritt' }, bar(found / total)));
       }
       return h('li', { class: 'bereich gesperrt' },
         h('div', { class: 'kopf' },
           h('span', { class: 'name' }, b.name),
           h('span', { class: 'status' }, `${total} Einträge`)),
         h('div', { class: 'beschr' }, b.desc),
-        h('div', { class: 'beispiel' }, `z. B. ${b.beispiel}`),
+        bereichHinweis(b),
         h('button', {
           type: 'button', class: 'freischalten', 'data-preis': price,
           onclick: () => {
@@ -576,7 +637,7 @@ function renderHelp() {
     h('thead', {}, h('tr', {}, head.map((x) => h('th', {}, x)))),
     h('tbody', {}, rows.map((r) => h('tr', {}, r.map((x) => h('td', {}, x))))));
 
-  $('hilfe-inhalt').replaceChildren(
+  fill($('hilfe-inhalt'), // fill(), weil Abschnitte je nach Modus null sein können
     h('div', { class: 'overlay-leiste' },
       h('button', { type: 'button', class: 'zurueck', onclick: closeOverlay }, '← Zurück'),
       h('span', { class: 'overlay-info' }, 'Anleitung')),
@@ -617,6 +678,10 @@ function renderHelp() {
         h('h3', {}, 'Deine Klasse'),
         h('p', {}, `Du spielst ${W().name}: nur Inhalte dieser Klassenstufe, mit Stufen innerhalb der Klasse `
           + '(1 = Grundwissen, 4 = Zusatzwissen). Alle Bereiche sind offen; Erkenntnis brauchst du hier für Upgrades und das Lückenwort.'),
+        h('h3', {}, 'Zeugnis'),
+        h('p', {}, 'Für jeden Bereich und für die ganze Klasse gibt es eine Medaille. Es zählt der Anteil aus entdeckten '
+          + 'Einträgen und richtig beantworteten Fragen – aufgelöste Fragen zählen nicht.'),
+        table(['Medaille', 'ab'], C.ZEUGNIS_STUFEN.map((z) => [`${z.zeichen} ${z.name}`, prozent(z.ab)])),
       ]
       : [
         h('h3', {}, 'Bereiche freischalten'),
@@ -630,6 +695,13 @@ function renderHelp() {
       + `und jedes Upgrade wird mit jedem Kauf um ${pct(C.BOOST_PRICE_GROWTH - 1)} teurer.`),
     table(['Upgrade', 'Startpreis', 'Wirkung'], BOOSTS.map((b) => [b.name, fmt(b.price), b.desc])),
 
+    ...(W().klasse ? [] : [
+      h('h3', { id: 'hilfe-auswahl' }, 'Wonach wurde ausgewählt?'),
+      h('p', {}, C.AUSWAHL.allgemein),
+      h('dl', { class: 'auswahl-liste' }, C.BEREICHE.map((b) => [h('dt', {}, b.name), h('dd', {}, b.auswahl)])),
+      h('p', {}, C.AUSWAHL.nichtGezaehlt),
+    ]),
+
     h('h3', {}, 'Tipps zur Eingabe'),
     h('ul', {},
       h('li', {}, 'Groß- und Kleinschreibung, Leerzeichen und Bindestriche sind egal; „oe“ geht statt „ö“.'),
@@ -640,11 +712,21 @@ function renderHelp() {
   );
 }
 
-$('hilfe-knopf').addEventListener('click', () => {
+/** Hilfe öffnen, optional direkt bei einem Abschnitt (z. B. 'hilfe-auswahl'). */
+function openHilfe(anker = null) {
   renderHelp();
   openOverlay('hilfe');
-  $('hilfe-inhalt').querySelector('.zurueck').focus();
-});
+  const ziel = anker && $(anker);
+  if (ziel) {
+    ziel.scrollIntoView({ block: 'start' });
+    ziel.setAttribute('tabindex', '-1');
+    ziel.focus({ preventScroll: true });
+  } else {
+    $('hilfe-inhalt').querySelector('.zurueck').focus();
+  }
+}
+
+$('hilfe-knopf').addEventListener('click', () => openHilfe());
 
 // ---------- Startbildschirm und Moduswahl (#16) ----------
 
@@ -652,7 +734,7 @@ $('hilfe-knopf').addEventListener('click', () => {
 function worldProgress(w) {
   const s = w.id === state.welt && !state.countdown ? state : loadLocal(w.id);
   if (!s && !hasSave(w.id)) return null;
-  return { found: s ? discoveryCount(s) : 0, total: w.entries.length };
+  return { found: s ? discoveryCount(s) : 0, total: w.entries.length, zeugnis: s ? zeugnis(s) : null };
 }
 
 // Im Startbildschirm ausgewählte Klasse (zeigt ihre Inhaltsübersicht, Issue #28)
@@ -672,6 +754,8 @@ function klassenUebersicht(w) {
     h('p', { class: 'ku-zahlen' },
       `${fmt(w.entries.length)} Begriffe zum Eintippen und ${fmt(w.questions.length)} Fragen. `
       + `Alle ${w.bereiche.length} Bereiche sind sofort offen: ${w.bereiche.map((b) => b.name).join(', ')}.`),
+    p?.zeugnis ? h('p', { class: 'ku-zeugnis' }, 'Dein Zeugnis: ',
+      medaille(p.zeugnis.gesamt.stufe) ?? 'noch keine Medaille', ` (${prozent(p.zeugnis.gesamt.anteil)})`) : null,
     h('button', { type: 'button', class: 'primaer ku-los', onclick: () => chooseWelt(w.id) },
       p ? `Weiter mit ${w.name} →` : `${w.name} spielen →`));
 }
@@ -704,7 +788,10 @@ function renderStart() {
               onclick: () => { startAuswahl = w.id; renderStart(); $('klassen-uebersicht').scrollIntoView({ block: 'nearest' }); },
             },
             h('span', { class: 'klasse-zahl' }, h('small', {}, 'Klasse'), w.klasse),
-            h('span', { class: 'klasse-stand' }, p ? `${p.found}/${p.total}` : `${w.entries.length} Einträge`));
+            h('span', { class: 'klasse-stand' }, p ? `${p.found}/${p.total}` : `${w.entries.length} Einträge`),
+            p?.zeugnis?.gesamt.stufe
+              ? h('span', { class: 'klasse-medaille', title: `${p.zeugnis.gesamt.stufe.name}-Zeugnis` }, p.zeugnis.gesamt.stufe.zeichen)
+              : null);
           })),
         klassenUebersicht(KLASSEN_WELTEN.find((w) => w.id === startAuswahl)),
         h('details', { class: 'klassen-themen' },
@@ -1114,7 +1201,7 @@ function renderQuestionView() {
     h('span', { class: 'overlay-info' }, `${BEREICH_NAMES[q.bereich]} · Stufe ${q.tier}`));
 
   if (questionSolved) {
-    const { entry, points, boost } = questionSolved;
+    const { entry, points, boost, ehrungen } = questionSolved;
     const next = nextOpenQuestion(state, q.id);
     fill(card, top,
       h('p', { class: 'frage-gross-text' }, q.frage),
@@ -1124,6 +1211,7 @@ function renderQuestionView() {
         h('p', { class: 'hinweis' }, entry.fact),
         boost ? h('p', { class: 'hinweis' }, `${boost.name}: ×${fmt(boost.factor)}`) : null,
         wikiLink(entry)),
+      ehrungenBlock(ehrungen),
       h('div', { class: 'knopfreihe' },
         next ? h('button', { type: 'button', class: 'primaer', onclick: () => showQuestionInPlace(next.id) }, 'Nächste Frage →') : null,
         h('button', { type: 'button', class: 'zweitrangig', onclick: closeOverlay }, 'Zurück zur Liste')));
@@ -1152,6 +1240,7 @@ function renderQuestionView() {
           floatPoints(result.points);
           showQuestionResult(q, result);
           renderHint();
+          renderBereiche();
           saveLocal(state);
         } else if (result.status === 'falsch') {
           questionFeedback = { cls: 'schlecht', text: result.canReveal

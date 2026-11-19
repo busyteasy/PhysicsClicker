@@ -54,6 +54,9 @@ export default {
     ...S(4, 'b_potenzial'),
     ...S(1, 'b_elektrische_energie'),
     ...S(2, 'b_elektronenstrom b_quellenspannung'),
+    // Erweiterung: fehlende Grundbegriffe (Issue #40)
+    ...S(1, 'd_feder b_strom'),
+    ...S(2, 'gravitation'),
   },
   fragen: [
     // Kraft und Masse

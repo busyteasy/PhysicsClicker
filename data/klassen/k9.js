@@ -57,6 +57,8 @@ export default {
     ...S(4, 'e_waltenhofen'),
     ...S(1, 'b_elektrische_energie'),
     ...S(2, 'b_schmelzwaerme b_verdampfungswaerme d_bhkw'),
+    // Erweiterung: fehlende Grundbegriffe (Issue #40)
+    ...S(1, 'd_magnet magnetismus b_strom'),
   },
   fragen: [
     // Energie quantitativ
