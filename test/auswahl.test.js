@@ -27,6 +27,6 @@ test('„Thomson“ und der Tippfehler „Thompson“ finden J. J. Thomson', () 
 
 test('Jeder Bereich erklärt, wonach ausgewählt wurde', () => {
   for (const b of BEREICHE) assert.ok(b.auswahl?.length > 40, `${b.id}: keine Auswahlbeschreibung`);
-  for (const k of ['allgemein', 'nichtGezaehlt', 'klassen']) assert.ok(AUSWAHL[k]?.length > 40, k);
+  for (const k of ['allgemein', 'nichtGezaehlt']) assert.ok(AUSWAHL[k]?.length > 40, k);
   assert.ok(FREI.bereiche.every((b) => b.auswahl), 'Bereiche der Welt tragen die Beschreibung mit');
 });

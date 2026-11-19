@@ -49,9 +49,9 @@ export const BEREICHE = [
     auswahl: 'Messgeräte, Bauteile und technische Geräte, die im Unterricht vorkommen oder Physik im Alltag nutzen.' },
 ];
 
-// Wonach wurde ausgewählt? (Issue #43) – erscheint in der Hilfe, in den
-// Bereichskarten und bei unbekannten Eingaben. Je Bereich steht es als
-// `auswahl` oben in BEREICHE.
+// Wonach wurde ausgewählt? (Issue #43) – nur im freien Spiel: in der Hilfe,
+// auf den Bereichskarten (dort statt des Beispiels) und bei unbekannten
+// Eingaben. Je Bereich steht es als `auswahl` oben in BEREICHE.
 export const AUSWAHL = {
   allgemein: 'Die Wissensdatenbank ist von Hand zusammengestellt und nicht vollständig. Maßstab ist, was in der Schule '
     + '(Kerncurricula Niedersachsen) und im Grundstudium vorkommt und in der Physik einen eigenen Namen hat. '
@@ -59,7 +59,6 @@ export const AUSWAHL = {
   nichtGezaehlt: 'Bewusst nicht gezählt werden sehr allgemeine Wörter mit unklarer Bedeutung (z. B. „Gewicht“, das mal Masse, '
     + 'mal Gewichtskraft meint), Abkürzungen mit weniger als drei Zeichen (z. B. kg, V) und Nachnamen, die mehrere Personen '
     + 'tragen – dann hilft der vollständige Name, z. B. „Gustav Hertz“.',
-  klassen: 'In einer Klasse zählt nur, was laut Kerncurriculum in dieser Klasse drankommt – alles andere gibt es im freien Spiel.',
 };
 
 // Zusammengefasste Bereiche (Issue #26): Klassen mit wenig Stoff legen kleine

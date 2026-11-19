@@ -810,8 +810,7 @@ button.start-karte:hover, .start-karte.aktiv { border-color: var(--akzent); }
   margin-top: 6px; padding: 4px 0; border: 0; background: none; cursor: pointer;
   color: var(--akzent); font: inherit; font-size: 0.88rem; font-weight: 600; text-decoration: underline;
 }
-details.auswahl { margin-top: 6px; font-size: 0.85rem; }
-details.auswahl summary { cursor: pointer; color: var(--akzent); font-weight: 600; }
-details.auswahl p { margin: 4px 0 0; color: var(--tinte-leise); }
+.bereich .auswahl { font-size: 0.82rem; color: var(--tinte-leise); }
+.auswahl-titel { font-weight: 700; color: var(--tinte); }
 .auswahl-liste dt { margin-top: 8px; font-weight: 700; }
 .auswahl-liste dd { margin: 2px 0 0; color: var(--tinte-leise); }

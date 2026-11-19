@@ -106,10 +106,12 @@ gespeichert; alte Spielstände bekommen ihre Medaillen also automatisch. Werte:
 ## Wonach wurde ausgewählt? (Issue #43)
 
 Die Wissensdatenbank ist von Hand zusammengestellt und nicht vollständig. Damit
-man versteht, warum etwas fehlt, erklärt das Spiel die Auswahl offen – in der
-Hilfe (Abschnitt „Wonach wurde ausgewählt?“), aufklappbar auf jeder
-Bereichskarte und als Link bei jeder unbekannten Eingabe. Texte: `AUSWAHL` und
-`auswahl` je Bereich in `content.js`.
+man versteht, warum etwas fehlt, erklärt das Spiel im **freien Spiel** die
+Auswahl offen – in der Hilfe (Abschnitt „Wonach wurde ausgewählt?“), auf jeder
+Bereichskarte („Ausgewählt: …“ – das ersetzt dort das Beispiel, weil man
+Einträge aus der Beschreibung herleiten kann) und als Link bei jeder
+unbekannten Eingabe. In den Klassen gibt es das nicht; dort zeigt jede Karte
+weiter ein Beispiel. Texte: `AUSWAHL` und `auswahl` je Bereich in `content.js`.
 
 - **Personen:** Namensgeber von Einheiten, Gesetzen, Effekten oder Versuchen;
   Forschende mit grundlegenden Entdeckungen aus Schule und Studium (oft mit
@@ -122,7 +124,6 @@ Bereichskarte und als Link bei jeder unbekannten Eingabe. Texte: `AUSWAHL` und
 - **Bewusst nicht gezählt:** sehr allgemeine Wörter mit unklarer Bedeutung
   („Gewicht“), Abkürzungen unter drei Zeichen (kg, V) und Nachnamen mehrerer
   Personen – dann hilft der vollständige Name („Gustav Hertz“).
-- **Klassen:** nur, was laut Kerncurriculum in dieser Klasse drankommt.
 
 Jede Person ist über ihren Nachnamen erreichbar; Ausnahmen sind nur Wu (zu
 kurz), Hertz (Heinrich und Gustav) und Gay-Lussac (zugleich ein Gesetz)
@@ -213,8 +214,9 @@ Teilchenmodell) und **Geräte & Bauteile** (Messgeräte, Bauteile, technische
 Geräte – etwa Kompass, Sammellinse, Transformator). In den Klassenstufen ist
 alles sofort offen (siehe oben).
 
-Jeder Bereich zeigt **nur ein Beispiel** (Issue #25), damit man die Lösungen
-nicht einfach abtippen kann.
+In den Klassen zeigt jeder Bereich **nur ein Beispiel** (Issue #25), damit man
+die Lösungen nicht einfach abtippen kann. Im freien Spiel steht dort stattdessen,
+wonach die Einträge ausgewählt wurden (Issue #43).
 
 Eingaben aus einem gesperrten Bereich werden erkannt, aber nicht gewertet und
 nicht gemerkt; das Spiel sagt, welcher Bereich dafür nötig ist. Mehrdeutige

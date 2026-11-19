@@ -212,7 +212,7 @@ function showFeedback(result, text) {
       w.klasse && FREI.index.byKey.has(`w:${normWord(text)}`)
         ? h('p', { class: 'hinweis' }, 'Im freien Spiel gibt es diesen Begriff – oben über die Moduswahl erreichbar.')
         : null,
-      h('button', { type: 'button', class: 'textlink', onclick: () => openHilfe('hilfe-auswahl') },
+      w.klasse ? null : h('button', { type: 'button', class: 'textlink', onclick: () => openHilfe('hilfe-auswahl') },
         'Wonach wurde ausgewählt?'),
     );
     return;
@@ -401,11 +401,15 @@ function renderZeugnis() {
       `Zählt Einträge und richtig beantwortete Fragen: ${s.map((x) => `${x.zeichen} ${x.name} ab ${prozent(x.ab)}`).join(' · ')}.`));
 }
 
-/** Aufklappbar: Wonach wurden die Einträge dieses Bereichs ausgewählt? (#43) */
-function auswahlDetails(b) {
-  const text = W().klasse ? C.AUSWAHL.klassen : b.auswahl;
-  if (!text) return null;
-  return h('details', { class: 'auswahl' }, h('summary', {}, 'Wonach ausgewählt?'), h('p', {}, text));
+/**
+ * Was eine Bereichskarte unter der Beschreibung zeigt: im freien Spiel, wonach
+ * ausgewählt wurde – das ersetzt das Beispiel, weil man Einträge daraus
+ * herleiten kann (#43). In den Klassen bleibt es beim einen Beispiel (#25).
+ */
+function bereichHinweis(b) {
+  return !W().klasse && b.auswahl
+    ? h('div', { class: 'auswahl' }, h('span', { class: 'auswahl-titel' }, 'Ausgewählt: '), b.auswahl)
+    : h('div', { class: 'beispiel' }, `z. B. ${b.beispiel}`);
 }
 
 function renderBereiche(force = false) {
@@ -433,8 +437,7 @@ function renderBereiche(force = false) {
             h('span', { class: 'status' }, `${found}/${total}`),
             zb ? medaille(zb.stufe) : null),
           h('div', { class: 'beschr' }, b.desc),
-          h('div', { class: 'beispiel' }, `z. B. ${b.beispiel}`),
-          auswahlDetails(b),
+          bereichHinweis(b),
           zb
             ? [h('div', { class: 'fortschritt' }, bar(zb.anteil)),
               h('div', { class: 'zeugnis-zeile' }, `${prozent(zb.anteil)} mit Fragen · ${bisZurNaechsten(zb)}`)]
@@ -445,8 +448,7 @@ function renderBereiche(force = false) {
           h('span', { class: 'name' }, b.name),
           h('span', { class: 'status' }, `${total} Einträge`)),
         h('div', { class: 'beschr' }, b.desc),
-        h('div', { class: 'beispiel' }, `z. B. ${b.beispiel}`),
-        auswahlDetails(b),
+        bereichHinweis(b),
         h('button', {
           type: 'button', class: 'freischalten', 'data-preis': price,
           onclick: () => {
@@ -693,11 +695,12 @@ function renderHelp() {
       + `und jedes Upgrade wird mit jedem Kauf um ${pct(C.BOOST_PRICE_GROWTH - 1)} teurer.`),
     table(['Upgrade', 'Startpreis', 'Wirkung'], BOOSTS.map((b) => [b.name, fmt(b.price), b.desc])),
 
-    h('h3', { id: 'hilfe-auswahl' }, 'Wonach wurde ausgewählt?'),
-    h('p', {}, C.AUSWAHL.allgemein),
-    W().klasse ? h('p', {}, C.AUSWAHL.klassen) : null,
-    h('dl', { class: 'auswahl-liste' }, C.BEREICHE.map((b) => [h('dt', {}, b.name), h('dd', {}, b.auswahl)])),
-    h('p', {}, C.AUSWAHL.nichtGezaehlt),
+    ...(W().klasse ? [] : [
+      h('h3', { id: 'hilfe-auswahl' }, 'Wonach wurde ausgewählt?'),
+      h('p', {}, C.AUSWAHL.allgemein),
+      h('dl', { class: 'auswahl-liste' }, C.BEREICHE.map((b) => [h('dt', {}, b.name), h('dd', {}, b.auswahl)])),
+      h('p', {}, C.AUSWAHL.nichtGezaehlt),
+    ]),
 
     h('h3', {}, 'Tipps zur Eingabe'),
     h('ul', {},
