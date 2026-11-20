@@ -8,8 +8,11 @@
 // sonst bei den Suchergebnissen – ein falscher Titel führt also nie ins Leere.
 //
 // Für jede Antwort im Fragekatalog steht hier ein Titel (das prüft ein Test).
+// `null` heißt: bewusst kein Link.
 
 export default {
+  // Easter Egg (Issue #48): kein Wikipedia-Artikel
+  wulze: null,
   // Personen
   einstein: 'Albert Einstein',
   curie: 'Marie Curie',
