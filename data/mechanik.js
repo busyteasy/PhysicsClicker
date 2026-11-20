@@ -259,4 +259,7 @@ export default inArea('mechanik', [
   B('b_welle', 1, 'Welle', [], 'Eine Welle transportiert Energie, aber kein Material: Die Wasserteilchen bewegen sich nur auf und ab.'),
   U('u_m_s', 1, 'Meter pro Sekunde', [], 'Wer mit 36 km/h fährt, legt in jeder Sekunde 10 m zurück.'),
   U('u_km_h', 1, 'Kilometer pro Stunde', ['km/h', 'Stundenkilometer'], 'Von km/h zu m/s kommt man, indem man durch 3,6 teilt.'),
+
+  // Erweiterung (Issue #48): Easter Egg für den Tutor des Seminarfachs, in dem das Spiel entstanden ist
+  W('wulze', 1, 'Wulze', [], 'Easter Egg: Tutor des Seminarfachs Physik, in dem dieses Spiel entstanden ist – ohne ihn gäbe es PhysicsClicker nicht.'),
 ]);

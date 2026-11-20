@@ -16,6 +16,7 @@ test('Jede Antwort im Fragekatalog hat einen Wikipedia-Link (#15)', () => {
 test('data/wiki.js verweist nur auf echte Einträge und hat sinnvolle Titel', () => {
   for (const [id, title] of Object.entries(WIKI)) {
     assert.ok(INDEX.byId.has(id), `unbekannte ID ${id}`);
+    if (title === null) continue; // bewusst ohne Link (z. B. Easter Egg, Issue #48)
     assert.ok(title.trim().length >= 3 && !/[=·]/.test(title), `${id}: Titel „${title}“`);
   }
   assert.equal(wikiUrl(INDEX.byId.get('einstein')),

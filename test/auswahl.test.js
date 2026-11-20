@@ -30,3 +30,13 @@ test('Jeder Bereich erklärt, wonach ausgewählt wurde', () => {
   for (const k of ['allgemein', 'nichtGezaehlt']) assert.ok(AUSWAHL[k]?.length > 40, k);
   assert.ok(FREI.bereiche.every((b) => b.auswahl), 'Bereiche der Welt tragen die Beschreibung mit');
 });
+
+test('Easter Egg (Issue #48): „Wulze“ zählt als Person, ohne Wikipedia-Link', async () => {
+  const { wikiUrl } = await import('../src/wiki.js');
+  const r = match(FREI.index, 'Wulze');
+  assert.equal(r.kind, 'treffer');
+  assert.deepEqual(r.ids, ['wulze']);
+  const e = FREI.index.byId.get('wulze');
+  assert.equal(e.cat, 'person');
+  assert.equal(wikiUrl(e), null);
+});
