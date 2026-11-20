@@ -5,6 +5,7 @@
 
 import { ENTRIES } from '../data/index.js';
 import FRAGEN from '../data/fragen.js';
+import SCHAETZFRAGEN from '../data/schaetzen.js';
 import KLASSEN from '../data/klassen/index.js';
 import { buildIndex } from './matcher.js';
 import {
@@ -26,12 +27,19 @@ function bereichMap(gruppen) {
   return map;
 }
 
-function makeWelt({ id, name, kurz, klasse = null, entries: raw, fragen, start: startCats, gruppen = [], prices, info = null }) {
+function makeWelt({ id, name, kurz, klasse = null, entries: raw, fragen, schaetzen = [], start: startCats, gruppen = [], prices, info = null }) {
   const zuBereich = bereichMap(gruppen);
   // Jeder Eintrag kennt seinen Bereich in dieser Welt; `cat` bleibt die Kategorie.
   const entries = raw.map((e) => ({ ...e, bereich: zuBereich.get(e.cat) }));
   const index = buildIndex(entries);
   const questions = fragen.map((q) => ({ ...q, bereich: index.byId.get(q.antwort)?.bereich }));
+  // Schätzfragen (Issue #46): Bezüge auf Einträge, die es in dieser Welt nicht
+  // gibt, entfallen – was man hier nicht eingeben kann, kann man nicht verraten.
+  const schaetzfragen = schaetzen.map((x) => ({
+    ...x,
+    bezug: x.bezug.filter((b) => index.byId.has(b)),
+    bezugWert: x.bezugWert.filter((b) => index.byId.has(b)),
+  }));
   const present = new Set(entries.map((e) => e.bereich));
   const start = [...new Set(startCats.map((c) => zuBereich.get(c) ?? c))].filter((b) => present.has(b));
   // Startbereiche zuerst, danach in der üblichen Reihenfolge – nur Bereiche mit Inhalt
@@ -45,6 +53,8 @@ function makeWelt({ id, name, kurz, klasse = null, entries: raw, fragen, start: 
   return {
     id, name, kurz, klasse, info, entries, index, questions,
     questionById: new Map(questions.map((q) => [q.id, q])),
+    schaetzfragen,
+    schaetzById: new Map(schaetzfragen.map((x) => [x.id, x])),
     bereiche,
     bereichIds: new Set(bereiche.map((b) => b.id)),
     zuBereich,
@@ -63,6 +73,7 @@ function klassenEintraege(k) {
 }
 
 export const FREI = makeWelt({
+  schaetzen: SCHAETZFRAGEN,
   id: 'frei', name: 'Freies Spiel', kurz: 'Freies Spiel',
   entries: ENTRIES, fragen: FRAGEN, start: START_BEREICHE, prices: UNLOCK_PRICES,
 });
@@ -70,7 +81,7 @@ export const FREI = makeWelt({
 export const KLASSEN_WELTEN = KLASSEN.map((k) => makeWelt({
   id: `k${k.klasse}`, name: `Klasse ${k.klasse}`, kurz: `Kl. ${k.klasse}`, klasse: k.klasse,
   // Alle Bereiche sind sofort offen (Issue #30) – es gibt nichts zu kaufen
-  entries: klassenEintraege(k), fragen: k.fragen, start: KLASSEN_BEREICH_REIHENFOLGE, gruppen: k.gruppen ?? [],
+  entries: klassenEintraege(k), fragen: k.fragen, schaetzen: k.schaetzen ?? [], start: KLASSEN_BEREICH_REIHENFOLGE, gruppen: k.gruppen ?? [],
   prices: [],
   info: { beschreibung: k.beschreibung, themen: k.themen, quelle: k.quelle },
 }));

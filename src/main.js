@@ -3,18 +3,19 @@
 import { CATEGORIES } from '../data/index.js';
 import * as C from './content.js';
 import { AREA_NAMES, BEREICH_NAMES, BOOSTS, COUNTDOWN } from './content.js';
-import { formatNumber as fmt } from './format.js';
+import { formatMesswert, formatNumber as fmt } from './format.js';
 import {
   FREI, KLASSEN_WELTEN, answerQuestion, bereichCount, boostBlocked, boostPrice, buyBereich,
   buyBoost, canReveal, comboMultiplier, comboWindow, countdownLeft, countdownOver, discoveryCount, isOpen,
-  kaufeBuchstabe, lueckenwort, newCountdownRun, newState, nextOpenQuestion, questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
+  kaufeBuchstabe, lueckenwort, naechsteSchaetzfrage, reglerAusSchaetzung, rundeSchaetzung, schaetzAusRegler,
+  schaetze, schaetzGrundwert, schaetzSperre, schaetzStatus, newCountdownRun, newState, nextOpenQuestion, questionPoints, questionStatus, revealQuestion, submit, unlockPrice,
   weltOf, zeugnis,
 } from './game.js';
 import {
   clearLocal, exportState, hasSave, importState, isFirstVisit, loadLocal, loadMode, loadRecord, markIntroSeen, saveLocal,
   saveMode, saveRecord,
 } from './save.js';
-import { isRelation, normWord } from './normalize.js';
+import { isRelation, normWord, parseQuantity } from './normalize.js';
 import { anstoesse } from './anstoss.js';
 import { bezuege, mindmap } from './mindmap.js';
 import { wikiUrl } from './wiki.js';
@@ -356,6 +357,7 @@ for (const tab of document.querySelectorAll('[role="tab"]')) {
     }
     if (tab.dataset.tab === 'optionen') renderStats();
     if (tab.dataset.tab === 'fragen') renderQuestions();
+    if (tab.dataset.tab === 'schaetzen') renderSchaetzen();
   });
 }
 
@@ -476,7 +478,7 @@ function renderBereiche(force = false) {
 // Zurück-Taste von Browser oder Handy das Overlay statt die Seite zu verlassen.
 const overlays = {
   frage: $('frage-overlay'), hilfe: $('hilfe-overlay'), mindmap: $('mindmap-overlay'), countdown: $('countdown-overlay'),
-  start: $('start-overlay'), intro: $('intro-overlay'),
+  start: $('start-overlay'), intro: $('intro-overlay'), schaetzen: $('schaetzen-overlay'),
 };
 let activeOverlay = null;
 let overlayReturnFocus = null;
@@ -549,9 +551,10 @@ const FOLIEN = [
   },
   {
     titel: 'Hol mehr heraus',
-    text: 'Beantworte Fragen, tippe schnell hintereinander und kaufe Upgrades.',
+    text: 'Beantworte Fragen, schätze Größen, tippe schnell hintereinander und kaufe Upgrades.',
     bild: () => tafel(
       h('span', { class: 'intro-kachel' }, h('b', {}, '?'), 'Fragen'),
+      h('span', { class: 'intro-kachel' }, h('b', {}, '≈'), 'Schätzen'),
       h('span', { class: 'intro-kachel' }, h('b', {}, '×1,6'), 'Combo'),
       h('span', { class: 'intro-kachel' }, h('b', {}, '★'), 'Upgrades')),
   },
@@ -672,6 +675,14 @@ function renderHelp() {
     h('p', {}, `Jede Frage im Fragekatalog bringt einmalig das ${fmt(C.QUESTION_FACTOR)}-Fache ihrer Stufe, `
       + `also zwischen ${fmt(C.TIER_POINTS[1] * C.QUESTION_FACTOR)} und ${fmt(C.TIER_POINTS[5] * C.QUESTION_FACTOR)} Erkenntnis. `
       + `Nach ${C.QUESTION_TRIES} Fehlversuchen kannst du eine Frage auflösen – dann ohne Punkte.`),
+
+    h('h3', { id: 'hilfe-schaetzen' }, 'Schätzen'),
+    h('p', {}, `Im Reiter „Schätzen“ gibst du mit dem Regler oder als Zahl an, wie groß etwas ist. Jede Schätzfrage zählt einmal `
+      + `und bringt bei einem Volltreffer das ${fmt(C.SCHAETZ_FACTOR)}-Fache ihrer Stufe, sonst einen Teil davon. `
+      + 'Fragen, deren Antwort du selbst noch entdecken kannst, öffnen sich erst danach. Im Countdown gibt es kein Schätzen.'),
+    table(['Bewertung', 'höchstens daneben', 'Erkenntnis'], C.SCHAETZ_STUFEN.map((z) => [
+      `${z.zeichen} ${z.name}`, `Faktor ${formatMesswert(z.faktor)}`, pct(z.anteil)])),
+    h('p', {}, `Bei Temperaturen zählt die Abweichung in Grad: höchstens das ${C.SCHAETZ_STUFEN.map((z) => fmt(z.linear)).join('-, ')}-Fache der Toleranz, die bei der Frage steht.`),
 
     ...(W().klasse
       ? [
@@ -1308,6 +1319,188 @@ function showQuestionResult(q, result) {
   pushHistory(result.points, `Frage: ${result.entry.name}`);
 }
 
+// ---------- Schätzen (Issue #46) ----------
+
+let currentSchaetz = null;   // ID der groß angezeigten Schätzfrage
+let schaetzErgebnis = null;  // Ergebnis gerade abgegebener Schätzung
+
+/** „eine Konstante (Mechanik) mit Wert“ – ohne Namen, damit nichts verraten wird. */
+function sperrText(f) {
+  const art = CATEGORIES[f.cat] ?? 'Eintrag';
+  const artikel = ['Konstante', 'Formel', 'Person', 'Einheit'].includes(art) ? 'eine' : 'ein';
+  return `${artikel} ${art} aus ${AREA_NAMES[f.area] ?? 'der Physik'}${f.wert ? ' mit Zahlenwert' : ''}`;
+}
+
+function renderSchaetzen() {
+  const liste = W().schaetzfragen;
+  const erledigt = liste.filter((s) => schaetzStatus(state, s) === 'geschaetzt').length;
+  $('schaetzen-zahl').textContent = liste.length ? `${erledigt}/${liste.length}` : '';
+  const gebiete = [...new Set(liste.map((s) => s.gebiet))];
+  fill($('schaetzen'), liste.length ? null : h('p', { class: 'offen' }, 'In dieser Welt gibt es noch keine Schätzfragen.'),
+    gebiete.map((g) => {
+      const fragen = liste.filter((s) => s.gebiet === g);
+      const fertig = fragen.filter((s) => schaetzStatus(state, s) === 'geschaetzt').length;
+      return h('section', { class: 'fragen-gruppe' },
+        h('h3', {}, AREA_NAMES[g] ?? g, h('span', { class: 'zahl' }, `${fertig}/${fragen.length}`)),
+        h('ul', { class: 'fragen-liste' }, fragen.map(renderSchaetzZeile)));
+    }));
+}
+
+function renderSchaetzZeile(s) {
+  const status = schaetzStatus(state, s);
+  if (status === 'verschlossen') {
+    const fehlt = schaetzSperre(state, s);
+    return h('li', { class: 'frage verschlossen' },
+      h('div', { class: 'frage-kopf' },
+        h('span', { class: 'frage-text' }, `🔒 Schätzfrage · Stufe ${s.tier}`),
+        h('span', { class: 'frage-punkte' }, `bis +${fmt(schaetzGrundwert(s))}`)),
+      h('div', { class: 'frage-loesung' }, `Entdecke zuerst ${fehlt.map(sperrText).join(' und ')}.`));
+  }
+  const gemacht = state.schaetzungen[s.id];
+  const li = h('li', { class: `frage ${status === 'geschaetzt' ? 'richtig' : 'offen'}` },
+    h('button', {
+      type: 'button', class: 'frage-kopf', disabled: status !== 'offen', onclick: () => showSchaetzfrage(s.id),
+    }, h('span', { class: 'frage-text' }, s.frage),
+    h('span', { class: 'frage-punkte' }, gemacht ? `+${fmt(gemacht.punkte)}` : `bis +${fmt(schaetzGrundwert(s))}`)));
+  if (gemacht) {
+    li.append(h('div', { class: 'frage-loesung' },
+      `Geschätzt ${formatMesswert(gemacht.schaetzung)} ${s.einheit} · richtig ${formatMesswert(s.wert)} ${s.einheit}`.trim()));
+  }
+  return li;
+}
+
+function showSchaetzfrage(id) {
+  currentSchaetz = id;
+  schaetzErgebnis = null;
+  openOverlay('schaetzen');
+  renderSchaetzView();
+}
+
+function showSchaetzfrageInPlace(id) {
+  currentSchaetz = id;
+  schaetzErgebnis = null;
+  renderSchaetzView();
+}
+
+/** Eine Skala mit Marken für Schätzung und echten Wert. */
+function schaetzSkala(s, schaetzung) {
+  const marke = (wert, cls, text) => h('span', {
+    class: `skala-marke ${cls}`, style: `left: ${reglerAusSchaetzung(s, wert) / C.SCHAETZ_REGLER * 100}%`,
+  }, h('span', { class: 'skala-text' }, text));
+  return h('div', { class: 'schaetz-skala', 'aria-hidden': 'true' },
+    h('div', { class: 'skala-linie' }, marke(schaetzung, 'du', 'Du'), marke(s.wert, 'echt', 'Echt')),
+    h('div', { class: 'skala-raender' },
+      h('span', {}, formatMesswert(s.min)), h('span', {}, formatMesswert(s.max))));
+}
+
+function renderSchaetzView() {
+  const s = W().schaetzById.get(currentSchaetz);
+  const card = $('schaetz-gross');
+  if (!s) return;
+  const einheit = s.einheit ? ` ${s.einheit}` : '';
+  const top = h('div', { class: 'overlay-leiste' },
+    h('button', { type: 'button', class: 'zurueck', onclick: closeOverlay }, '← Zurück'),
+    h('span', { class: 'overlay-info' }, `Schätzen · ${AREA_NAMES[s.gebiet] ?? ''} · Stufe ${s.tier}`));
+
+  if (schaetzErgebnis) {
+    const r = schaetzErgebnis;
+    const next = naechsteSchaetzfrage(state, s.id);
+    const daneben = r.faktor != null
+      ? (r.faktor < 1.005 ? 'genau getroffen' : `${fmt(Math.round(r.faktor * 100) / 100)}-fach ${r.schaetzung > s.wert ? 'zu groß' : 'zu klein'}`)
+      : (r.abweichung === 0 ? 'genau getroffen' : `${formatMesswert(r.abweichung)}${einheit} ${r.schaetzung > s.wert ? 'zu hoch' : 'zu niedrig'}`);
+    fill(card, top,
+      h('p', { class: 'frage-gross-text', id: 'schaetz-titel' }, s.frage),
+      h('div', { class: 'frage-erfolg', role: 'status', 'aria-live': 'polite' },
+        h('p', { class: `titel ${r.punkte ? 'gut' : ''}` },
+          r.stufe ? `${r.stufe.zeichen} ${r.stufe.name}! +${fmt(r.punkte)} Erkenntnis` : 'Leider zu weit daneben – diesmal ohne Punkte.'),
+        h('p', { class: 'schaetz-vergleich' },
+          h('span', {}, 'Deine Schätzung: ', h('b', {}, `${formatMesswert(r.schaetzung)}${einheit}`)),
+          h('span', {}, 'Echter Wert: ', h('b', {}, `${formatMesswert(s.wert)}${einheit}`)),
+          h('span', {}, `(${daneben})`)),
+        schaetzSkala(s, r.schaetzung),
+        h('p', { class: 'hinweis' }, s.erklaerung),
+        r.boost ? h('p', { class: 'hinweis' }, `${r.boost.name}: ×${fmt(r.boost.factor)}`) : null),
+      h('div', { class: 'knopfreihe' },
+        next ? h('button', { type: 'button', class: 'primaer', onclick: () => showSchaetzfrageInPlace(next.id) }, 'Nächste Schätzfrage →') : null,
+        h('button', { type: 'button', class: 'zweitrangig', onclick: closeOverlay }, 'Zurück zur Liste')));
+    card.querySelector('.primaer, .zweitrangig').focus();
+    return;
+  }
+
+  let wert = schaetzAusRegler(s, C.SCHAETZ_REGLER / 2);
+  const anzeige = h('output', { class: 'schaetz-anzeige', for: 'schaetz-regler' });
+  const meldung = h('p', { class: 'frage-meldung', 'aria-live': 'polite' });
+  const regler = h('input', {
+    type: 'range', id: 'schaetz-regler', min: 0, max: C.SCHAETZ_REGLER, step: 1,
+    value: C.SCHAETZ_REGLER / 2, 'aria-labelledby': 'schaetz-titel',
+  });
+  const feld = h('input', {
+    type: 'text', id: 'schaetz-zahl', inputmode: 'decimal', spellcheck: 'false', autocomplete: 'off',
+    'aria-label': `Schätzung als Zahl${s.einheit ? ` in ${s.einheit}` : ''}`,
+  });
+  const setze = (zahl, { vonFeld = false } = {}) => {
+    const begrenzt = Math.min(s.max, Math.max(s.min, zahl));
+    wert = rundeSchaetzung(s, begrenzt);
+    regler.value = reglerAusSchaetzung(s, wert);
+    const text = `${formatMesswert(wert)}${einheit}`;
+    anzeige.textContent = `≈ ${text}`;
+    regler.setAttribute('aria-valuetext', `ungefähr ${text}`);
+    if (!vonFeld) feld.value = formatMesswert(wert);
+    meldung.textContent = begrenzt !== zahl
+      ? `Der Regler reicht von ${formatMesswert(s.min)} bis ${formatMesswert(s.max)}${einheit} – ich nehme ${formatMesswert(wert)}.`
+      : '';
+  };
+  regler.addEventListener('input', () => setze(schaetzAusRegler(s, Number(regler.value))));
+  feld.addEventListener('input', () => {
+    const q = parseQuantity(feld.value);
+    if (!q || (s.skala === 'log' && q.value <= 0)) return;
+    setze(q.value, { vonFeld: true });
+  });
+  const schritt = (richtung) => {
+    if (s.skala === 'linear') setze(wert + richtung * 10 ** Math.floor(Math.log10(s.toleranz)));
+    else setze(richtung > 0 ? wert * 1.05 : wert / 1.05);
+  };
+  setze(wert);
+
+  fill(card, top,
+    h('p', { class: 'frage-gross-text', id: 'schaetz-titel' }, s.frage),
+    h('p', { class: 'frage-wert' }, `bis +${fmt(schaetzGrundwert(s))} Erkenntnis · nur ein Versuch`
+      + (s.skala === 'linear' ? ` · Volltreffer bis ±${formatMesswert(s.toleranz)}${einheit}` : ' · Volltreffer bis 10 % daneben')),
+    anzeige,
+    h('div', { class: 'schaetz-regler' },
+      h('button', { type: 'button', class: 'schaetz-schritt', 'aria-label': 'etwas weniger', onclick: () => schritt(-1) }, '−'),
+      regler,
+      h('button', { type: 'button', class: 'schaetz-schritt', 'aria-label': 'etwas mehr', onclick: () => schritt(1) }, '+')),
+    h('div', { class: 'skala-raender' },
+      h('span', {}, `${formatMesswert(s.min)}${einheit}`), h('span', {}, `${formatMesswert(s.max)}${einheit}`)),
+    h('form', {
+      class: 'antwort-gross',
+      onsubmit: (event) => {
+        event.preventDefault();
+        const r = schaetze(state, s.id, wert);
+        if (r.status !== 'geschaetzt') return;
+        schaetzErgebnis = r;
+        if (r.punkte) floatPoints(r.punkte);
+        pushHistory(r.punkte, `Schätzen: ${r.stufe?.name ?? 'daneben'}`);
+        saveLocal(state);
+        renderSchaetzView();
+        renderSchaetzen();
+        update();
+      },
+    },
+    h('label', { class: 'schaetz-feld' }, feld, s.einheit ? h('span', { class: 'einheit' }, s.einheit) : null),
+    h('button', { type: 'submit' }, 'Schätzen')),
+    meldung,
+    (() => {
+      const next = naechsteSchaetzfrage(state, s.id);
+      return next ? h('button', {
+        type: 'button', class: 'ueberspringen', title: 'Diese Schätzfrage erst einmal auslassen – sie bleibt offen.',
+        onclick: () => showSchaetzfrageInPlace(next.id),
+      }, 'Überspringen →') : null;
+    })());
+  regler.focus();
+}
+
 // ---------- Upgrades ----------
 
 let boostSignature = '';
@@ -1578,6 +1771,12 @@ function updateCountdown(now) {
   const run = Boolean(state.countdown);
   document.body.classList.toggle('countdown-aktiv', run);
   $('countdown').hidden = !run;
+  // Schätzen gibt es im Countdown nicht (Issue #46)
+  const reiter = $('schaetzen-reiter');
+  if (reiter.hidden !== run) {
+    reiter.hidden = run;
+    if (run && reiter.getAttribute('aria-selected') === 'true') document.querySelector('[data-tab="bereiche"]').click();
+  }
   if (!run) return;
   const left = countdownLeft(state, now);
   $('countdown-zeit').textContent = clock(left);
@@ -1619,6 +1818,7 @@ function rerenderAll() {
   renderBereiche(true);
   renderCodex();
   renderQuestions();
+  renderSchaetzen();
   renderBoosts(true);
   renderHint();
   renderStats();

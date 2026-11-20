@@ -2,7 +2,7 @@
 // Thermodynamik der Gase (Kelvin-Skala, Gasgesetze, Stirlingmotor,
 // maximaler Wirkungsgrad), Atom- und Kernphysik, Halbleiter,
 // Präzisierung der Mechanik (Beschleunigung).
-import { Q, QUELLE_SI, S } from './helpers.js';
+import { Q, QUELLE_SI, S, ausFreiListe } from './helpers.js';
 
 export default {
   klasse: 10,
@@ -121,5 +121,11 @@ export default {
     Q('k10_a', 1, 'Mit welcher Formel berechnet man die Beschleunigung?', 'beschleunigung'),
     Q('k10_vat', 2, 'Wie schnell ist ein Körper, der aus der Ruhe gleichmäßig beschleunigt? Gesucht ist die Formel.', 'f_v_at'),
     Q('k10_sat', 3, 'Mit welcher Formel berechnet man den Weg bei gleichmäßig beschleunigter Bewegung aus der Ruhe?', 'weg_zeit'),
+  ],
+  // Schätzfragen (Issue #46)
+  schaetzen: [
+    ...ausFreiListe(10, 1, 's_wasser_100m s_luft_liter s_c14 s_kernkraftwerk'),
+    ...ausFreiListe(10, 2, 's_zugspitze s_atom_groesse s_wasser_1grad s_mensch_atome'),
+    ...ausFreiListe(10, 3, 's_sonne_oberflaeche s_schluck_wasser'),
   ],
 };

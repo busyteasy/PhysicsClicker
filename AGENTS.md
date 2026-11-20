@@ -56,7 +56,8 @@ src/
   welt.js         Spielwelten: FREI und KLASSEN_WELTEN (Einträge, Index, Fragen, Bereiche, Preise); welt(id), weltOf(state)
   game.js         Zustand und Regeln: newState(weltId), submit, buyBereich, answerQuestion, buyBoost, restore,
                   Lückenwort (lueckenwort, kaufeBuchstabe), Zeugnisse der Klassen (zeugnis, zeugnisFortschritte),
-                  Countdown-Modus (newCountdownRun, countdownLeft, countdownOver) …
+                  Countdown-Modus (newCountdownRun, countdownLeft, countdownOver),
+                  Schätzen (schaetze, bewerteSchaetzung, schaetzStatus, schaetzAusRegler …) …
   matcher.js      buildIndex(ENTRIES) und match(index, eingabe) – Eingabe → Einträge
   normalize.js    Vereinheitlicht Wörter, Formeln, Einheiten; parseQuantity liest Zahlen
   save.js         localStorage, Export/Import als Base64-Text
@@ -72,11 +73,12 @@ data/
   index.js        ENTRIES (alle Gebiete zusammen) und CATEGORIES (Einzahl-Bezeichnungen)
   mechanik.js …   Ein Gebiet pro Datei (mechanik, optik, waerme, elektro, astro, quanten, relativ, kern)
   fragen.js       Fragekatalog
+  schaetzen.js    Schätzfragen des freien Spiels (Issue #46), Helfer S(…)
   bezuege.js      Person → zugehörige Einträge (für die Mindmap)
   wiki.js         Wikipedia-Artikeltitel je Eintrag-ID (Pflicht für jede Fragen-Antwort, Test)
   klassen/        k5.js … k13.js: Auswahl der Einträge je Klasse mit Stufe 1–4 und eigenem Fragekatalog
 test/             data, matcher, game, fragen, upgrades, wiki, mindmap, countdown, klassen, denkhilfe,
-                  grundbegriffe, zeugnis, auswahl
+                  grundbegriffe, zeugnis, auswahl, schaetzen
 ```
 
 ### Begriffe
@@ -140,6 +142,19 @@ werden. Der Bereich der Frage ergibt sich aus der Kategorie der Antwort. Jeder
 Bereich braucht mindestens 4 Fragen (Test).
 Die Antwort braucht außerdem einen Wikipedia-Titel in `data/wiki.js` (Test).
 
+### Neue Schätzfrage
+
+In `data/schaetzen.js` (Format dort beschrieben) bzw. in `schaetzen` einer
+Klasse (`ausFreiListe(klasse, stufe, 's_a s_b')` übernimmt Fragen des freien
+Spiels, `SZ(…)` legt neue an). `test/schaetzen.test.js` prüft:
+
+- `quelle` und `erklaerung` sind Pflicht, Wert sorgfältig belegen;
+- jeder Name eines Eintrags im Text (auch die Einheit) steht in `bezug`, jede
+  Konstante, aus der man den Wert ablesen oder berechnen kann, in `bezugWert`;
+- kein „=“ in Frage oder Erklärung;
+- Wert nicht in der Reglermitte und nicht am Rand, Log-Bereich ≥ 3 Zehnerpotenzen;
+- Budget je Welt ≤ 15 % der Fragenpunkte – zur Not die Stufe senken.
+
 ### Klassenstufe pflegen
 
 Jede Klasse steht in `data/klassen/kN.js` (Format in `data/klassen/helpers.js`):
@@ -192,7 +207,7 @@ Spielende haben echte Spielstände – **niemals einfach brechen**:
   (Overlays nutzen `window.history.pushState`). Die Verlaufsliste heißt `recent`.
 - Inhalte immer über die aktuelle Welt holen (`W()` in `main.js`, `weltOf(state)`
   in der Logik) – nie direkt `ENTRIES`, `QUESTIONS` oder `BEREICHE` benutzen.
-- Overlays (`intro`, `start`, `frage`, `hilfe`, `mindmap`, `countdown`) über `openOverlay(name)` / `closeOverlay()` öffnen
+- Overlays (`intro`, `start`, `frage`, `schaetzen`, `hilfe`, `mindmap`, `countdown`) über `openOverlay(name)` / `closeOverlay()` öffnen
   und schließen; sie legen einen History-Eintrag an, damit Escape, der
   „Zurück“-Knopf und die Browser-/Handy-Zurück-Taste funktionieren.
 - Teure Listen (Bereiche, Upgrades) rendern nur neu, wenn sich ihre „Signatur“

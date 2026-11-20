@@ -2,7 +2,7 @@
 // Wärme, spezifische Wärmekapazität, Energieerhaltung, Wirkungsgrad),
 // Elektromagnetismus und Energieversorgung (Induktion, Generator, Motor,
 // Transformator, Wechselstrom), Energiewende und Klima.
-import { Q, QUELLE_SI, S } from './helpers.js';
+import { Q, QUELLE_SI, S, ausFreiListe } from './helpers.js';
 
 export default {
   klasse: 9,
@@ -112,5 +112,11 @@ export default {
     Q('k9_daemmung', 2, 'Wodurch verringert man die Wärmeverluste eines Hauses am wirksamsten?', 'b_waermedaemmung'),
     Q('k9_albedo', 3, 'Wie heißt das Rückstrahlvermögen einer Oberfläche, das bei Schnee besonders groß ist?', 'b_albedo'),
     Q('k9_solarkonstante', 3, 'Wie heißt die Strahlungsleistung der Sonne pro Quadratmeter oberhalb der Erdatmosphäre?', 'solarkonstante'),
+  ],
+  // Schätzfragen (Issue #46)
+  schaetzen: [
+    ...ausFreiListe(9, 1, 's_wasserkocher s_handyakku s_mensch_waerme s_fall_45m'),
+    ...ausFreiListe(9, 2, 's_kernkraftwerk s_wasser_1grad s_pendel_1m s_eiffelturm'),
+    ...ausFreiListe(9, 3, 's_luft_liter s_wasser_100m'),
   ],
 };

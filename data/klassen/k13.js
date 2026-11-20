@@ -2,7 +2,7 @@
 // Elektroneninterferenz, de Broglie, Mach-Zehnder, Unbestimmtheit),
 // Atomhülle (Energieniveaus, Spektren, Franck-Hertz, Potenzialtopf,
 // Fluoreszenz) und Atomkern (Zerfallsgesetz, Nuklidkarte, Detektoren).
-import { Q, QUELLE_SII, S } from './helpers.js';
+import { Q, QUELLE_SII, S, ausFreiListe } from './helpers.js';
 
 export default {
   klasse: 13,
@@ -133,5 +133,12 @@ export default {
     Q('k13_antineutrino', 3, 'Welches fast masselose Teilchen entsteht beim Beta-Minus-Zerfall zusammen mit dem Elektron?', 'antineutrino'),
     Q('k13_massendefekt', 3, 'Wie heißt es, dass ein Kern leichter ist als die Summe seiner Bausteine?', 'massendefekt'),
     Q('k13_rutherford', 1, 'Wer entdeckte mit Alphateilchen und Goldfolie den Atomkern?', 'rutherford'),
+  ],
+  // Schätzfragen (Issue #46)
+  schaetzen: [
+    ...ausFreiListe(13, 1, 's_c14 s_kernkraftwerk'),
+    ...ausFreiListe(13, 2, 's_gruenes_licht s_atom_groesse s_sonne_erden s_universum s_mensch_atome'),
+    ...ausFreiListe(13, 3, 's_schluck_wasser s_sonne_oberflaeche'),
+    ...ausFreiListe(13, 4, 's_gps'),
   ],
 };

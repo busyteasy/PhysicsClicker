@@ -814,3 +814,41 @@ button.start-karte:hover, .start-karte.aktiv { border-color: var(--akzent); }
 .auswahl-titel { font-weight: 700; color: var(--tinte); }
 .auswahl-liste dt { margin-top: 8px; font-weight: 700; }
 .auswahl-liste dd { margin: 2px 0 0; color: var(--tinte-leise); }
+
+/* ---------- Schätzen (Issue #46) ---------- */
+.frage.verschlossen { color: var(--tinte-leise); border-style: dashed; }
+.frage.verschlossen .frage-kopf { cursor: default; }
+.frage.verschlossen .frage-punkte { color: var(--tinte-leise); font-weight: 600; }
+.schaetz-anzeige {
+  display: block; margin: 0 0 8px; font-size: 1.6rem; font-weight: 800; text-align: center;
+  font-variant-numeric: tabular-nums; color: var(--tinte);
+}
+.schaetz-regler { display: flex; align-items: center; gap: 8px; }
+.schaetz-regler input[type="range"] { flex: 1; min-width: 0; height: 44px; accent-color: var(--akzent); margin: 0; }
+.schaetz-schritt {
+  flex: none; width: 44px; height: 44px; border: 2px solid var(--linie); border-radius: var(--radius);
+  background: var(--flaeche); color: var(--tinte); font-size: 1.4rem; font-weight: 700; cursor: pointer;
+}
+.schaetz-schritt:hover, .schaetz-schritt:focus-visible { border-color: var(--akzent); color: var(--akzent); }
+.skala-raender {
+  display: flex; justify-content: space-between; margin: 2px 52px 14px; font-size: 0.8rem; color: var(--tinte-leise);
+  font-variant-numeric: tabular-nums;
+}
+.schaetz-feld { display: flex; flex: 1 1 160px; align-items: center; gap: 6px; min-width: 0; }
+.schaetz-feld input { flex: 1; min-width: 0; }
+.schaetz-feld .einheit { font-weight: 700; color: var(--tinte-leise); }
+.schaetz-vergleich { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 6px 0 4px; }
+.schaetz-skala { margin: 26px 0 8px; }
+.schaetz-skala .skala-raender { margin: 4px 0 0; }
+.skala-linie { position: relative; height: 6px; border-radius: 3px; background: var(--linie); }
+.skala-marke {
+  position: absolute; top: -5px; width: 4px; height: 16px; margin-left: -2px; border-radius: 2px;
+}
+.skala-marke.du { background: var(--akzent); }
+.skala-marke.echt { background: var(--gut); }
+.skala-text {
+  position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); font-size: 0.75rem; font-weight: 700;
+  white-space: nowrap;
+}
+.skala-marke.du .skala-text { color: var(--akzent); }
+.skala-marke.echt .skala-text { color: var(--gut); top: 18px; bottom: auto; }
